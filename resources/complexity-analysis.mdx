@@ -1,0 +1,580 @@
+---
+title: Complexity Analysis Guide
+description: Master time and space complexity analysis for coding interviews
+---
+
+# Complexity Analysis Guide
+
+Understanding algorithmic complexity is critical for coding interviews. This guide teaches you how to analyze and communicate the efficiency of your solutions.
+
+---
+
+## What is Big O Notation?
+
+**Big O** describes how an algorithm's runtime or space requirements grow as input size increases. It focuses on the **dominant term** and ignores constants.
+
+### Key Principles
+
+1. **Drop Constants**: O(2n) → O(n)
+2. **Drop Lower Terms**: O(n² + n) → O(n²)
+3. **Different Variables**: O(n + m) stays as O(n + m)
+4. **Worst Case**: Big O typically describes worst-case behavior
+
+### Common Time Complexities (Best to Worst)
+
+| Big O | Name | Example Operations |
+|-------|------|-------------------|
+| O(1) | Constant | Array access, hash lookup |
+| O(log n) | Logarithmic | Binary search, balanced BST operations |
+| O(n) | Linear | Array traversal, linear search |
+| O(n log n) | Linearithmic | Merge sort, heap sort |
+| O(n²) | Quadratic | Nested loops, bubble sort |
+| O(2ⁿ) | Exponential | Recursive fibonacci, subset generation |
+| O(n!) | Factorial | Permutations |
+
+---
+
+## O(1) - Constant Time
+
+**Definition**: Time doesn't depend on input size.
+
+### Examples
+
+```python
+# Array access
+def get_first(arr: List[int]) -> int:
+    return arr[0]  # O(1)
+
+# Hash map lookup
+def has_key(map: dict, key: str) -> bool:
+    return key in map  # O(1) average
+
+# Arithmetic operations
+def add(a: int, b: int) -> int:
+    return a + b  # O(1)
+
+# Stack/Queue operations
+def push_pop(stack: List[int]):
+    stack.append(5)  # O(1)
+    stack.pop()      # O(1)
+```
+
+### When You See O(1)
+- Direct array index access: `arr[i]`
+- Hash map operations: insert, lookup, delete (average case)
+- Mathematical formulas: sum of 1 to n = n(n+1)/2
+- Stack/queue push/pop operations
+
+**Real Example**: [#017 - Two Sum](/problems/array-hashing/017-two-sum)
+```python
+def two_sum(nums: List[int], target: int) -> List[int]:
+    seen = {}
+    for i, num in enumerate(nums):  # O(n) loop
+        if target - num in seen:     # O(1) hash lookup
+            return [seen[target - num], i]
+        seen[num] = i                # O(1) hash insert
+    # Time: O(n), each iteration does O(1) work
+```
+
+---
+
+## O(log n) - Logarithmic Time
+
+**Definition**: Input size halves with each operation.
+
+### Why Log n?
+
+If you divide n by 2 repeatedly until reaching 1:
+- n → n/2 → n/4 → ... → 1
+- Number of steps = log₂(n)
+
+### Examples
+
+```python
+# Binary search
+def binary_search(arr: List[int], target: int) -> int:
+    left, right = 0, len(arr) - 1
+    while left <= right:              # log n iterations
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1            # Halve search space
+        else:
+            right = mid - 1           # Halve search space
+    return -1
+    # Time: O(log n) - search space halves each iteration
+
+# Balanced BST operations
+def search_bst(root: TreeNode, val: int) -> TreeNode:
+    while root:
+        if val == root.val:
+            return root
+        elif val < root.val:
+            root = root.left   # Skip right subtree
+        else:
+            root = root.right  # Skip left subtree
+    return None
+    # Time: O(log n) for balanced tree, O(n) worst case
+```
+
+### When You See O(log n)
+- Binary search on sorted array
+- Balanced BST operations: search, insert, delete
+- Heap operations: push, pop
+- Divide and conquer that processes one half
+
+**Real Example**: [#010 - Find Peak Element](/problems/binary-search/010-find-peak-element)
+```python
+def findPeakElement(nums: List[int]) -> int:
+    left, right = 0, len(nums) - 1
+    while left < right:
+        mid = left + (right - left) // 2
+        if nums[mid] > nums[mid + 1]:
+            right = mid
+        else:
+            left = mid + 1
+    return left
+    # Time: O(log n) - binary search
+    # Space: O(1) - only pointers
+```
+
+---
+
+## O(n) - Linear Time
+
+**Definition**: Time grows linearly with input size.
+
+### Examples
+
+```python
+# Single loop
+def find_max(arr: List[int]) -> int:
+    max_val = arr[0]
+    for num in arr:      # n iterations
+        if num > max_val:
+            max_val = num
+    return max_val
+    # Time: O(n)
+
+# Two sequential loops (still O(n))
+def process_array(arr: List[int]):
+    # First pass
+    total = sum(arr)     # O(n)
+    # Second pass
+    for num in arr:      # O(n)
+        print(num / total)
+    # Time: O(n) + O(n) = O(2n) = O(n)
+
+# Recursive tree traversal
+def sum_tree(root: TreeNode) -> int:
+    if not root:
+        return 0
+    return root.val + sum_tree(root.left) + sum_tree(root.right)
+    # Time: O(n) - visit each node once
+    # Space: O(h) - recursion depth = tree height
+```
+
+### When You See O(n)
+- Single loop through array/list
+- Tree/graph traversal (DFS/BFS)
+- Building hash map from array
+- String concatenation in a loop (careful: string operations can be O(n))
+
+**Real Example**: [#029 - Valid Palindrome](/problems/two-pointers/029-valid-palindrome)
+```python
+def is_palindrome(s: str) -> bool:
+    left, right = 0, len(s) - 1
+    while left < right:              # n/2 iterations
+        if s[left] != s[right]:
+            return False
+        left += 1
+        right -= 1
+    return True
+    # Time: O(n) - visit each character once (in worst case)
+    # Space: O(1) - only two pointers
+```
+
+---
+
+## O(n log n) - Linearithmic Time
+
+**Definition**: Combination of linear and logarithmic, typical for efficient sorting.
+
+### Why n log n?
+
+**Merge Sort**: Divide array log n times, merge takes O(n) at each level.
+- Levels: log n
+- Work per level: n
+- Total: n × log n
+
+### Examples
+
+```python
+# Merge sort
+def merge_sort(arr: List[int]) -> List[int]:
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])    # T(n/2)
+    right = merge_sort(arr[mid:])   # T(n/2)
+    return merge(left, right)       # O(n)
+    # Time: T(n) = 2T(n/2) + O(n) = O(n log n)
+
+# Sort then process
+def find_duplicates(nums: List[int]) -> List[int]:
+    nums.sort()          # O(n log n)
+    duplicates = []
+    for i in range(1, len(nums)):  # O(n)
+        if nums[i] == nums[i-1]:
+            duplicates.append(nums[i])
+    return duplicates
+    # Time: O(n log n) + O(n) = O(n log n)
+    # Sorting dominates
+```
+
+### When You See O(n log n)
+- Efficient comparison sorts: merge sort, heap sort, quicksort (average)
+- Building segment tree or other divide-and-conquer structures
+- Sorting + linear processing
+
+**Real Example**: [#016 - Merge Intervals](/problems/array-hashing/016-merge-intervals)
+```python
+def merge(intervals: List[List[int]]) -> List[List[int]]:
+    if not intervals:
+        return []
+    
+    intervals.sort(key=lambda x: x[0])  # O(n log n)
+    merged = [intervals[0]]
+    
+    for interval in intervals[1:]:       # O(n)
+        if interval[0] <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], interval[1])
+        else:
+            merged.append(interval)
+    
+    return merged
+    # Time: O(n log n) - dominated by sorting
+    # Space: O(n) - for output (or O(log n) if sort is in-place)
+```
+
+---
+
+## O(n²) - Quadratic Time
+
+**Definition**: Time grows quadratically, often from nested loops.
+
+### Examples
+
+```python
+# Nested loops
+def find_pairs(arr: List[int]) -> List[Tuple[int, int]]:
+    pairs = []
+    for i in range(len(arr)):        # n iterations
+        for j in range(i+1, len(arr)): # up to n iterations
+            pairs.append((arr[i], arr[j]))
+    return pairs
+    # Time: O(n²) - n × n/2 = O(n²/2) = O(n²)
+
+# Bubble sort
+def bubble_sort(arr: List[int]):
+    n = len(arr)
+    for i in range(n):               # n iterations
+        for j in range(n - i - 1):   # n iterations
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    # Time: O(n²)
+
+# 2D grid traversal
+def sum_matrix(matrix: List[List[int]]) -> int:
+    total = 0
+    for row in matrix:               # m rows
+        for val in row:              # n columns
+            total += val
+    return total
+    # Time: O(m × n), if m = n then O(n²)
+```
+
+### When You See O(n²)
+- Nested loops iterating over same collection
+- Brute force pair/triplet finding
+- Simple sorting algorithms: bubble, insertion, selection sort
+- Checking all substrings of length 2+
+
+**When It's Actually O(n)**: Be careful with nested loops!
+
+```python
+# This looks like O(n²) but is actually O(n)
+def remove_duplicates(s: str) -> str:
+    stack = []
+    for char in s:              # O(n)
+        if stack and stack[-1] == char:
+            stack.pop()         # O(1) operation
+        else:
+            stack.append(char)  # O(1) operation
+    return ''.join(stack)       # O(n)
+    # Time: O(n) - each char processed once with O(1) operations
+```
+
+---
+
+## O(2ⁿ) - Exponential Time
+
+**Definition**: Time doubles with each additional input element.
+
+### Examples
+
+```python
+# Naive recursive Fibonacci
+def fib(n: int) -> int:
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)
+    # Time: O(2ⁿ) - each call spawns 2 more calls
+    # Space: O(n) - max recursion depth
+
+# Generate all subsets
+def subsets(nums: List[int]) -> List[List[int]]:
+    result = []
+    def backtrack(start, path):
+        result.append(path[:])
+        for i in range(start, len(nums)):
+            backtrack(i + 1, path + [nums[i]])  # 2 choices each level
+    backtrack(0, [])
+    return result
+    # Time: O(2ⁿ) - 2 choices (include/exclude) for each element
+    # Space: O(n) - recursion depth
+```
+
+### When You See O(2ⁿ)
+- Generating all subsets/combinations
+- Recursive solutions without memoization
+- Problems requiring exhaustive search
+
+**Optimization**: Often can be reduced to O(n) or O(n²) with dynamic programming!
+
+```python
+# Optimized Fibonacci with memoization
+def fib_memo(n: int, memo={}) -> int:
+    if n <= 1:
+        return n
+    if n in memo:
+        return memo[n]
+    memo[n] = fib_memo(n-1, memo) + fib_memo(n-2, memo)
+    return memo[n]
+    # Time: O(n) - compute each value once
+    # Space: O(n) - memoization + recursion stack
+```
+
+---
+
+## Space Complexity
+
+**Space complexity** measures memory usage beyond input storage.
+
+### What Counts?
+- **Yes**: Auxiliary data structures (hash maps, arrays, stacks)
+- **Yes**: Recursion call stack
+- **No**: Input array (unless you're modifying it)
+- **No**: Output array (unless explicitly asked)
+
+### Examples
+
+```python
+# O(1) space - constant extra memory
+def two_pointer_sum(arr: List[int], target: int) -> bool:
+    left, right = 0, len(arr) - 1
+    while left < right:
+        if arr[left] + arr[right] == target:
+            return True
+        elif arr[left] + arr[right] < target:
+            left += 1
+        else:
+            right -= 1
+    return False
+    # Space: O(1) - only two pointers
+
+# O(n) space - hash map
+def two_sum(arr: List[int], target: int) -> List[int]:
+    seen = {}  # stores up to n elements
+    for i, num in enumerate(arr):
+        if target - num in seen:
+            return [seen[target - num], i]
+        seen[num] = i
+    # Space: O(n) - hash map can grow to n elements
+
+# O(h) space - recursion depth
+def tree_height(root: TreeNode) -> int:
+    if not root:
+        return 0
+    return 1 + max(tree_height(root.left), tree_height(root.right))
+    # Space: O(h) where h = tree height
+    # Balanced tree: h = log n, so O(log n)
+    # Skewed tree: h = n, so O(n)
+
+# O(n) space - new array
+def squares(arr: List[int]) -> List[int]:
+    return [x * x for x in arr]  # creates new array of size n
+    # Space: O(n) - new array
+```
+
+---
+
+## How to Analyze Complexity
+
+### Step-by-Step Process
+
+1. **Identify input size**: What is n? (array length, string length, tree nodes, etc.)
+
+2. **Count operations in loops**:
+   - Single loop → O(n)
+   - Nested loops → Multiply iterations
+   - Sequential loops → Add complexities
+
+3. **Analyze recursion**:
+   - Count recursive calls
+   - Measure recursion depth
+   - Use recurrence relations: T(n) = aT(n/b) + O(nᶜ)
+
+4. **Consider data structure operations**:
+   - Hash map insert/lookup: O(1) average
+   - Sorted array binary search: O(log n)
+   - Heap push/pop: O(log n)
+
+5. **Take dominant term**:
+   - O(n² + n log n + n) → O(n²)
+   - O(3n + 100) → O(n)
+
+### Real Example Analysis
+
+**Problem**: [#037 - Minimum Window Substring](/problems/sliding-window/037-minimum-window-substring)
+
+```python
+def minWindow(s: str, t: str) -> str:
+    if not s or not t:
+        return ""
+    
+    target = Counter(t)           # O(|t|) time, O(k) space
+    required = len(target)
+    formed = 0
+    window_counts = {}            # O(k) space
+    
+    l, r = 0, 0
+    ans = float('inf'), 0, 0
+    
+    while r < len(s):             # O(|s|) - right pointer moves n times
+        char = s[r]
+        window_counts[char] = window_counts.get(char, 0) + 1  # O(1)
+        
+        if char in target and window_counts[char] == target[char]:
+            formed += 1
+        
+        while l <= r and formed == required:  # Amortized O(|s|) total
+            if r - l + 1 < ans[0]:
+                ans = (r - l + 1, l, r)
+            
+            char = s[l]
+            window_counts[char] -= 1
+            if char in target and window_counts[char] < target[char]:
+                formed -= 1
+            l += 1                # Left pointer moves at most n times total
+        
+        r += 1
+    
+    return "" if ans[0] == float('inf') else s[ans[1]:ans[2]+1]
+
+# Time Complexity: O(|s| + |t|)
+# - Building target counter: O(|t|)
+# - Right pointer moves |s| times: O(|s|)
+# - Left pointer moves at most |s| times total (amortized): O(|s|)
+# - Each character processed at most twice (once by r, once by l)
+# Total: O(|s| + |t|)
+
+# Space Complexity: O(k) where k = unique characters in t
+# - target counter: O(k)
+# - window_counts: O(k)
+# - Other variables: O(1)
+```
+
+---
+
+## Common Complexity Patterns
+
+### Pattern Recognition Table
+
+| Code Pattern | Time | Space |
+|--------------|------|-------|
+| Single loop | O(n) | O(1) |
+| Nested loops (independent) | O(n×m) | O(1) |
+| Nested loops (same array) | O(n²) | O(1) |
+| Binary search | O(log n) | O(1) |
+| Sorting + linear | O(n log n) | O(1) or O(n) |
+| Hash map build + lookup | O(n) | O(n) |
+| DFS/BFS on tree | O(n) | O(h) or O(w) |
+| DFS/BFS on graph | O(V+E) | O(V) |
+| Sliding window | O(n) | O(k) |
+| Two pointers | O(n) | O(1) |
+| Heap of size k | O(n log k) | O(k) |
+| DP 2D table | O(n×m) | O(n×m) or O(m) |
+| Backtracking (subsets) | O(2ⁿ) | O(n) |
+
+---
+
+## Interview Communication Tips
+
+### How to Explain Complexity
+
+**Good explanation structure**:
+
+1. **State the complexity clearly**:
+   - "The time complexity is O(n log n) and space is O(1)."
+
+2. **Explain the dominant operation**:
+   - "We sort the array which takes O(n log n), then iterate once in O(n), so sorting dominates."
+
+3. **Define variables**:
+   - "Where n is the number of intervals and m is the maximum number of overlaps."
+
+4. **Mention trade-offs**:
+   - "We use O(n) extra space with a hash map to achieve O(n) time instead of O(n²) with nested loops."
+
+### Example Script
+
+> "For this Two Sum solution, the time complexity is **O(n)** where n is the length of the input array. We iterate through the array once, and for each element, we do a hash map lookup which is O(1) on average, giving us O(n) overall.
+>
+> The space complexity is **O(n)** because in the worst case, we might store all n elements in the hash map before finding the answer.
+>
+> This is optimal because we need to examine each element at least once, so we can't do better than O(n) time."
+
+---
+
+## Practice Problems by Complexity
+
+### O(1) and O(log n)
+- [#010 - Find Peak Element](/problems/binary-search/010-find-peak-element) - O(log n)
+- [#042 - Find First and Last Position](/problems/binary-search/042-find-first-and-last-position) - O(log n)
+
+### O(n)
+- [#017 - Two Sum](/problems/array-hashing/017-two-sum) - O(n) time, O(n) space
+- [#029 - Valid Palindrome](/problems/two-pointers/029-valid-palindrome) - O(n) time, O(1) space
+- [#037 - Minimum Window Substring](/problems/sliding-window/037-minimum-window-substring) - O(m+n)
+
+### O(n log n)
+- [#016 - Merge Intervals](/problems/array-hashing/016-merge-intervals) - O(n log n)
+- [#015 - Top K Frequent Elements](/problems/heap-priority-queue/015-top-k-frequent-elements) - O(n log k)
+
+### O(n²)
+- [#065 - 3Sum](/problems/two-pointers/065-3sum) - O(n²) time, O(1) space
+
+---
+
+## Next Steps
+
+- **Practice**: Analyze complexity for every solution you write
+- **Compare**: Understand trade-offs between different approaches
+- **Optimize**: Learn when O(n) space is worth O(n²) → O(n) time savings
+
+For pattern-specific complexities, see [Common Patterns](/resources/patterns).
+
+For interview preparation, see [Interview Tips](/resources/interview-tips).

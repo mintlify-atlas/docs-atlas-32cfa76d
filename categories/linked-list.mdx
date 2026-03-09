@@ -1,0 +1,486 @@
+---
+title: 'Linked List'
+description: 'Master linked list manipulation, traversal, and structural modifications'
+---
+
+# Linked List
+
+Linked lists are linear data structures where elements (nodes) are connected via pointers. Unlike arrays, they provide O(1) insertion/deletion but O(n) access. Mastering pointer manipulation is key to solving these problems.
+
+## Core Concepts
+
+### Linked List Types
+- **Singly Linked**: Each node has `next` pointer
+- **Doubly Linked**: Each node has `next` and `prev` pointers
+- **Circular**: Last node points back to first
+
+### Key Operations
+- **Traversal**: Follow `next` pointers - O(n)
+- **Insertion**: Update pointers - O(1) if at known position
+- **Deletion**: Update pointers, handle prev node - O(1) if at known position
+- **Search**: Linear scan - O(n)
+
+## Key Patterns & Techniques
+
+### 1. Two Pointers (Fast & Slow)
+- Detect cycle (Floyd's algorithm)
+- Find middle node
+- Find kth from end
+- Check if palindrome
+
+### 2. Dummy Node
+- Simplifies edge cases (empty list, single node)
+- No special handling for head
+- Return dummy.next as new head
+
+### 3. Reverse Linked List
+- Iterative with 3 pointers (prev, curr, next)
+- Recursive with return new head
+- Reverse in groups
+
+### 4. Merge & Sort
+- Merge two sorted lists
+- Merge k sorted lists (heap/divide & conquer)
+- Sort linked list (merge sort)
+
+## Common Approaches
+
+### Two Pointers Template (Fast & Slow)
+```python
+def findMiddle(head: ListNode) -> ListNode:
+    """
+    Find middle node using fast/slow pointers.
+    Time: O(n), Space: O(1)
+    """
+    slow = fast = head
+    
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    
+    return slow  # Slow is at middle
+```
+
+### Cycle Detection
+```python
+def hasCycle(head: ListNode) -> bool:
+    """
+    Detect cycle using Floyd's algorithm.
+    Time: O(n), Space: O(1)
+    """
+    if not head:
+        return False
+    
+    slow = fast = head
+    
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        
+        if slow == fast:
+            return True
+    
+    return False
+```
+
+### Remove Nth From End
+```python
+def removeNthFromEnd(head: ListNode, n: int) -> ListNode:
+    """
+    Remove nth node from end using two pointers.
+    Time: O(n), Space: O(1)
+    """
+    dummy = ListNode(0)
+    dummy.next = head
+    
+    # Move fast pointer n steps ahead
+    fast = dummy
+    for _ in range(n + 1):
+        fast = fast.next
+    
+    # Move both until fast reaches end
+    slow = dummy
+    while fast:
+        slow = slow.next
+        fast = fast.next
+    
+    # Remove the node
+    slow.next = slow.next.next
+    
+    return dummy.next
+```
+
+### Reverse Linked List
+```python
+def reverseList(head: ListNode) -> ListNode:
+    """
+    Reverse linked list iteratively.
+    Time: O(n), Space: O(1)
+    """
+    prev = None
+    curr = head
+    
+    while curr:
+        next_temp = curr.next  # Save next
+        curr.next = prev       # Reverse pointer
+        prev = curr            # Move prev forward
+        curr = next_temp       # Move curr forward
+    
+    return prev  # New head
+```
+
+### Copy List with Random Pointer
+```python
+def copyRandomList(head: 'Node') -> 'Node':
+    """
+    Deep copy list with random pointers.
+    Time: O(n), Space: O(n)
+    """
+    if not head:
+        return None
+    
+    # First pass: create all nodes
+    old_to_new = {}
+    curr = head
+    while curr:
+        old_to_new[curr] = Node(curr.val)
+        curr = curr.next
+    
+    # Second pass: set next and random pointers
+    curr = head
+    while curr:
+        if curr.next:
+            old_to_new[curr].next = old_to_new[curr.next]
+        if curr.random:
+            old_to_new[curr].random = old_to_new[curr.random]
+        curr = curr.next
+    
+    return old_to_new[head]
+```
+
+### Add Two Numbers
+```python
+def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
+    """
+    Add two numbers represented as linked lists.
+    Time: O(max(m,n)), Space: O(max(m,n))
+    """
+    dummy = ListNode(0)
+    curr = dummy
+    carry = 0
+    
+    while l1 or l2 or carry:
+        # Get values
+        val1 = l1.val if l1 else 0
+        val2 = l2.val if l2 else 0
+        
+        # Calculate sum and carry
+        total = val1 + val2 + carry
+        carry = total // 10
+        digit = total % 10
+        
+        # Create new node
+        curr.next = ListNode(digit)
+        curr = curr.next
+        
+        # Move pointers
+        l1 = l1.next if l1 else None
+        l2 = l2.next if l2 else None
+    
+    return dummy.next
+```
+
+### Insert into Sorted Circular List
+```python
+def insert(head: 'Node', insertVal: int) -> 'Node':
+    """
+    Insert value into sorted circular linked list.
+    Time: O(n), Space: O(1)
+    """
+    new_node = Node(insertVal)
+    
+    # Empty list
+    if not head:
+        new_node.next = new_node
+        return new_node
+    
+    prev, curr = head, head.next
+    insert_done = False
+    
+    while True:
+        # Case 1: Insert in middle (prev <= val <= curr)
+        if prev.val <= insertVal <= curr.val:
+            insert_done = True
+        
+        # Case 2: Insert at boundary (max -> min)
+        elif prev.val > curr.val:
+            if insertVal >= prev.val or insertVal <= curr.val:
+                insert_done = True
+        
+        if insert_done:
+            prev.next = new_node
+            new_node.next = curr
+            return head
+        
+        prev, curr = curr, curr.next
+        
+        # Case 3: All same values, insert anywhere
+        if prev == head:
+            break
+    
+    # Insert after current node
+    prev.next = new_node
+    new_node.next = curr
+    return head
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="045. Remove Nth Node From End" icon="delete-left" href="/problems/045-remove-nth-node-from-end-of-list">
+    **Medium** | Frequency: 56.0%
+    
+    Two pointers with n gap - find nth from end in one pass.
+  </Card>
+
+  <Card title="032. Copy List with Random Pointer" icon="clone" href="/problems/032-copy-list-with-random-pointer">
+    **Medium** | Frequency: 67.4%
+    
+    Two-pass with hash map to handle random pointers.
+  </Card>
+
+  <Card title="054. Add Two Numbers" icon="plus" href="/problems/054-add-two-numbers">
+    **Medium** | Frequency: 47.0%
+    
+    Traverse both lists simultaneously, handle carry.
+  </Card>
+
+  <Card title="064. Insert into Sorted Circular List" icon="circle-plus" href="/problems/064-insert-into-a-sorted-circular-linked-list">
+    **Medium** | Frequency: 47.0%
+    
+    Handle three cases: middle insert, boundary, all same values.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Operation | Array | Singly Linked | Doubly Linked |
+|-----------|-------|---------------|---------------|
+| Access | O(1) | O(n) | O(n) |
+| Insert (beginning) | O(n) | O(1) | O(1) |
+| Insert (end) | O(1) amortized | O(n) without tail | O(1) with tail |
+| Insert (middle) | O(n) | O(1) with node | O(1) with node |
+| Delete (beginning) | O(n) | O(1) | O(1) |
+| Delete (middle) | O(n) | O(1) with prev | O(1) with node |
+| Search | O(n) | O(n) | O(n) |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Detect cycle"** → Fast/slow pointers (Floyd's algorithm)
+- **"Find middle"** → Fast moves 2x, slow moves 1x
+- **"Nth from end"** → Two pointers with gap of n
+- **"Reverse list"** → Three pointers (prev, curr, next)
+- **"Merge sorted lists"** → Two pointers, dummy node
+- **"Palindrome check"** → Find middle, reverse second half, compare
+
+### Common Mistakes
+- Losing reference to next node before updating pointer
+- Not handling empty list or single node
+- Forgetting to move pointers forward (infinite loop)
+- Off-by-one errors with nth from end
+- Not using dummy node (complicates edge cases)
+- Memory leaks (not breaking cycles when needed)
+
+### Key Insights
+1. **Dummy node eliminates edge cases** - especially for head changes
+2. **Draw diagrams** - visualize pointer changes
+3. **Two pointers solve many problems** in O(1) space
+4. **Save next before changing pointers** - common bug source
+5. **Check null pointers** before accessing `.next`
+6. **Circular lists** need extra care to detect when traversal completes
+
+## Essential Techniques
+
+### 1. Runner Technique (Fast/Slow)
+```python
+# Fast moves 2x speed of slow
+slow = fast = head
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+# slow is at middle when fast reaches end
+```
+
+### 2. Dummy Node Technique
+```python
+dummy = ListNode(0)
+dummy.next = head
+# Work with dummy, return dummy.next
+```
+
+### 3. Two Pointers with Gap
+```python
+# For nth from end
+fast = head
+for _ in range(n):
+    fast = fast.next
+slow = head
+while fast.next:
+    slow = slow.next
+    fast = fast.next
+# slow is at (n+1)th from end
+```
+
+## Advanced Patterns
+
+### Merge K Sorted Lists
+```python
+import heapq
+
+def mergeKLists(lists: List[ListNode]) -> ListNode:
+    """
+    Merge k sorted lists using min heap.
+    Time: O(N log k), N = total nodes, k = lists
+    Space: O(k)
+    """
+    dummy = ListNode(0)
+    curr = dummy
+    heap = []
+    
+    # Add first node from each list
+    for i, node in enumerate(lists):
+        if node:
+            heapq.heappush(heap, (node.val, i, node))
+    
+    # Extract min and add next from same list
+    while heap:
+        val, i, node = heapq.heappop(heap)
+        curr.next = node
+        curr = curr.next
+        
+        if node.next:
+            heapq.heappush(heap, (node.next.val, i, node.next))
+    
+    return dummy.next
+```
+
+### Sort Linked List (Merge Sort)
+```python
+def sortList(head: ListNode) -> ListNode:
+    """
+    Sort linked list using merge sort.
+    Time: O(n log n), Space: O(log n) recursion
+    """
+    if not head or not head.next:
+        return head
+    
+    # Find middle
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    
+    # Split into two halves
+    mid = slow.next
+    slow.next = None
+    
+    # Recursively sort both halves
+    left = sortList(head)
+    right = sortList(mid)
+    
+    # Merge sorted halves
+    return merge(left, right)
+```
+
+### Palindrome Check
+```python
+def isPalindrome(head: ListNode) -> bool:
+    """
+    Check if linked list is palindrome.
+    Time: O(n), Space: O(1)
+    """
+    if not head or not head.next:
+        return True
+    
+    # Find middle
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    
+    # Reverse second half
+    prev = None
+    while slow:
+        next_temp = slow.next
+        slow.next = prev
+        prev = slow
+        slow = next_temp
+    
+    # Compare first and second half
+    left, right = head, prev
+    while right:  # right is shorter or equal
+        if left.val != right.val:
+            return False
+        left = left.next
+        right = right.next
+    
+    return True
+```
+
+### Flatten Multilevel Doubly Linked List
+```python
+def flatten(head: 'Node') -> 'Node':
+    """
+    Flatten doubly linked list with child pointers.
+    Time: O(n), Space: O(1)
+    """
+    if not head:
+        return head
+    
+    curr = head
+    
+    while curr:
+        # If has child, insert child list
+        if curr.child:
+            # Save next
+            next_temp = curr.next
+            
+            # Connect to child
+            curr.next = curr.child
+            curr.child.prev = curr
+            curr.child = None
+            
+            # Find tail of child list
+            tail = curr.next
+            while tail.next:
+                tail = tail.next
+            
+            # Connect tail to next_temp
+            if next_temp:
+                tail.next = next_temp
+                next_temp.prev = tail
+        
+        curr = curr.next
+    
+    return head
+```
+
+## Linked List vs Array
+
+| Aspect | Array | Linked List |
+|--------|-------|-------------|
+| Memory | Contiguous | Scattered |
+| Access | O(1) | O(n) |
+| Insert/Delete (beginning) | O(n) | O(1) |
+| Insert/Delete (end) | O(1) amortized | O(1) with tail pointer |
+| Memory overhead | None | Extra for pointers |
+| Cache performance | Better | Worse |
+
+**Use Linked List when**: Frequent insertions/deletions, size unknown, no random access needed
+
+**Use Array when**: Need random access, cache performance important, size known
+
+---
+
+**Pro Tip:** Always use a dummy node for problems that might change the head. It eliminates special cases and makes code cleaner. Draw pointer diagrams to visualize changes before coding.

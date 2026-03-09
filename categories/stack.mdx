@@ -1,0 +1,283 @@
+---
+title: 'Stack'
+description: 'Master stack-based solutions for parsing, evaluation, and sequential processing'
+---
+
+# Stack
+
+Stacks provide Last-In-First-Out (LIFO) access, making them ideal for problems involving nested structures, parsing, backtracking, and maintaining context while processing sequences.
+
+## Key Patterns & Techniques
+
+### 1. Monotonic Stack
+- Maintain elements in increasing/decreasing order
+- Find next greater/smaller element
+- Used in temperature, stock span problems
+
+### 2. Expression Evaluation
+- Parse and evaluate mathematical expressions
+- Handle operator precedence
+- Postfix, infix, prefix conversion
+
+### 3. Matching & Validation
+- Validate balanced parentheses
+- Match opening and closing symbols
+- HTML/XML tag validation
+
+### 4. String Decoding
+- Decode nested encoded strings
+- Handle nested brackets with recursion or stack
+- Build result string incrementally
+
+## Common Approaches
+
+### Basic Calculator Pattern
+```python
+def calculate(s: str) -> int:
+    """
+    Evaluate arithmetic expression with +, -, *, /.
+    Time: O(n), Space: O(n)
+    """
+    if not s:
+        return 0
+    
+    stack = []
+    num = 0
+    sign = '+'
+    
+    for i, char in enumerate(s):
+        if char.isdigit():
+            num = num * 10 + int(char)
+        
+        if char in '+-*/' or i == len(s) - 1:
+            if sign == '+':
+                stack.append(num)
+            elif sign == '-':
+                stack.append(-num)
+            elif sign == '*':
+                stack.append(stack.pop() * num)
+            elif sign == '/':
+                # Python division truncates toward -inf, need toward 0
+                stack.append(int(stack.pop() / num))
+            
+            if char in '+-*/':
+                sign = char
+                num = 0
+    
+    return sum(stack)
+```
+
+### Valid Parentheses Pattern
+```python
+def isValid(s: str) -> bool:
+    """
+    Check if parentheses are balanced.
+    Time: O(n), Space: O(n)
+    """
+    stack = []
+    pairs = {'(': ')', '[': ']', '{': '}'}
+    
+    for char in s:
+        if char in pairs:  # Opening bracket
+            stack.append(char)
+        else:  # Closing bracket
+            if not stack or pairs[stack.pop()] != char:
+                return False
+    
+    return len(stack) == 0
+```
+
+### Decode String Pattern
+```python
+def decodeString(s: str) -> str:
+    """
+    Decode string with nested brackets: "3[a2[c]]" -> "accaccacc".
+    Time: O(n), Space: O(n)
+    """
+    stack = []
+    current_num = 0
+    current_str = ''
+    
+    for char in s:
+        if char.isdigit():
+            current_num = current_num * 10 + int(char)
+        elif char == '[':
+            # Push current state
+            stack.append((current_str, current_num))
+            current_str = ''
+            current_num = 0
+        elif char == ']':
+            # Pop and build
+            prev_str, num = stack.pop()
+            current_str = prev_str + num * current_str
+        else:
+            current_str += char
+    
+    return current_str
+```
+
+### Monotonic Stack Pattern
+```python
+def nextGreaterElement(nums: List[int]) -> List[int]:
+    """
+    Find next greater element for each element.
+    Time: O(n), Space: O(n)
+    """
+    result = [-1] * len(nums)
+    stack = []  # Store indices
+    
+    for i, num in enumerate(nums):
+        # Pop elements smaller than current
+        while stack and nums[stack[-1]] < num:
+            idx = stack.pop()
+            result[idx] = num
+        stack.append(i)
+    
+    return result
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="008. Basic Calculator II" icon="calculator" href="/problems/008-basic-calculator-ii">
+    **Medium** | Frequency: 84.0%
+    
+    Stack-based calculator handling +, -, *, / with proper precedence.
+  </Card>
+
+  <Card title="093. Decode String" icon="brackets-curly" href="/problems/093-decode-string">
+    **Medium** | Frequency: 32.0%
+    
+    Decode nested encoded strings using stack to track context.
+  </Card>
+
+  <Card title="035. Simplify Path" icon="folder" href="/problems/035-simplify-path">
+    **Medium** | Frequency: 65.0%
+    
+    Unix path simplification using stack for directory navigation.
+  </Card>
+
+  <Card title="049. Exclusive Time of Functions" icon="clock" href="/problems/049-exclusive-time-of-functions">
+    **Medium** | Frequency: 56.0%
+    
+    Stack to track function call hierarchy and compute exclusive times.
+  </Card>
+
+  <Card title="098. Remove All Adjacent Duplicates in String II" icon="delete-left" href="/problems/098-remove-all-adjacent-duplicates-in-string-ii">
+    **Medium** | Frequency: 32.0%
+    
+    Stack with counts to remove k consecutive duplicate characters.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Basic Stack | O(n) | O(n) | Nested structures, validation |
+| Monotonic Stack | O(n) | O(n) | Next greater/smaller element |
+| Calculator | O(n) | O(n) | Expression evaluation |
+| String Decode | O(n * k) | O(n) | Nested encoding, k is repeat count |
+| Path Simplification | O(n) | O(n) | Directory navigation |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Balanced parentheses/brackets"** → Stack for matching
+- **"Evaluate expression"** → Stack for operators/operands
+- **"Next greater/smaller"** → Monotonic stack
+- **"Decode nested string"** → Stack to track context
+- **"Simplify/parse path"** → Stack for directory levels
+- **"Remove adjacent duplicates"** → Stack with counts
+
+### Common Mistakes
+- Not handling operator precedence correctly (*, / before +, -)
+- Forgetting to process remaining stack elements
+- Off-by-one errors when checking stack.peek()
+- Not handling spaces in calculator problems
+- Wrong division truncation (Python // vs int(/))
+
+### Key Insights
+1. **When to push?** When you need to remember context (opening bracket, operator)
+2. **When to pop?** When closing a context (closing bracket) or found better element
+3. **What to store?** Often indices instead of values for result building
+4. **Monotonic invariant** makes O(n) possible - each element pushed/popped once
+5. **Calculator trick** high precedence ops (*, /) modify stack top immediately
+
+## Stack Variations
+
+### Min/Max Stack
+```python
+class MinStack:
+    """Stack with O(1) min operation."""
+    def __init__(self):
+        self.stack = []  # (value, min_so_far)
+    
+    def push(self, val: int) -> None:
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            current_min = min(val, self.stack[-1][1])
+            self.stack.append((val, current_min))
+    
+    def pop(self) -> None:
+        self.stack.pop()
+    
+    def top(self) -> int:
+        return self.stack[-1][0]
+    
+    def getMin(self) -> int:
+        return self.stack[-1][1]
+```
+
+### Stack with Counts
+```python
+def removeDuplicates(s: str, k: int) -> str:
+    """
+    Remove k consecutive duplicates.
+    Stack stores (char, count) pairs.
+    """
+    stack = []  # [(char, count)]
+    
+    for char in s:
+        if stack and stack[-1][0] == char:
+            stack[-1] = (char, stack[-1][1] + 1)
+            if stack[-1][1] == k:
+                stack.pop()
+        else:
+            stack.append((char, 1))
+    
+    return ''.join(char * count for char, count in stack)
+```
+
+## Decision Tree
+
+```
+Does the problem involve nested structures?
+├─ Yes: Parentheses/brackets matching → Stack for validation
+├─ Yes: Nested encoding/decoding → Stack to track context
+└─ No: Check other patterns
+    ├─ Need to evaluate expression? → Stack for calculator
+    ├─ Need next greater/smaller? → Monotonic stack
+    ├─ Need to track min/max? → Stack with extra info
+    └─ Sequential processing with backtrack? → Stack to save state
+```
+
+## Advanced Patterns
+
+### Two Stacks for Queue
+- Implement queue using two stacks
+- Amortized O(1) for enqueue/dequeue
+
+### Stack for DFS
+- Iterative DFS using explicit stack
+- Avoids recursion depth limits
+- Same logic as recursive DFS
+
+### Expression Trees
+- Build tree from expression using stack
+- Used in compilers and calculators
+
+---
+
+**Pro Tip:** If you see nested structures (parentheses, tags, directories), think stack. If you need "next greater/smaller", use monotonic stack for O(n) solution instead of O(n²) brute force.

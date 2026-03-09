@@ -1,0 +1,381 @@
+---
+title: 'Binary Search Tree (BST)'
+description: 'Leverage BST properties for efficient searching, insertion, and in-order operations'
+---
+
+# Binary Search Tree (BST)
+
+Binary Search Trees maintain the property that for every node, all values in the left subtree are smaller and all values in the right subtree are larger. This ordering enables O(log n) operations and sorted traversal.
+
+## Key Properties
+
+### BST Invariant
+- **Left subtree**: All values < node.val
+- **Right subtree**: All values > node.val
+- **Inorder traversal** produces sorted sequence
+- **Search, Insert, Delete**: O(log n) average, O(n) worst case
+
+### When to Use BST
+- Need sorted order efficiently
+- Frequent insertions and searches
+- Finding kth smallest/largest element
+- Range queries
+- Finding successor/predecessor
+
+## Key Patterns & Techniques
+
+### 1. BST Search
+- Compare with current node
+- Go left if target is smaller
+- Go right if target is larger
+- O(log n) average time
+
+### 2. Inorder Traversal = Sorted Order
+- Process left subtree first
+- Then current node
+- Then right subtree
+- Critical for kth element problems
+
+### 3. BST Iterator
+- Simulate inorder traversal
+- Use stack to track path
+- O(1) amortized next() operation
+
+### 4. Range Queries
+- Prune search based on range
+- Skip entire subtrees outside range
+- Efficient O(log n + k) where k is result size
+
+## Common Approaches
+
+### BST Search Template
+```python
+def searchBST(root: TreeNode, val: int) -> TreeNode:
+    """
+    Search for node with given value.
+    Time: O(log n) average, O(n) worst
+    Space: O(1) iterative, O(log n) recursive
+    """
+    # Iterative approach
+    while root:
+        if val == root.val:
+            return root
+        elif val < root.val:
+            root = root.left
+        else:
+            root = root.right
+    return None
+```
+
+### BST Insert
+```python
+def insertBST(root: TreeNode, val: int) -> TreeNode:
+    """
+    Insert value into BST.
+    Time: O(log n) average, Space: O(log n)
+    """
+    if not root:
+        return TreeNode(val)
+    
+    if val < root.val:
+        root.left = insertBST(root.left, val)
+    else:
+        root.right = insertBST(root.right, val)
+    
+    return root
+```
+
+### Kth Smallest Element (Inorder)
+```python
+def kthSmallest(root: TreeNode, k: int) -> int:
+    """
+    Find kth smallest element using inorder traversal.
+    Time: O(k + log n), Space: O(log n)
+    """
+    stack = []
+    curr = root
+    count = 0
+    
+    while curr or stack:
+        # Go left as far as possible
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        
+        # Process node (kth smallest)
+        curr = stack.pop()
+        count += 1
+        if count == k:
+            return curr.val
+        
+        # Go right
+        curr = curr.right
+    
+    return -1
+```
+
+### BST Range Sum
+```python
+def rangeSumBST(root: TreeNode, low: int, high: int) -> int:
+    """
+    Sum all values in range [low, high].
+    Time: O(n) worst, O(log n + k) average
+    Space: O(h) for recursion
+    """
+    if not root:
+        return 0
+    
+    # Current node outside range - prune subtree
+    if root.val < low:
+        return rangeSumBST(root.right, low, high)
+    if root.val > high:
+        return rangeSumBST(root.left, low, high)
+    
+    # Current node in range - include both subtrees
+    return (root.val + 
+            rangeSumBST(root.left, low, high) + 
+            rangeSumBST(root.right, low, high))
+```
+
+### BST Iterator
+```python
+class BSTIterator:
+    """
+    Iterator for BST with O(1) average next() and hasNext().
+    Space: O(h) for stack.
+    """
+    def __init__(self, root: TreeNode):
+        self.stack = []
+        self._leftmost_inorder(root)
+    
+    def _leftmost_inorder(self, node: TreeNode):
+        """Push all left children to stack."""
+        while node:
+            self.stack.append(node)
+            node = node.left
+    
+    def next(self) -> int:
+        """Return next smallest element."""
+        topmost = self.stack.pop()
+        
+        # If right child exists, push its left children
+        if topmost.right:
+            self._leftmost_inorder(topmost.right)
+        
+        return topmost.val
+    
+    def hasNext(self) -> bool:
+        """Check if next element exists."""
+        return len(self.stack) > 0
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="027. Range Sum of BST" icon="calculator" href="/problems/027-range-sum-of-bst">
+    **Easy** | Frequency: 69.5%
+    
+    Prune search space using BST property - skip subtrees outside range.
+  </Card>
+
+  <Card title="092. Kth Smallest Element in BST" icon="list-ol" href="/problems/092-kth-smallest-element-in-a-bst">
+    **Medium** | Frequency: 32.0%
+    
+    Inorder traversal gives sorted order - stop at kth element.
+  </Card>
+
+  <Card title="051. Binary Search Tree Iterator" icon="forward" href="/problems/051-binary-search-tree-iterator">
+    **Medium** | Frequency: 51.9%
+    
+    Implement iterator with O(1) average time using controlled inorder.
+  </Card>
+
+  <Card title="060. Closest BST Value" icon="bullseye" href="/problems/060-closest-binary-search-tree-value">
+    **Easy** | Frequency: 47.0%
+    
+    Binary search on BST to find value closest to target.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Operation | Average | Worst Case | Notes |
+|-----------|---------|------------|-------|
+| Search | O(log n) | O(n) | Balanced vs skewed tree |
+| Insert | O(log n) | O(n) | Maintains BST property |
+| Delete | O(log n) | O(n) | Most complex operation |
+| Inorder Traversal | O(n) | O(n) | Gives sorted sequence |
+| Kth Smallest | O(k + log n) | O(n) | Stop early in inorder |
+| Range Query | O(log n + k) | O(n) | Prune irrelevant subtrees |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Kth smallest/largest in BST"** → Inorder traversal
+- **"Values in range [low, high]"** → Prune with BST property
+- **"Closest value to target"** → Binary search on BST
+- **"Validate BST"** → Check inorder is sorted
+- **"Iterator for BST"** → Controlled inorder with stack
+- **"Successor/predecessor"** → Inorder with tracking
+
+### Common Mistakes
+- Forgetting BST property applies to entire subtree, not just children
+- Not pruning search space in range queries
+- Using BFS when inorder traversal is needed
+- Modifying tree during iteration
+- Assuming tree is balanced (worst case O(n) height)
+
+### Key Insights
+1. **Inorder traversal = sorted order** - use for kth element, validation
+2. **Prune aggressively** - skip entire subtrees outside target range
+3. **Iterative > Recursive** for space efficiency (O(1) vs O(h))
+4. **Stack for iterator** simulates recursive inorder call stack
+5. **BST property** allows O(log n) search, but degrades to O(n) if unbalanced
+
+## BST vs Hash Table
+
+| Feature | BST | Hash Table |
+|---------|-----|------------|
+| Search | O(log n) | O(1) average |
+| Insert | O(log n) | O(1) average |
+| Delete | O(log n) | O(1) average |
+| Sorted Order | Yes | No |
+| Range Queries | O(log n + k) | O(n) |
+| Kth Element | O(k) | O(n) |
+| Space | O(n) | O(n) |
+
+**Use BST when**: Need sorted order, range queries, kth element
+**Use Hash Table when**: Only need existence checks, exact lookups
+
+## Advanced Patterns
+
+### Validate BST
+```python
+def isValidBST(root: TreeNode) -> bool:
+    """
+    Validate BST using range constraints.
+    Time: O(n), Space: O(h)
+    """
+    def validate(node, min_val, max_val):
+        if not node:
+            return True
+        
+        # Check BST property
+        if not (min_val < node.val < max_val):
+            return False
+        
+        # Recursively validate subtrees with updated ranges
+        return (validate(node.left, min_val, node.val) and
+                validate(node.right, node.val, max_val))
+    
+    return validate(root, float('-inf'), float('inf'))
+```
+
+### BST from Preorder
+```python
+def bstFromPreorder(preorder: List[int]) -> TreeNode:
+    """
+    Construct BST from preorder traversal.
+    Time: O(n), Space: O(h)
+    """
+    def build(min_val, max_val):
+        nonlocal idx
+        
+        if idx >= len(preorder):
+            return None
+        
+        val = preorder[idx]
+        
+        # Value must be in valid range for current position
+        if not (min_val < val < max_val):
+            return None
+        
+        idx += 1
+        node = TreeNode(val)
+        node.left = build(min_val, val)
+        node.right = build(val, max_val)
+        return node
+    
+    idx = 0
+    return build(float('-inf'), float('inf'))
+```
+
+### Delete Node in BST
+```python
+def deleteNode(root: TreeNode, key: int) -> TreeNode:
+    """
+    Delete node from BST.
+    Time: O(log n) average, Space: O(h)
+    """
+    if not root:
+        return None
+    
+    if key < root.val:
+        root.left = deleteNode(root.left, key)
+    elif key > root.val:
+        root.right = deleteNode(root.right, key)
+    else:
+        # Found node to delete
+        
+        # Case 1: Leaf node
+        if not root.left and not root.right:
+            return None
+        
+        # Case 2: One child
+        if not root.left:
+            return root.right
+        if not root.right:
+            return root.left
+        
+        # Case 3: Two children
+        # Find inorder successor (leftmost in right subtree)
+        successor = root.right
+        while successor.left:
+            successor = successor.left
+        
+        # Replace value with successor
+        root.val = successor.val
+        
+        # Delete successor
+        root.right = deleteNode(root.right, successor.val)
+    
+    return root
+```
+
+### Lowest Common Ancestor in BST
+```python
+def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+    """
+    Find LCA in BST - simpler than general binary tree.
+    Time: O(log n), Space: O(1) iterative
+    """
+    while root:
+        # Both in left subtree
+        if p.val < root.val and q.val < root.val:
+            root = root.left
+        # Both in right subtree
+        elif p.val > root.val and q.val > root.val:
+            root = root.right
+        else:
+            # Split point - this is LCA
+            return root
+    
+    return None
+```
+
+## Self-Balancing Trees
+
+For guaranteed O(log n) operations, use self-balancing BSTs:
+
+- **AVL Tree**: Strict balancing, faster lookups
+- **Red-Black Tree**: Relaxed balancing, faster insert/delete
+- **B-Tree**: For disk storage, multiple keys per node
+
+Most language standard libraries use Red-Black Trees:
+- C++ `std::map`, `std::set`
+- Java `TreeMap`, `TreeSet`
+- Python `sortedcontainers.SortedDict` (external library)
+
+---
+
+**Pro Tip:** The BST property enables aggressive pruning. In range queries or searches, skip entire subtrees that can't contain the answer. This makes BST operations much faster than O(n) traversal of unsorted trees.

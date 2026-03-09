@@ -1,0 +1,438 @@
+---
+title: 'String'
+description: 'Master string manipulation, parsing, and transformation patterns'
+---
+
+# String
+
+String problems involve character manipulation, parsing, pattern matching, and transformations. Mastering string algorithms is essential as they appear frequently in interviews and real-world applications.
+
+## Core Concepts
+
+### String Operations
+- **Access**: O(1) in most languages
+- **Concatenation**: O(n) creates new string (immutable)
+- **Substring**: O(n) copies characters
+- **Comparison**: O(n) character by character
+
+### Common Techniques
+- **Two pointers**: For in-place modifications
+- **StringBuilder**: Efficient concatenation
+- **Character array**: Mutable operations
+- **Hash map**: Character frequency/mapping
+
+## Key Patterns & Techniques
+
+### 1. Two Pointers
+- In-place string reversal
+- Palindrome validation
+- Remove duplicates
+- Partition by criteria
+
+### 2. Character Mapping
+- Frequency counting
+- Anagram detection
+- Character transformation
+- Isomorphic strings
+
+### 3. State Machine
+- String parsing (atoi, calculator)
+- Validation (IP address, number)
+- Complex format handling
+
+### 4. String Building
+- Avoid repeated concatenation
+- Use list/StringBuilder
+- Join at the end
+
+## Common Approaches
+
+### String to Integer (atoi)
+```python
+def myAtoi(s: str) -> int:
+    """
+    Convert string to integer with validation.
+    Time: O(n), Space: O(1)
+    """
+    s = s.lstrip()  # Remove leading whitespace
+    
+    if not s:
+        return 0
+    
+    # Check sign
+    sign = 1
+    i = 0
+    if s[0] in '+-':
+        sign = -1 if s[0] == '-' else 1
+        i = 1
+    
+    # Build number
+    result = 0
+    while i < len(s) and s[i].isdigit():
+        digit = int(s[i])
+        
+        # Check overflow before multiplying
+        if result > (2**31 - 1 - digit) // 10:
+            return 2**31 - 1 if sign == 1 else -2**31
+        
+        result = result * 10 + digit
+        i += 1
+    
+    return sign * result
+```
+
+### Longest Common Prefix
+```python
+def longestCommonPrefix(strs: List[str]) -> str:
+    """
+    Find longest common prefix among strings.
+    Time: O(S), S = sum of all characters
+    Space: O(1)
+    """
+    if not strs:
+        return ""
+    
+    # Compare characters at each position
+    for i in range(len(strs[0])):
+        char = strs[0][i]
+        
+        # Check if all strings have same char at position i
+        for string in strs[1:]:
+            if i >= len(string) or string[i] != char:
+                return strs[0][:i]
+    
+    return strs[0]
+```
+
+### Valid Number
+```python
+def isNumber(s: str) -> bool:
+    """
+    Validate if string represents valid number.
+    Time: O(n), Space: O(1)
+    """
+    s = s.strip()
+    
+    # State machine states
+    seen_digit = False
+    seen_dot = False
+    seen_e = False
+    
+    for i, char in enumerate(s):
+        if char.isdigit():
+            seen_digit = True
+        
+        elif char in '+-':
+            # Sign must be at start or after 'e'
+            if i > 0 and s[i-1] not in 'eE':
+                return False
+        
+        elif char == '.':
+            # Only one dot, and no 'e' before it
+            if seen_dot or seen_e:
+                return False
+            seen_dot = True
+        
+        elif char in 'eE':
+            # Only one 'e', and must have digit before
+            if seen_e or not seen_digit:
+                return False
+            seen_e = True
+            seen_digit = False  # Need digit after 'e'
+        
+        else:
+            return False
+    
+    return seen_digit
+```
+
+### Text Justification
+```python
+def fullJustify(words: List[str], maxWidth: int) -> List[str]:
+    """
+    Fully justify text to given width.
+    Time: O(n), Space: O(n)
+    """
+    result = []
+    current_line = []
+    current_length = 0
+    
+    for word in words:
+        # Check if adding word exceeds width
+        # +1 for space between words
+        if current_length + len(word) + len(current_line) > maxWidth:
+            # Justify current line
+            result.append(justify_line(current_line, current_length, maxWidth, False))
+            current_line = []
+            current_length = 0
+        
+        current_line.append(word)
+        current_length += len(word)
+    
+    # Last line: left-justified
+    result.append(justify_line(current_line, current_length, maxWidth, True))
+    
+    return result
+
+def justify_line(words: List[str], length: int, maxWidth: int, is_last: bool) -> str:
+    if len(words) == 1 or is_last:
+        # Left-justify
+        return ' '.join(words).ljust(maxWidth)
+    
+    # Distribute spaces
+    total_spaces = maxWidth - length
+    gaps = len(words) - 1
+    spaces_per_gap = total_spaces // gaps
+    extra_spaces = total_spaces % gaps
+    
+    result = []
+    for i, word in enumerate(words[:-1]):
+        result.append(word)
+        result.append(' ' * spaces_per_gap)
+        if i < extra_spaces:
+            result.append(' ')
+    
+    result.append(words[-1])
+    
+    return ''.join(result)
+```
+
+### Diagonal Traverse
+```python
+def findDiagonalOrder(mat: List[List[int]]) -> List[int]:
+    """
+    Return matrix elements in diagonal order.
+    Time: O(m*n), Space: O(1) excluding output
+    """
+    if not mat:
+        return []
+    
+    m, n = len(mat), len(mat[0])
+    result = []
+    
+    # Iterate diagonals by sum of indices
+    for d in range(m + n - 1):
+        intermediate = []
+        
+        # Find all (i, j) where i + j == d
+        for i in range(max(0, d - n + 1), min(d + 1, m)):
+            j = d - i
+            intermediate.append(mat[i][j])
+        
+        # Reverse every other diagonal
+        if d % 2 == 0:
+            intermediate.reverse()
+        
+        result.extend(intermediate)
+    
+    return result
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="043. Longest Common Prefix" icon="text" href="/problems/043-longest-common-prefix">
+    **Easy** | Frequency: 59.4%
+    
+    Vertical scanning or horizontal scanning for common prefix.
+  </Card>
+
+  <Card title="067. String to Integer (atoi)" icon="input-numeric" href="/problems/067-string-to-integer-atoi">
+    **Medium" | Frequency: 40.7%
+    
+    State machine for parsing with validation and overflow handling.
+  </Card>
+
+  <Card title="097. Text Justification" icon="align-justify" href="/problems/097-text-justification">
+    **Hard** | Frequency: 32.0%
+    
+    Greedy line filling with space distribution.
+  </Card>
+
+  <Card title="058. Valid Number" icon="hashtag" href="/problems/058-valid-number">
+    **Hard** | Frequency: 47.0%
+    
+    State machine to validate number format including scientific notation.
+  </Card>
+
+  <Card title="046. Diagonal Traverse" icon="grip-lines-vertical" href="/problems/046-diagonal-traverse">
+    **Medium** | Frequency: 56.0%
+    
+    Process matrix diagonals with alternating direction.
+  </Card>
+
+  <Card title="047. Missing Ranges" icon="ellipsis" href="/problems/047-missing-ranges">
+    **Easy** | Frequency: 56.0%
+    
+    Find gaps in sorted array, format as ranges.
+  </Card>
+
+  <Card title="095. Goat Latin" icon="language" href="/problems/095-goat-latin">
+    **Easy** | Frequency: 32.0%
+    
+    String transformation with rules for vowels and consonants.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Character Scan | O(n) | O(1) | Validation, counting |
+| Two Pointers | O(n) | O(1) | In-place modification |
+| String Building | O(n) | O(n) | Multiple concatenations |
+| State Machine | O(n) | O(1) | Complex parsing |
+| Hash Map | O(n) | O(k) | Frequency, mapping |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Parse/validate string"** → State machine or character-by-character
+- **"Transform string"** → Build new string, avoid repeated concatenation
+- **"Common prefix/suffix"** → Compare character by character
+- **"Justify/format text"** → Greedy line filling, space distribution
+- **"Encode/decode"** → String building with rules
+- **"Anagram/permutation"** → Frequency map or sort
+
+### Common Mistakes
+- Repeated string concatenation (use list/StringBuilder)
+- Not handling edge cases (empty, single char)
+- Off-by-one errors in substring
+- Forgetting to handle overflow in atoi
+- Not stripping whitespace when needed
+- Case sensitivity issues
+
+### Key Insights
+1. **Strings are immutable** in many languages - concatenation creates new string
+2. **Use character array or list** for in-place modifications
+3. **State machine** simplifies complex parsing logic
+4. **StringBuilder pattern**: collect in list, join at end
+5. **Overflow checking** necessary for number parsing
+6. **Edge cases**: empty, single character, all same
+
+## String Building Efficiency
+
+### Bad: Repeated Concatenation
+```python
+# O(n²) due to string copying
+result = ""
+for char in s:
+    result += char  # Creates new string each time
+```
+
+### Good: List + Join
+```python
+# O(n) with single join
+result = []
+for char in s:
+    result.append(char)
+return ''.join(result)
+```
+
+### Python String Methods
+```python
+# Efficient built-in methods
+s.strip()       # Remove whitespace
+s.split()       # Split on whitespace
+s.split(delim)  # Split on delimiter
+s.replace(old, new)  # Replace substring
+s.startswith(prefix)
+s.endswith(suffix)
+s.isdigit()     # All digits
+s.isalpha()     # All letters
+s.isalnum()     # Letters or digits
+s.upper()       # Uppercase
+s.lower()       # Lowercase
+```
+
+## Advanced Patterns
+
+### KMP String Matching
+```python
+def kmp_search(text: str, pattern: str) -> int:
+    """
+    Find pattern in text using KMP algorithm.
+    Time: O(n + m), Space: O(m)
+    """
+    def build_lps(pattern):
+        """Build longest proper prefix which is also suffix array."""
+        lps = [0] * len(pattern)
+        length = 0
+        i = 1
+        
+        while i < len(pattern):
+            if pattern[i] == pattern[length]:
+                length += 1
+                lps[i] = length
+                i += 1
+            else:
+                if length != 0:
+                    length = lps[length - 1]
+                else:
+                    lps[i] = 0
+                    i += 1
+        
+        return lps
+    
+    if not pattern:
+        return 0
+    
+    lps = build_lps(pattern)
+    i = j = 0
+    
+    while i < len(text):
+        if text[i] == pattern[j]:
+            i += 1
+            j += 1
+        
+        if j == len(pattern):
+            return i - j  # Found at index i - j
+        
+        elif i < len(text) and text[i] != pattern[j]:
+            if j != 0:
+                j = lps[j - 1]
+            else:
+                i += 1
+    
+    return -1
+```
+
+### Manacher's Algorithm (Longest Palindrome)
+```python
+def longestPalindrome(s: str) -> str:
+    """
+    Find longest palindromic substring.
+    Manacher's algorithm: O(n) time
+    """
+    # Transform string: "abc" -> "#a#b#c#"
+    t = '#'.join('^{}$'.format(s))
+    n = len(t)
+    p = [0] * n  # p[i] = radius of palindrome at i
+    center = right = 0
+    
+    for i in range(1, n - 1):
+        # Mirror of i
+        mirror = 2 * center - i
+        
+        if i < right:
+            p[i] = min(right - i, p[mirror])
+        
+        # Expand around i
+        while t[i + p[i] + 1] == t[i - p[i] - 1]:
+            p[i] += 1
+        
+        # Update center if expanded past right
+        if i + p[i] > right:
+            center, right = i, i + p[i]
+    
+    # Find longest palindrome
+    max_len = max(p)
+    center_index = p.index(max_len)
+    start = (center_index - max_len) // 2
+    
+    return s[start:start + max_len]
+```
+
+---
+
+**Pro Tip:** For string building in loops, always use a list and join at the end instead of repeated concatenation. This changes O(n²) to O(n). For complex parsing, draw a state machine diagram first to clarify the logic.

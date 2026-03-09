@@ -1,0 +1,414 @@
+---
+title: 'Palindrome'
+description: 'Master palindrome detection, validation, and construction patterns'
+---
+
+# Palindrome
+
+Palindromes read the same forwards and backwards. These problems test string manipulation, two-pointer technique, and dynamic programming for substring/subsequence variations.
+
+## Core Concepts
+
+### Palindrome Types
+- **String Palindrome**: "racecar", "level"
+- **Substring**: Contiguous characters
+- **Subsequence**: Non-contiguous characters (can skip)
+- **Numeric**: 121, 12321
+
+### Key Differences
+- **Valid Palindrome**: Check if string is palindrome (ignore non-alphanumeric)
+- **Longest Palindromic Substring**: Contiguous, O(n²) or O(n) with Manacher's
+- **Longest Palindromic Subsequence**: Non-contiguous, O(n²) DP
+
+## Key Patterns & Techniques
+
+### 1. Two Pointers
+- Check from both ends moving inward
+- Skip non-alphanumeric for validation
+- O(n) time, O(1) space
+
+### 2. Expand Around Center
+- Try each position as center
+- Expand while characters match
+- Handle both odd and even length
+- O(n²) time
+
+### 3. Dynamic Programming
+- dp[i][j] = is substring s[i:j+1] palindrome
+- Build from smaller to larger substrings
+- O(n²) time and space
+
+### 4. Manacher's Algorithm
+- Linear time palindrome detection
+- Transform string to handle even/odd
+- O(n) time, O(n) space
+
+## Common Approaches
+
+### Valid Palindrome
+```python
+def isPalindrome(s: str) -> bool:
+    """
+    Check if string is palindrome (alphanumeric only).
+    Time: O(n), Space: O(1)
+    """
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        # Skip non-alphanumeric
+        while left < right and not s[left].isalnum():
+            left += 1
+        while left < right and not s[right].isalnum():
+            right -= 1
+        
+        # Compare case-insensitive
+        if s[left].lower() != s[right].lower():
+            return False
+        
+        left += 1
+        right -= 1
+    
+    return True
+```
+
+### Valid Palindrome II (One Delete Allowed)
+```python
+def validPalindrome(s: str) -> bool:
+    """
+    Check if palindrome after deleting at most one character.
+    Time: O(n), Space: O(1)
+    """
+    def isPalindromeRange(left: int, right: int) -> bool:
+        while left < right:
+            if s[left] != s[right]:
+                return False
+            left += 1
+            right -= 1
+        return True
+    
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        if s[left] != s[right]:
+            # Try deleting left or right character
+            return (isPalindromeRange(left + 1, right) or 
+                    isPalindromeRange(left, right - 1))
+        left += 1
+        right -= 1
+    
+    return True
+```
+
+### Longest Palindromic Substring (Expand Around Center)
+```python
+def longestPalindrome(s: str) -> str:
+    """
+    Find longest palindromic substring.
+    Time: O(n²), Space: O(1)
+    """
+    def expandAroundCenter(left: int, right: int) -> int:
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return right - left - 1
+    
+    if not s:
+        return ""
+    
+    start = 0
+    max_len = 0
+    
+    for i in range(len(s)):
+        # Odd length palindrome (center is single char)
+        len1 = expandAroundCenter(i, i)
+        # Even length palindrome (center is between chars)
+        len2 = expandAroundCenter(i, i + 1)
+        
+        length = max(len1, len2)
+        
+        if length > max_len:
+            max_len = length
+            start = i - (length - 1) // 2
+    
+    return s[start:start + max_len]
+```
+
+### Palindromic Substrings (Count)
+```python
+def countSubstrings(s: str) -> int:
+    """
+    Count all palindromic substrings.
+    Time: O(n²), Space: O(1)
+    """
+    def expandAroundCenter(left: int, right: int) -> int:
+        count = 0
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            count += 1
+            left -= 1
+            right += 1
+        return count
+    
+    total = 0
+    
+    for i in range(len(s)):
+        # Odd length
+        total += expandAroundCenter(i, i)
+        # Even length
+        total += expandAroundCenter(i, i + 1)
+    
+    return total
+```
+
+### Valid Palindrome III (K Deletions)
+```python
+def isValidPalindrome(s: str, k: int) -> bool:
+    """
+    Check if palindrome after deleting at most k characters.
+    Uses LCS: if len - LPS <= k, then valid.
+    Time: O(n²), Space: O(n²)
+    """
+    n = len(s)
+    
+    # Find longest palindromic subsequence
+    dp = [[0] * n for _ in range(n)]
+    
+    # Every single character is palindrome of length 1
+    for i in range(n):
+        dp[i][i] = 1
+    
+    # Build for increasing lengths
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1] + 2
+            else:
+                dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
+    
+    # Longest palindromic subsequence
+    lps = dp[0][n - 1]
+    
+    # Min deletions = n - lps
+    return n - lps <= k
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="029. Valid Palindrome" icon="check" href="/problems/029-valid-palindrome">
+    **Easy** | Frequency: 69.5%
+    
+    Two pointers ignoring non-alphanumeric characters.
+  </Card>
+
+  <Card title="004. Valid Palindrome II" icon="trash" href="/problems/004-valid-palindrome-ii">
+    **Easy** | Frequency: 92.7%
+    
+    Two pointers with one delete allowed - try both options on mismatch.
+  </Card>
+
+  <Card title="096. Longest Palindromic Substring" icon="text-width" href="/problems/096-longest-palindromic-substring">
+    **Medium** | Frequency: 32.0%
+    
+    Expand around center for each position (odd and even length).
+  </Card>
+
+  <Card title="057. Palindromic Substrings" icon="list-check" href="/problems/057-palindromic-substrings">
+    **Medium** | Frequency: 47.0%
+    
+    Count all palindromic substrings using expand around center.
+  </Card>
+
+  <Card title="083. Valid Palindrome III" icon="filter" href="/problems/083-valid-palindrome-iii">
+    **Hard** | Frequency: 40.7%
+    
+    DP to find longest palindromic subsequence, check if deletions ≤ k.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Approach | Time Complexity | Space Complexity | When to Use |
+|----------|----------------|------------------|-------------|
+| Two Pointers | O(n) | O(1) | Validation, simple check |
+| Expand Around Center | O(n²) | O(1) | Find/count palindromic substrings |
+| DP (2D) | O(n²) | O(n²) | Subsequence, multiple queries |
+| Manacher's Algorithm | O(n) | O(n) | Optimal substring finding |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Is valid palindrome?"** → Two pointers from ends
+- **"At most k deletions"** → DP for longest palindromic subsequence
+- **"Longest palindromic substring"** → Expand around center
+- **"Count palindromic substrings"** → Expand around each position
+- **"Minimum insertions/deletions"** → DP similar to edit distance
+
+### Common Mistakes
+- Not handling even and odd length palindromes separately
+- Forgetting case-insensitive comparison
+- Not skipping non-alphanumeric in validation
+- Confusing substring (contiguous) with subsequence (non-contiguous)
+- Off-by-one errors in string indices
+
+### Key Insights
+1. **Two pointers for validation** - O(n) time, O(1) space
+2. **Expand around center** - try each position as center
+3. **Both odd and even** - check s[i] as center and s[i:i+1] as center
+4. **DP for subsequence** - different from substring
+5. **Manacher's for optimal** - O(n) but complex to implement
+6. **LPS = Longest Palindromic Subsequence** = LCS(s, reverse(s))
+
+## Expand Around Center Pattern
+
+```python
+def expandAroundCenter(s: str, left: int, right: int) -> tuple:
+    """
+    Expand around center and return palindrome info.
+    Returns: (start_index, length)
+    """
+    while left >= 0 and right < len(s) and s[left] == s[right]:
+        left -= 1
+        right += 1
+    
+    # When loop ends, left and right are one step too far
+    length = right - left - 1
+    start = left + 1
+    
+    return start, length
+
+# Use for each position
+for i in range(len(s)):
+    # Odd length: center is s[i]
+    start1, len1 = expandAroundCenter(s, i, i)
+    
+    # Even length: center is between s[i] and s[i+1]
+    start2, len2 = expandAroundCenter(s, i, i + 1)
+```
+
+## DP Pattern for Subsequence
+
+```python
+def longestPalindromeSubseq(s: str) -> int:
+    """
+    Find length of longest palindromic subsequence.
+    Time: O(n²), Space: O(n²)
+    """
+    n = len(s)
+    dp = [[0] * n for _ in range(n)]
+    
+    # Single characters
+    for i in range(n):
+        dp[i][i] = 1
+    
+    # Build for increasing lengths
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            
+            if s[i] == s[j]:
+                # Include both characters
+                dp[i][j] = dp[i + 1][j - 1] + 2
+            else:
+                # Take max of excluding one
+                dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
+    
+    return dp[0][n - 1]
+```
+
+## Advanced Patterns
+
+### Manacher's Algorithm
+```python
+def manacher(s: str) -> str:
+    """
+    Find longest palindrome in O(n) time.
+    Transform: "abc" -> "^#a#b#c#$"
+    """
+    # Preprocess: add # between characters
+    t = '#'.join('^{}$'.format(s))
+    n = len(t)
+    p = [0] * n  # p[i] = radius of palindrome at i
+    center = right = 0
+    
+    for i in range(1, n - 1):
+        # Mirror of i around center
+        mirror = 2 * center - i
+        
+        if i < right:
+            p[i] = min(right - i, p[mirror])
+        
+        # Try to expand palindrome at i
+        while t[i + p[i] + 1] == t[i - p[i] - 1]:
+            p[i] += 1
+        
+        # If expanded past right, update center
+        if i + p[i] > right:
+            center, right = i, i + p[i]
+    
+    # Find longest
+    max_len = max(p)
+    center_idx = p.index(max_len)
+    start = (center_idx - max_len) // 2
+    
+    return s[start:start + max_len]
+```
+
+### Palindrome Partitioning
+```python
+def partition(s: str) -> List[List[str]]:
+    """
+    Partition string into all palindromic substrings.
+    Time: O(n * 2^n), Space: O(n)
+    """
+    def isPalindrome(sub: str) -> bool:
+        return sub == sub[::-1]
+    
+    def backtrack(start: int, path: List[str]):
+        if start == len(s):
+            result.append(path[:])
+            return
+        
+        for end in range(start + 1, len(s) + 1):
+            substring = s[start:end]
+            if isPalindrome(substring):
+                path.append(substring)
+                backtrack(end, path)
+                path.pop()
+    
+    result = []
+    backtrack(0, [])
+    return result
+```
+
+### Minimum Insertions to Make Palindrome
+```python
+def minInsertions(s: str) -> int:
+    """
+    Minimum insertions to make string palindrome.
+    Answer = n - LPS (longest palindromic subsequence)
+    Time: O(n²), Space: O(n²)
+    """
+    n = len(s)
+    dp = [[0] * n for _ in range(n)]
+    
+    for i in range(n):
+        dp[i][i] = 1
+    
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1] + 2
+            else:
+                dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
+    
+    lps = dp[0][n - 1]
+    return n - lps
+```
+
+---
+
+**Pro Tip:** For palindrome validation, use two pointers O(n). For finding longest palindromic substring, expand around each center O(n²). For subsequence problems (can skip characters), use DP O(n²). Remember to check both odd and even length palindromes.

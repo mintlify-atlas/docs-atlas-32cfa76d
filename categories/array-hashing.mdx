@@ -1,0 +1,218 @@
+---
+title: 'Array & Hashing'
+description: 'Master array manipulation and hash table patterns for efficient lookups and frequency counting'
+---
+
+# Array & Hashing
+
+Array and hash table problems form the foundation of algorithmic problem-solving. This category focuses on efficient data access, frequency counting, and lookup operations using arrays and hash maps.
+
+## Key Patterns & Techniques
+
+### 1. Hash Map for O(1) Lookups
+- Store elements for constant-time access
+- Track seen elements or complements
+- Map elements to indices or frequencies
+
+### 2. Frequency Counting
+- Use Counter or hash map to count occurrences
+- Group elements by properties
+- Find duplicates or unique elements
+
+### 3. Prefix Sum
+- Precompute cumulative sums for range queries
+- Use with hash map for subarray problems
+- Space-time tradeoff for multiple queries
+
+### 4. Sorting + Hash Map
+- Sort for grouping similar elements
+- Use hash map for quick lookups after sorting
+- Interval problems often require sorting first
+
+## Common Approaches
+
+### Two Sum Pattern
+```python
+def twoSum(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using hash map.
+    Time: O(n), Space: O(n)
+    """
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+```
+
+### Frequency Counting Pattern
+```python
+from collections import Counter
+
+def groupAnagrams(strs: List[str]) -> List[List[str]]:
+    """
+    Group strings by character frequency.
+    Time: O(n * k), Space: O(n * k)
+    """
+    groups = {}
+    for s in strs:
+        # Sort or count chars as key
+        key = ''.join(sorted(s))
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(s)
+    return list(groups.values())
+```
+
+### Prefix Sum Pattern
+```python
+def subarraySum(nums: List[int], k: int) -> int:
+    """
+    Count subarrays with sum equal to k.
+    Time: O(n), Space: O(n)
+    """
+    count = 0
+    prefix_sum = 0
+    sum_freq = {0: 1}  # prefix_sum -> frequency
+    
+    for num in nums:
+        prefix_sum += num
+        # Check if (prefix_sum - k) exists
+        if prefix_sum - k in sum_freq:
+            count += sum_freq[prefix_sum - k]
+        sum_freq[prefix_sum] = sum_freq.get(prefix_sum, 0) + 1
+    
+    return count
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="017. Two Sum" icon="hashtag" href="/problems/017-two-sum">
+    **Easy** | Frequency: 76.4%
+    
+    Classic hash map pattern - find two numbers that sum to target in O(n) time.
+  </Card>
+
+  <Card title="016. Merge Intervals" icon="merge" href="/problems/016-merge-intervals">
+    **Medium** | Frequency: 77.9%
+    
+    Sort by start time, then merge overlapping intervals in single pass.
+  </Card>
+
+  <Card title="024. K Closest Points to Origin" icon="map-pin" href="/problems/024-k-closest-points-to-origin">
+    **Medium** | Frequency: 71.4%
+    
+    Find k closest points using heap or quickselect partitioning.
+  </Card>
+
+  <Card title="026. Subarray Sum Equals K" icon="plus" href="/problems/026-subarray-sum-equals-k">
+    **Medium** | Frequency: 71.4%
+    
+    Prefix sum with hash map to find subarrays summing to target.
+  </Card>
+
+  <Card title="023. Custom Sort String" icon="arrow-down-a-z" href="/problems/023-custom-sort-string">
+    **Medium** | Frequency: 73.2%
+    
+    Count frequencies and rebuild string according to custom order.
+  </Card>
+
+  <Card title="022. Buildings With an Ocean View" icon="building" href="/problems/022-buildings-with-an-ocean-view">
+    **Medium** | Frequency: 74.9%
+    
+    Track maximum height from right to find buildings with ocean view.
+  </Card>
+
+  <Card title="062. Group Shifted Strings" icon="layer-group" href="/problems/062-group-shifted-strings">
+    **Medium** | Frequency: 47.0%
+    
+    Group strings by their shift pattern using hash map.
+  </Card>
+
+  <Card title="059. Continuous Subarray Sum" icon="calculator" href="/problems/059-continuous-subarray-sum">
+    **Medium** | Frequency: 47.0%
+    
+    Prefix sum modulo with hash map for subarray divisibility.
+  </Card>
+
+  <Card title="077. Car Pooling" icon="car" href="/problems/077-car-pooling">
+    **Medium** | Frequency: 40.7%
+    
+    Interval scheduling with capacity constraints.
+  </Card>
+
+  <Card title="089. Range Sum Query - Immutable" icon="table" href="/problems/089-range-sum-query-immutable">
+    **Easy** | Frequency: 32.0%
+    
+    Precompute prefix sums for O(1) range queries.
+  </Card>
+
+  <Card title="087. Maximum Subarray" icon="chart-line" href="/problems/087-maximum-subarray">
+    **Medium** | Frequency: 32.0%
+    
+    Kadane's algorithm for maximum contiguous subarray sum.
+  </Card>
+
+  <Card title="071. Managers with at Least 5 Direct Reports" icon="users" href="/problems/071-managers-with-at-least-5-direct-reports">
+    **Medium** | Frequency: 40.7%
+    
+    SQL/hash map problem for counting grouped relationships.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Hash Map Lookup | O(n) | O(n) | Need O(1) access, two sum variants |
+| Frequency Count | O(n) | O(k) | Counting, grouping, anagrams |
+| Prefix Sum | O(n) | O(n) | Range queries, subarray sums |
+| Sorting + Hash | O(n log n) | O(n) | Intervals, need sorted order |
+| Sliding Window + Hash | O(n) | O(k) | Substring/subarray with constraints |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Find two elements that..."** → Hash map for O(n) solution
+- **"Count frequency/occurrences"** → Counter or hash map
+- **"Subarray sum equals k"** → Prefix sum with hash map
+- **"Group by property"** → Hash map with computed keys
+- **"Merge overlapping..."** → Sort first, then single pass
+
+### Common Mistakes
+- Forgetting to handle duplicates in hash map
+- Not initializing prefix sum hash with `{0: 1}`
+- Modifying array while iterating over it
+- Using list instead of hash set for O(1) lookups
+- Not sorting intervals before merging
+
+### Optimization Strategies
+1. **Use hash set instead of hash map** when only checking existence
+2. **Counter from collections** is cleaner than manual dict updates
+3. **Prefix sum** trades space for time in range queries
+4. **Sort first** when dealing with intervals or grouping
+5. **Single pass is often possible** with the right hash map structure
+
+## Advanced Patterns
+
+### Rolling Hash
+- For substring matching problems
+- Rabin-Karp algorithm
+- Time: O(n), Space: O(1)
+
+### Multi-level Hashing
+- Nested hash maps for 2D problems
+- Group by multiple properties
+- Time: O(n), Space: O(n)
+
+### Index Mapping
+- Map values to indices for O(1) updates
+- Used in problems like "First Missing Positive"
+- In-place modifications using array indices as hash
+
+---
+
+**Pro Tip:** When you see "in O(n) time", think hash map. When you see "subarray sum", think prefix sum with hash map. When you see "intervals", think sort first.

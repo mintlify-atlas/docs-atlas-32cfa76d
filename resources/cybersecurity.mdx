@@ -1,0 +1,1202 @@
+---
+title: 'Cybersecurity Applications'
+description: 'How algorithms protect systems - from Snort to Splunk, threat detection to incident response'
+---
+
+Every algorithm you study has security applications. This guide connects interview problems to real security tools and defense mechanisms.
+
+## Network Security
+
+<AccordionGroup>
+  <Accordion title="Intrusion Detection (Snort, Suricata)" icon="shield-halved">
+    
+    ### Problem: String Pattern Matching, Trie, Sliding Window
+    **Security Tools:** Snort, Suricata, Zeek (formerly Bro), Cisco Firepower
+    
+    **How it's used:**
+    - **Signature matching:** Trie for fast pattern detection in packet payloads
+    - **Snort:** Aho-Corasick algorithm (multi-pattern trie) for rule matching
+    - **Suricata:** Multi-threaded pattern matching at 10Gbps+
+    - **Zeek:** DFA-based pattern matching for protocol analysis
+    
+    **Production Rules:**
+    ```
+    Snort rule:
+    alert tcp any any -> any 80 (content:"|90 90 90 90|"; msg:"NOP sled detected";)
+    
+    Algorithm:
+    1. Build trie of all attack signatures (100K+ patterns)
+    2. For each packet: Trie traversal through payload
+    3. Match: Alert + log + block (depending on policy)
+    4. Time: O(m) where m = payload length
+    ```
+    
+    **Why Trie?**
+    - **Multiple patterns:** Check 100K signatures simultaneously
+    - **Fast:** O(m) vs O(n*m) for naive matching
+    - **Real-time:** Process 10Gbps with &lt;1ms latency
+    
+    **Scale:**
+    - Snort: Deployed on millions of endpoints
+    - Suricata: Processes billions of packets per day in enterprise SOCs
+    - Pattern database: 50K-100K signatures updated daily
+
+  </Accordion>
+
+  <Accordion title="DDoS Detection & Mitigation" icon="ban">
+    
+    ### Problem: Sliding Window, Top K Elements, Bloom Filter
+    **Security Tools:** Cloudflare Magic Transit, AWS Shield, Arbor Networks
+    
+    **How it's used:**
+    - **Rate limiting:** Sliding window tracks requests per IP
+    - **Top attackers:** Min heap finds top K source IPs
+    - **Bloom filter:** Quickly check if IP is in blocklist (1% false positive vs 100x memory)
+    - **Anomaly detection:** Sliding window statistics for traffic spikes
+    
+    **Cloudflare DDoS Protection:**
+    ```python
+    # Per-IP rate limiting
+    class DDoSDetector:
+        def __init__(self):
+            self.windows = {}  # IP -> deque of timestamps
+            self.blocklist = BloomFilter(size=10**6)
+        
+        def check_request(self, ip, timestamp):
+            # Sliding window: last 60 seconds
+            if ip not in self.windows:
+                self.windows[ip] = deque()
+            
+            window = self.windows[ip]
+            # Remove old requests
+            while window and window[0] < timestamp - 60:
+                window.popleft()
+            
+            window.append(timestamp)
+            
+            # Threshold: 1000 requests/minute = suspicious
+            if len(window) > 1000:
+                self.blocklist.add(ip)
+                return "BLOCK"
+            
+            # Check blocklist (O(1) with bloom filter)
+            if ip in self.blocklist:
+                return "BLOCK"
+            
+            return "ALLOW"
+    ```
+    
+    **Production Scale:**
+    - **Cloudflare:** Mitigates 100M+ requests/second during attacks
+    - **AWS Shield:** Automatically detects volumetric attacks >1Tbps
+    - **Algorithm:** Sliding window + bloom filter processes line-rate traffic
+    
+    **Why Sliding Window?**
+    - **Temporal patterns:** Attacks show sustained high request rates
+    - **Adaptive:** Window size adjusts based on baseline traffic
+    - **Efficient:** O(1) amortized per request with proper cleanup
+
+  </Accordion>
+
+  <Accordion title="Firewall Rule Processing" icon="fire">
+    
+    ### Problem: Trie (IP prefixes), Binary Search, Interval Trees
+    **Security Tools:** iptables, pfSense, Cisco ASA, Palo Alto Networks
+    
+    **How it's used:**
+    - **IP matching:** Trie for CIDR blocks (192.168.0.0/16)
+    - **Port ranges:** Interval tree for port 1000-2000
+    - **Rule ordering:** Binary search for rule priority
+    - **iptables:** Linear chain traversal optimized with hash tables
+    
+    **Production Firewall Rules:**
+    ```
+    iptables rules (simplified):
+    ACCEPT 192.168.0.0/16 port 80,443
+    DROP   10.0.0.0/8      port 22
+    ACCEPT 0.0.0.0/0       port 22
+    
+    Algorithm:
+    1. IP lookup: Trie for longest prefix match O(32) for IPv4
+    2. Port check: Interval tree or hash set O(log n)
+    3. Action: ACCEPT, DROP, or REJECT
+    
+    Optimization:
+    - Hash common rules (port 80, 443)
+    - Trie for IP subnets
+    - Processes millions packets/second
+    ```
+    
+    **Why Trie for IPs?**
+    - **CIDR notation:** 192.168.1.0/24 = binary prefix
+    - **Longest match:** Most specific rule wins
+    - **Fast:** O(32) for IPv4, O(128) for IPv6
+    
+    **Scale:**
+    - Enterprise firewalls: 10K-100K rules
+    - iptables: Can handle 1M+ packets/second
+    - Palo Alto: Hardware-accelerated trie lookup
+
+  </Accordion>
+
+  <Accordion title="TLS/SSL Certificate Validation" icon="certificate">
+    
+    ### Problem: Tree Traversal, Path Finding
+    **Security Tools:** OpenSSL, Browser cert stores, Let's Encrypt
+    
+    **How it's used:**
+    - **Certificate chain:** Tree traversal from leaf to root CA
+    - **Path validation:** DFS to verify trust path
+    - **Revocation check:** Hash map (O(1)) or binary search through CRL
+    - **Chrome/Firefox:** Certificate Transparency logs (Merkle trees)
+    
+    **Certificate Validation Algorithm:**
+    ```python
+    def validate_certificate_chain(cert, trusted_roots):
+        # DFS from leaf cert to root CA
+        current = cert
+        visited = set()
+        
+        while current:
+            if current in visited:
+                return False  # Cycle detected
+            visited.add(current)
+            
+            # Check signature
+            if not verify_signature(current):
+                return False
+            
+            # Check expiration
+            if current.expired():
+                return False
+            
+            # Root CA reached?
+            if current.issuer in trusted_roots:
+                return True
+            
+            # Traverse to issuer
+            current = get_issuer_cert(current.issuer)
+        
+        return False  # No path to trusted root
+    ```
+    
+    **Production Systems:**
+    - **Chrome:** Validates billions of certificates per day
+    - **Let's Encrypt:** Issues 3M+ certificates per day
+    - **Certificate Transparency:** Merkle tree for audit logs
+    
+    **Why Tree Traversal?**
+    - **Trust chain:** Hierarchical CA structure
+    - **Verification:** Must validate every link in chain
+    - **Revocation:** Check CRL/OCSP (hash table lookup)
+
+  </Accordion>
+</AccordionGroup>
+
+## Application Security
+
+<AccordionGroup>
+  <Accordion title="SQL Injection Detection" icon="database">
+    
+    ### Problem: String Parsing, FSM (Finite State Machine)
+    **Security Tools:** ModSecurity, OWASP Core Rule Set, Web Application Firewalls
+    
+    **How it's used:**
+    - **Pattern detection:** State machine for SQL syntax
+    - **Tokenization:** Parse user input for SQL keywords
+    - **ModSecurity:** Regex + state machine for injection detection
+    - **AWS WAF:** Pre-compiled patterns for common SQLi attacks
+    
+    **SQL Injection Detection:**
+    ```python
+    # Simplified SQLi detector
+    SQL_KEYWORDS = {"SELECT", "UNION", "DROP", "INSERT", "OR", "AND"}
+    
+    def detect_sqli(user_input):
+        # Tokenize input
+        tokens = tokenize(user_input.upper())
+        
+        sql_keyword_count = 0
+        for token in tokens:
+            if token in SQL_KEYWORDS:
+                sql_keyword_count += 1
+        
+        # Heuristic: 2+ SQL keywords = suspicious
+        if sql_keyword_count >= 2:
+            return "BLOCK", "Potential SQLi detected"
+        
+        # Check for common patterns
+        patterns = [
+            "' OR '1'='1",
+            "'; DROP TABLE",
+            "UNION SELECT"
+        ]
+        
+        for pattern in patterns:
+            if pattern in user_input.upper():
+                return "BLOCK", f"SQLi pattern: {pattern}"
+        
+        return "ALLOW", None
+    ```
+    
+    **ModSecurity Rules:**
+    ```
+    SecRule ARGS "(?i:union.*select)" \
+        "id:1,phase:2,deny,status:403,msg:'SQL Injection'"
+    ```
+    
+    **Why Parsing?**
+    - **Context-aware:** Distinguish data from code
+    - **FSM:** Efficient pattern matching in real-time
+    - **Low false positives:** Better than simple regex
+
+  </Accordion>
+
+  <Accordion title="Cross-Site Scripting (XSS) Prevention" icon="code">
+    
+    ### Problem: String Parsing, Trie, FSM
+    **Security Tools:** DOMPurify, OWASP Java Encoder, Content Security Policy
+    
+    **How it's used:**
+    - **HTML sanitization:** Parse and filter dangerous tags/attributes
+    - **DOMPurify:** AST (Abstract Syntax Tree) traversal
+    - **CSP:** Trie-based domain whitelist matching
+    - **Output encoding:** State machine for context-aware escaping
+    
+    **XSS Filter Algorithm:**
+    ```python
+    DANGEROUS_TAGS = {"script", "iframe", "object", "embed"}
+    DANGEROUS_ATTRS = {"onerror", "onload", "onclick"}
+    
+    def sanitize_html(html):
+        # Parse HTML to DOM tree
+        tree = parse_html(html)
+        
+        # DFS traversal
+        def traverse(node):
+            # Remove dangerous tags
+            if node.tag in DANGEROUS_TAGS:
+                node.remove()
+                return
+            
+            # Remove dangerous attributes
+            for attr in list(node.attrs.keys()):
+                if attr in DANGEROUS_ATTRS:
+                    del node.attrs[attr]
+                # Check for javascript: URLs
+                if attr in {"href", "src"} and \
+                   node.attrs[attr].startswith("javascript:"):
+                    del node.attrs[attr]
+            
+            # Traverse children
+            for child in node.children:
+                traverse(child)
+        
+        traverse(tree.root)
+        return tree.to_string()
+    ```
+    
+    **DOMPurify (JavaScript):**
+    ```javascript
+    // Used by GitHub, Google, Microsoft
+    const clean = DOMPurify.sanitize(dirty_html);
+    // Processes millions of user inputs per day
+    ```
+    
+    **Why Tree Traversal?**
+    - **HTML structure:** Nested tags = tree
+    - **Context-aware:** Different rules for different contexts
+    - **Safe:** Whitelist approach (only allow known-safe elements)
+
+  </Accordion>
+
+  <Accordion title="Session Management & Token Validation" icon="key">
+    
+    ### Problem: Hash Map, LRU Cache, Bloom Filter
+    **Security Tools:** JWT libraries, Redis session stores, API gateways
+    
+    **How it's used:**
+    - **Session lookup:** Hash map for O(1) session ID → user data
+    - **Token blacklist:** Bloom filter for revoked JWTs
+    - **Session expiry:** Min heap for TTL-based cleanup
+    - **Rate limiting:** LRU cache for recent API keys
+    
+    **Production Session Management:**
+    ```python
+    class SessionManager:
+        def __init__(self):
+            self.sessions = {}  # session_id -> {user, expiry, data}
+            self.revoked = BloomFilter()  # O(1) revocation check
+            self.expiry_heap = []  # Min heap for cleanup
+        
+        def validate_session(self, session_id):
+            # O(1) lookup
+            if session_id not in self.sessions:
+                return None
+            
+            session = self.sessions[session_id]
+            
+            # Check expiry
+            if time.now() > session['expiry']:
+                del self.sessions[session_id]
+                return None
+            
+            # Check revocation (bloom filter)
+            if session_id in self.revoked:
+                return None
+            
+            return session['user']
+        
+        def revoke_session(self, session_id):
+            self.revoked.add(session_id)  # O(1)
+            if session_id in self.sessions:
+                del self.sessions[session_id]
+    ```
+    
+    **Why These Data Structures?**
+    - **Hash map:** Fast session lookup (millions per second)
+    - **Bloom filter:** Space-efficient blacklist (1% false positive OK)
+    - **Heap:** Efficient expiry cleanup (only check oldest)
+    
+    **Scale:**
+    - **Redis:** Handles 100K+ session ops/second
+    - **Auth0:** Validates millions of JWTs per day
+
+  </Accordion>
+
+  <Accordion title="Password Strength & Breach Detection" icon="lock">
+    
+    ### Problem: Hash Map, Bloom Filter, Trie
+    **Security Tools:** Have I Been Pwned, zxcvbn, password managers
+    
+    **How it's used:**
+    - **Common passwords:** Bloom filter for 10M+ leaked passwords
+    - **Have I Been Pwned:** Prefix hash table (k-anonymity)
+    - **Complexity checker:** State machine for password rules
+    - **Dictionary attack:** Trie of common words to reject
+    
+    **Have I Been Pwned Algorithm:**
+    ```python
+    # k-anonymity model: Don't send full password hash
+    def check_password_breach(password):
+        # SHA-1 hash of password
+        full_hash = sha1(password)  # e.g., "5BAA61E4C..."
+        
+        # Send only first 5 chars (prefix)
+        prefix = full_hash[:5]  # "5BAA6"
+        
+        # API returns all hashes with this prefix (O(1) lookup)
+        matches = api_call(f"https://api.pwnedpasswords.com/range/{prefix}")
+        # Returns: ~500 hash suffixes
+        
+        # Check if full hash in results (local check)
+        suffix = full_hash[5:]
+        if suffix in matches:
+            return "BREACHED", matches[suffix]  # breach count
+        
+        return "SAFE", 0
+    ```
+    
+    **Data Structures:**
+    ```python
+    # Password strength checker (zxcvbn)
+    class PasswordChecker:
+        def __init__(self):
+            self.common = BloomFilter()  # 10M passwords, 10MB
+            self.dictionary = Trie()     # 100K words
+        
+        def check_strength(self, password):
+            # Fast check: common password? O(1)
+            if password.lower() in self.common:
+                return "WEAK", "Password is too common"
+            
+            # Dictionary word? O(m)
+            if self.dictionary.contains(password.lower()):
+                return "WEAK", "Password is a dictionary word"
+            
+            # Complexity rules
+            score = 0
+            if len(password) >= 12: score += 2
+            if has_uppercase(password): score += 1
+            if has_digit(password): score += 1
+            if has_symbol(password): score += 1
+            
+            if score >= 4:
+                return "STRONG", None
+            return "MODERATE", "Consider adding complexity"
+    ```
+    
+    **Scale:**
+    - **HIBP:** 600M+ passwords, 10 billion checks since 2017
+    - **Bloom filter:** 10MB vs 10GB for hash table
+
+  </Accordion>
+</AccordionGroup>
+
+## Log Analysis & SIEM
+
+<AccordionGroup>
+  <Accordion title="Security Log Aggregation (Splunk, ELK)" icon="magnifying-glass-chart">
+    
+    ### Problem: Merge K Sorted Lists, Heap, Hash Map
+    **Security Tools:** Splunk, Elasticsearch, Datadog, Sumo Logic
+    
+    **How it's used:**
+    - **Log ingestion:** Merge K sorted log streams from different sources
+    - **Time-series merging:** Min heap for chronological ordering
+    - **Splunk:** Distributed search across petabytes using merge
+    - **Elasticsearch:** Aggregations using bucket sort and heaps
+    
+    **Production Log Merging:**
+    ```python
+    # Merge logs from multiple sources in chronological order
+    def merge_security_logs(log_sources):
+        # Each source produces logs sorted by timestamp
+        # sources = [firewall_logs, ids_logs, auth_logs, ...]
+        
+        heap = []  # Min heap
+        
+        # Initialize: add first log from each source
+        for i, source in enumerate(log_sources):
+            if source:
+                log = source.next()
+                heapq.heappush(heap, (log.timestamp, i, log))
+        
+        merged_logs = []
+        while heap:
+            timestamp, source_idx, log = heapq.heappop(heap)
+            merged_logs.append(log)
+            
+            # Add next log from same source
+            next_log = log_sources[source_idx].next()
+            if next_log:
+                heapq.heappush(heap, (next_log.timestamp, source_idx, next_log))
+        
+        return merged_logs
+    ```
+    
+    **Splunk Query:**
+    ```
+    index=security sourcetype=firewall OR sourcetype=ids
+    | sort 0 _time
+    | stats count by src_ip
+    
+    # Under the hood:
+    # 1. Merge sorted log streams (K-way merge)
+    # 2. Hash map for aggregation (src_ip -> count)
+    # 3. Top K using heap
+    ```
+    
+    **Scale:**
+    - **Splunk:** Processes 100TB+ logs per day in large SOCs
+    - **Elasticsearch:** Billions of log entries, subsecond queries
+    - **Algorithm:** O(N log K) where N=total logs, K=sources
+
+  </Accordion>
+
+  <Accordion title="Anomaly Detection & Pattern Recognition" icon="chart-line">
+    
+    ### Problem: Sliding Window, Statistical Algorithms, Hash Map
+    **Security Tools:** Splunk UBA, Elastic SIEM, Microsoft Sentinel
+    
+    **How it's used:**
+    - **Baseline learning:** Sliding window calculates normal behavior
+    - **Outlier detection:** Statistical deviation using window stats
+    - **Failed login tracking:** Hash map counts per user in time window
+    - **Beaconing detection:** FFT (similar to sliding window) for periodic traffic
+    
+    **Production Anomaly Detectors:**
+    ```python
+    class FailedLoginDetector:
+        def __init__(self):
+            self.windows = {}  # user -> deque of failed attempts
+            self.thresholds = {
+                'alert': 5,    # 5 failures in 10 min
+                'block': 10    # 10 failures in 10 min
+            }
+        
+        def record_failure(self, username, timestamp):
+            if username not in self.windows:
+                self.windows[username] = deque()
+            
+            window = self.windows[username]
+            
+            # Sliding window: last 10 minutes
+            cutoff = timestamp - 600
+            while window and window[0] < cutoff:
+                window.popleft()
+            
+            window.append(timestamp)
+            
+            # Threshold detection
+            count = len(window)
+            if count >= self.thresholds['block']:
+                return "BLOCK", f"Brute force attack: {count} failures"
+            elif count >= self.thresholds['alert']:
+                return "ALERT", f"Suspicious activity: {count} failures"
+            
+            return "OK", None
+    ```
+    
+    **Elastic SIEM Rules:**
+    ```
+    # Detect unusual outbound traffic
+    - baseline: Sliding window of last 7 days
+    - current: Last 1 hour
+    - alert: if current > 3 * std_dev(baseline)
+    ```
+    
+    **Why Sliding Window?**
+    - **Temporal context:** Attacks happen over time
+    - **Adaptive:** Baselines adjust to normal changes
+    - **Efficient:** O(1) amortized per event
+
+  </Accordion>
+
+  <Accordion title="Threat Hunting & IoC Matching" icon="crosshairs">
+    
+    ### Problem: Trie, Hash Map, Bloom Filter
+    **Security Tools:** YARA, Sigma rules, MISP, OpenIOC
+    
+    **How it's used:**
+    - **IoC database:** Hash map for fast IP/domain/hash lookups
+    - **YARA rules:** Trie + regex for malware signature matching
+    - **Threat feeds:** Bloom filter for millions of IoCs
+    - **MISP:** Graph database for threat correlation
+    
+    **YARA Signature Matching:**
+    ```
+    rule APT_Malware {
+        strings:
+            $hex1 = { 6A 40 68 00 30 00 00 }
+            $str1 = "cmd.exe /c"
+            $domain = "evil.com"
+        condition:
+            ($hex1 and $str1) or $domain
+    }
+    
+    # Under the hood:
+    # - Trie for string patterns (Aho-Corasick)
+    # - Boyer-Moore for hex patterns
+    # - Scans files at 100MB/second
+    ```
+    
+    **IoC Lookup System:**
+    ```python
+    class ThreatIntelligence:
+        def __init__(self):
+            self.malicious_ips = BloomFilter()     # 10M IPs
+            self.malware_hashes = set()            # 1M hashes
+            self.malicious_domains = Trie()        # 100K domains
+        
+        def check_ip(self, ip):
+            # O(1) bloom filter check
+            if ip in self.malicious_ips:
+                # Possible match, verify in database
+                return "SUSPICIOUS", "IP in threat feed"
+            return "CLEAN", None
+        
+        def check_domain(self, domain):
+            # Trie check for subdomains
+            # O(m) where m = domain length
+            if self.malicious_domains.contains_prefix(domain):
+                return "MALICIOUS", "Domain matches IoC"
+            return "CLEAN", None
+        
+        def check_file_hash(self, sha256):
+            # O(1) hash set lookup
+            if sha256 in self.malware_hashes:
+                return "MALWARE", "Hash matches known malware"
+            return "CLEAN", None
+    ```
+    
+    **Scale:**
+    - **MISP:** 100M+ threat indicators
+    - **VirusTotal:** Scans 1M+ files per day
+    - **Bloom filter:** 99% accuracy, 10x space savings
+
+  </Accordion>
+
+  <Accordion title="Incident Timeline Reconstruction" icon="clock-rotate-left">
+    
+    ### Problem: Topological Sort, Graph Algorithms
+    **Security Tools:** TimeSketch, Timelines, forensic tools
+    
+    **How it's used:**
+    - **Event correlation:** Graph of events with causal relationships
+    - **Timeline construction:** Topological sort of events
+    - **Root cause analysis:** BFS/DFS from initial compromise
+    - **Attack path:** Shortest path from entry to objective
+    
+    **Incident Timeline Algorithm:**
+    ```python
+    class IncidentReconstructor:
+        def __init__(self):
+            self.events = []  # All security events
+            self.graph = {}   # Causal relationships
+        
+        def add_event(self, event):
+            self.events.append(event)
+        
+        def add_causality(self, cause_event_id, effect_event_id):
+            # Build directed graph
+            if cause_event_id not in self.graph:
+                self.graph[cause_event_id] = []
+            self.graph[cause_event_id].append(effect_event_id)
+        
+        def reconstruct_timeline(self):
+            # Topological sort of events
+            in_degree = {e.id: 0 for e in self.events}
+            for edges in self.graph.values():
+                for dest in edges:
+                    in_degree[dest] += 1
+            
+            # Kahn's algorithm
+            queue = deque([e for e in self.events if in_degree[e.id] == 0])
+            timeline = []
+            
+            while queue:
+                event = queue.popleft()
+                timeline.append(event)
+                
+                for next_id in self.graph.get(event.id, []):
+                    in_degree[next_id] -= 1
+                    if in_degree[next_id] == 0:
+                        queue.append(get_event_by_id(next_id))
+            
+            return timeline
+        
+        def find_attack_path(self, entry_point, objective):
+            # BFS for shortest attack path
+            queue = deque([entry_point])
+            visited = {entry_point}
+            parent = {entry_point: None}
+            
+            while queue:
+                current = queue.popleft()
+                if current == objective:
+                    # Reconstruct path
+                    path = []
+                    while current:
+                        path.append(current)
+                        current = parent[current]
+                    return list(reversed(path))
+                
+                for neighbor in self.graph.get(current, []):
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        parent[neighbor] = current
+                        queue.append(neighbor)
+            
+            return None  # No path found
+    ```
+    
+    **Example Timeline:**
+    ```
+    T0: Phishing email received (entry_point)
+    T1: User clicked malicious link
+    T2: Malware downloaded
+    T3: Malware executed (privilege escalation)
+    T4: Lateral movement to file server
+    T5: Data exfiltration (objective)
+    
+    Topological sort ensures chronological + causal ordering
+    ```
+
+  </Accordion>
+</AccordionGroup>
+
+## Vulnerability Management
+
+<AccordionGroup>
+  <Accordion title="Vulnerability Scanning & Prioritization" icon="bug">
+    
+    ### Problem: Graph Algorithms, Top K Elements, Heap
+    **Security Tools:** Nessus, OpenVAS, Qualys, Rapid7
+    
+    **How it's used:**
+    - **Dependency graphs:** Identify vulnerable libraries (DFS/BFS)
+    - **Risk scoring:** Min heap for top K critical vulnerabilities
+    - **Patch priority:** Topological sort for dependency-aware patching
+    - **Attack surface:** Graph traversal to find exploitable paths
+    
+    **Vulnerability Prioritization:**
+    ```python
+    class VulnerabilityManager:
+        def __init__(self):
+            self.vulns = []  # All discovered vulnerabilities
+        
+        def prioritize_vulns(self, k=100):
+            # Get top K critical vulnerabilities
+            # Score based on: CVSS, exploitability, asset criticality
+            
+            heap = []  # Min heap of size K
+            for vuln in self.vulns:
+                score = self.calculate_risk(vuln)
+                if len(heap) < k:
+                    heapq.heappush(heap, (score, vuln))
+                elif score > heap[0][0]:
+                    heapq.heapreplace(heap, (score, vuln))
+            
+            # Return top K in descending order
+            return [heapq.heappop(heap)[1] for _ in range(len(heap))][::-1]
+        
+        def calculate_risk(self, vuln):
+            # Risk = CVSS * exploitability * asset_value
+            cvss = vuln.cvss_score  # 0-10
+            exploit = 1.5 if vuln.exploit_available else 1.0
+            asset = vuln.asset.criticality  # 1-5
+            return cvss * exploit * asset
+    ```
+    
+    **Dependency Graph Analysis:**
+    ```python
+    # Find all systems affected by vulnerable library
+    def find_affected_systems(vuln_library):
+        # Graph: library -> [dependent libraries/apps]
+        graph = build_dependency_graph()
+        
+        # BFS from vulnerable library
+        affected = set()
+        queue = deque([vuln_library])
+        visited = {vuln_library}
+        
+        while queue:
+            current = queue.popleft()
+            affected.add(current)
+            
+            for dependent in graph.get(current, []):
+                if dependent not in visited:
+                    visited.add(dependent)
+                    queue.append(dependent)
+        
+        return affected
+    ```
+    
+    **Scale:**
+    - **Nessus:** Scans millions of hosts per day
+    - **GitHub Dependabot:** Analyzes dependency graphs for millions of repos
+
+  </Accordion>
+
+  <Accordion title="Penetration Testing & Exploitation" icon="user-secret">
+    
+    ### Problem: Graph Algorithms, BFS/DFS, Path Finding
+    **Security Tools:** Metasploit, Cobalt Strike, BloodHound
+    
+    **How it's used:**
+    - **BloodHound:** Graph database of AD relationships (shortest path to Domain Admin)
+    - **Lateral movement:** BFS to find paths between hosts
+    - **Privilege escalation:** Graph traversal for permission chains
+    - **Metasploit:** Decision tree for exploit selection
+    
+    **BloodHound Attack Path:**
+    ```python
+    # Find path from compromised user to Domain Admin
+    class AttackPathFinder:
+        def __init__(self, ad_graph):
+            self.graph = ad_graph  # Neo4j graph database
+        
+        def find_attack_path(self, compromised_user, target_group="Domain Admins"):
+            # Shortest path from user to target using BFS
+            # Graph edges: MemberOf, AdminTo, CanRDP, etc.
+            
+            queue = deque([(compromised_user, [compromised_user])])
+            visited = {compromised_user}
+            
+            while queue:
+                current, path = queue.popleft()
+                
+                # Check if current user is in target group
+                if current.member_of(target_group):
+                    return path  # Attack path found!
+                
+                # Explore relationships
+                for edge_type in ['AdminTo', 'MemberOf', 'CanRDP', 'CanPSRemote']:
+                    for neighbor in self.graph.get_edges(current, edge_type):
+                        if neighbor not in visited:
+                            visited.add(neighbor)
+                            queue.append((neighbor, path + [neighbor]))
+            
+            return None  # No path found
+    ```
+    
+    **Example Output:**
+    ```
+    Attack Path Found:
+    User "bob" -> MemberOf -> Group "IT" 
+              -> AdminTo -> Server "FILE01" 
+              -> HasSession -> User "alice" 
+              -> MemberOf -> Group "Domain Admins"
+    
+    Steps:
+    1. Compromise bob (phishing)
+    2. Lateral move to FILE01 (IT admin access)
+    3. Extract credentials from alice's session
+    4. Use alice's creds (Domain Admin)
+    ```
+    
+    **Why Graph Algorithms?**
+    - **Complex relationships:** AD = graph with users, groups, computers
+    - **Shortest path:** Most efficient attack path
+    - **BloodHound:** Makes visible what took weeks to discover
+
+  </Accordion>
+</AccordionGroup>
+
+## Malware Analysis
+
+<AccordionGroup>
+  <Accordion title="Static Analysis & Signature Detection" icon="microscope">
+    
+    ### Problem: String Matching, Trie, Hash Map
+    **Security Tools:** ClamAV, YARA, VirusTotal, IDA Pro
+    
+    **How it's used:**
+    - **Signature database:** Trie of known malware patterns
+    - **Hash matching:** Hash map for known malware hashes (SHA256)
+    - **ClamAV:** Aho-Corasick for multi-pattern matching
+    - **Binary diffing:** Longest common subsequence (LCS)
+    
+    **ClamAV Scanning:**
+    ```python
+    class MalwareScanner:
+        def __init__(self, signature_db):
+            self.trie = build_trie(signature_db)  # 8M+ signatures
+            self.hash_db = {}  # Known malware hashes
+        
+        def scan_file(self, file_path):
+            # Quick check: file hash
+            file_hash = sha256(read_file(file_path))
+            if file_hash in self.hash_db:
+                return "MALWARE", self.hash_db[file_hash]
+            
+            # Deep scan: pattern matching
+            content = read_file(file_path)
+            matches = self.aho_corasick_search(content, self.trie)
+            
+            if matches:
+                return "MALWARE", f"Signatures: {matches}"
+            
+            return "CLEAN", None
+        
+        def aho_corasick_search(self, content, trie):
+            # Multi-pattern matching in O(n + m) time
+            # n = content length, m = total pattern length
+            matches = []
+            state = trie.root
+            
+            for i, char in enumerate(content):
+                # Transition
+                while state and char not in state.edges:
+                    state = state.failure
+                
+                if char in state.edges:
+                    state = state.edges[char]
+                    if state.output:
+                        matches.extend(state.output)
+            
+            return matches
+    ```
+    
+    **Scale:**
+    - **ClamAV:** 8M+ signatures, scans at 100MB/s
+    - **VirusTotal:** 70+ antivirus engines, 1M+ scans/day
+
+  </Accordion>
+
+  <Accordion title="Behavioral Analysis & Sandboxing" icon="flask">
+    
+    ### Problem: Graph Algorithms, State Machine, DFS
+    **Security Tools:** Cuckoo Sandbox, Joe Sandbox, ANY.RUN
+    
+    **How it's used:**
+    - **System call graph:** DFS to track malware behavior
+    - **Process tree:** Tree traversal for parent-child relationships
+    - **Network traffic:** Graph of connections (C2 detection)
+    - **State machine:** Model expected vs actual behavior
+    
+    **Sandbox Behavioral Analysis:**
+    ```python
+    class SandboxAnalyzer:
+        def __init__(self):
+            self.syscalls = []      # Monitored system calls
+            self.process_tree = {}  # PID -> [child PIDs]
+            self.network = []       # Network connections
+        
+        def analyze_behavior(self, executable):
+            # Run in isolated environment
+            run_sandboxed(executable)
+            
+            # Build process tree
+            tree = self.build_process_tree()
+            
+            # DFS through process tree
+            suspicious_behaviors = []
+            
+            def traverse(pid, depth=0):
+                process = self.get_process_info(pid)
+                
+                # Check for suspicious patterns
+                if process.created_file_in_system32():
+                    suspicious_behaviors.append("File drop in System32")
+                
+                if process.modified_registry_runkey():
+                    suspicious_behaviors.append("Persistence via Run key")
+                
+                if process.injected_into_other_process():
+                    suspicious_behaviors.append("Process injection")
+                
+                # Traverse children
+                for child_pid in self.process_tree.get(pid, []):
+                    traverse(child_pid, depth + 1)
+            
+            root_pid = self.get_root_process()
+            traverse(root_pid)
+            
+            return self.generate_report(suspicious_behaviors)
+        
+        def detect_c2_communication(self):
+            # Graph analysis of network connections
+            # Suspicious: Beaconing (periodic connections)
+            connection_times = [conn.timestamp for conn in self.network]
+            
+            # Sliding window to detect periodicity
+            intervals = [connection_times[i+1] - connection_times[i] 
+                        for i in range(len(connection_times)-1)]
+            
+            # If intervals are consistent (±10%), likely C2 beacon
+            if is_periodic(intervals, tolerance=0.1):
+                return "C2_DETECTED", "Beaconing pattern detected"
+            
+            return "OK", None
+    ```
+    
+    **Cuckoo Sandbox Reports:**
+    - Process tree visualization (tree traversal)
+    - Network graph (IP connections)
+    - Behavior signatures (pattern matching)
+
+  </Accordion>
+</AccordionGroup>
+
+## Cloud Security
+
+<AccordionGroup>
+  <Accordion title="IAM Policy Evaluation (AWS, Azure, GCP)" icon="cloud-lock">
+    
+    ### Problem: Graph Algorithms, DFS, Set Operations
+    **Security Tools:** AWS IAM Policy Simulator, Azure RBAC, GCP IAM
+    
+    **How it's used:**
+    - **Permission evaluation:** Graph traversal through role hierarchy
+    - **Policy conflicts:** Set intersection/union for allow/deny
+    - **AWS IAM:** DFS through groups, roles, policies
+    - **Least privilege:** Graph analysis to find excessive permissions
+    
+    **IAM Policy Evaluation:**
+    ```python
+    class IAMEvaluator:
+        def __init__(self):
+            self.policies = {}  # Policy documents
+            self.roles = {}     # Role -> [attached policies]
+            self.users = {}     # User -> [groups, roles]
+        
+        def evaluate_permission(self, user, action, resource):
+            # Collect all applicable policies (DFS)
+            policies = self.collect_policies(user)
+            
+            explicit_deny = False
+            explicit_allow = False
+            
+            for policy in policies:
+                for statement in policy['Statement']:
+                    if self.matches(statement, action, resource):
+                        if statement['Effect'] == 'Deny':
+                            explicit_deny = True
+                        elif statement['Effect'] == 'Allow':
+                            explicit_allow = True
+            
+            # AWS logic: Explicit deny overrides everything
+            if explicit_deny:
+                return "DENY"
+            if explicit_allow:
+                return "ALLOW"
+            return "DENY"  # Default deny
+        
+        def collect_policies(self, user):
+            # DFS through user -> groups -> roles -> policies
+            policies = []
+            visited = set()
+            
+            def traverse(entity):
+                if entity in visited:
+                    return
+                visited.add(entity)
+                
+                # Direct policies
+                if entity in self.policies:
+                    policies.extend(self.policies[entity])
+                
+                # Traverse groups
+                for group in self.users.get(entity, {}).get('groups', []):
+                    traverse(group)
+                
+                # Traverse roles
+                for role in self.users.get(entity, {}).get('roles', []):
+                    traverse(role)
+            
+            traverse(user)
+            return policies
+    ```
+    
+    **Production Tools:**
+    - **AWS Access Analyzer:** Graph analysis for overly permissive policies
+    - **Azure RBAC:** Role hierarchy traversal
+    - **GCP IAM Recommender:** ML + graph analysis for least privilege
+
+  </Accordion>
+
+  <Accordion title="Container Security Scanning" icon="docker">
+    
+    ### Problem: Graph Algorithms (dependency), Hash Map, Trie
+    **Security Tools:** Trivy, Clair, Anchore, Snyk
+    
+    **How it's used:**
+    - **Layer scanning:** Hash map for known vulnerable packages
+    - **Dependency graph:** DFS to find all dependencies
+    - **Trivy:** Fast vulnerability scanning using binary search in CVE database
+    - **Image layers:** Merkle tree (hash tree) for integrity
+    
+    **Container Vulnerability Scanner:**
+    ```python
+    class ContainerScanner:
+        def __init__(self, cve_db):
+            self.cve_db = cve_db  # Package -> [CVEs]
+            self.package_index = {}  # Hash map for fast lookup
+        
+        def scan_image(self, image):
+            # Extract layers
+            layers = image.layers
+            
+            # Build dependency graph
+            packages = {}
+            for layer in layers:
+                layer_packages = extract_packages(layer)
+                packages.update(layer_packages)
+            
+            # Check each package against CVE database
+            vulnerabilities = []
+            for pkg_name, pkg_version in packages.items():
+                # O(1) hash lookup
+                if pkg_name in self.cve_db:
+                    for cve in self.cve_db[pkg_name]:
+                        if self.is_vulnerable(pkg_version, cve['affected_versions']):
+                            vulnerabilities.append({
+                                'package': pkg_name,
+                                'version': pkg_version,
+                                'cve': cve['id'],
+                                'severity': cve['severity']
+                            })
+            
+            return self.generate_report(vulnerabilities)
+    ```
+    
+    **Scale:**
+    - **Docker Hub:** Scans millions of images
+    - **Trivy:** Scans in seconds using optimized lookups
+    - **CVE database:** 200K+ vulnerabilities
+
+  </Accordion>
+</AccordionGroup>
+
+## Key Takeaways
+
+<Card title="Algorithms Protect Everything" icon="shield-check">
+  **Core security operations map directly to interview problems:**
+  
+  - **IDS/IPS → String matching:** Snort uses tries (Aho-Corasick) for 100K+ signatures
+  - **DDoS defense → Sliding window:** Cloudflare blocks 100M+ req/sec
+  - **Log analysis → K-way merge:** Splunk merges petabytes from distributed sources
+  - **IAM evaluation → Graph traversal:** AWS IAM uses DFS through role hierarchy
+  - **Malware detection → Pattern matching:** ClamAV scans at 100MB/s using tries
+  
+  **The pattern:**
+  - Interview: Clean input, academic setting
+  - Production: Noisy data, adversarial input, performance-critical
+  
+  **But the underlying algorithm? The same.**
+</Card>
+
+<Card title="Why Security Needs These Algorithms" icon="brain">
+  **Security is about scale and speed:**
+  
+  1. **Real-time processing:** Network traffic at 10Gbps+ (need O(1) or O(log n))
+  2. **Massive datasets:** Billions of logs, millions of threats (need efficient search)
+  3. **Adversarial input:** Attackers craft worst-case inputs (need robust algorithms)
+  4. **Low false positives:** Hash maps + bloom filters (99%+ accuracy)
+  5. **Resource constraints:** Edge devices, IoT (need memory-efficient structures)
+  
+  **Trade-offs in security:**
+  - **Bloom filters:** 1% false positive OK if saves 100x memory
+  - **Sliding windows:** Accept some inaccuracy for real-time performance
+  - **Sampling:** Check 1% of packets if full inspection impossible
+</Card>
+
+<Card title="Security-Specific Optimizations" icon="gauge-high">
+  **Security tools use these patterns heavily:**
+  
+  1. **Tries:** Network security (Snort, firewalls, DNS)
+  2. **Bloom filters:** Threat intelligence (millions of IoCs)
+  3. **Sliding windows:** DDoS, anomaly detection, rate limiting
+  4. **Heaps:** Top K threats, risk scoring, log aggregation
+  5. **Graphs:** IAM policies, attack paths, incident response
+  6. **Hash maps:** Session management, cache, lookups
+  
+  **Why these over others:**
+  - **Tries > Hash maps:** When prefix matching matters (IPs, domains)
+  - **Bloom filters > Sets:** When false positives acceptable, memory limited
+  - **Sliding windows > Full history:** Real-time with bounded memory
+</Card>
+
+---
+
+## Interview Preparation Tips
+
+<AccordionGroup>
+  <Accordion title="For Security Engineer Roles" icon="briefcase">
+    **Emphasize security context when solving problems:**
+    
+    - **Two Sum:** "Like session ID lookup in authentication systems"
+    - **Sliding Window:** "Similar to DDoS rate limiting and anomaly detection"
+    - **Trie:** "Used in Snort for signature matching and firewall IP lookups"
+    - **Graph algorithms:** "Applied in IAM policy evaluation and attack path analysis"
+    
+    **Questions to ask:**
+    - "How does your security team use algorithms for threat detection?"
+    - "What data structures power your SIEM?"
+    - "How do you handle real-time log analysis at scale?"
+  </Accordion>
+
+  <Accordion title="Common Security Interview Questions" icon="clipboard-question">
+    **Algorithm problems with security framing:**
+    
+    1. **Rate limiting:** Implement token bucket using sliding window
+    2. **IDS signature matching:** Build multi-pattern trie (Aho-Corasick)
+    3. **Log merging:** Merge K sorted log streams from different sources
+    4. **Anomaly detection:** Detect outliers using sliding window statistics
+    5. **Attack path finding:** Shortest path in privilege escalation graph
+    6. **Password breach check:** Implement Have I Been Pwned lookup
+    7. **Session management:** Design LRU cache with expiration
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<Note>
+  **Further Learning:**
+  - [Snort source code](https://github.com/snort3/snort3) - See Aho-Corasick in production
+  - [BloodHound](https://github.com/BloodHoundAD/BloodHound) - Graph algorithms for security
+  - [ClamAV](https://github.com/Cisco-Talos/clamav) - Signature matching engine
+  - Security blogs: Cloudflare, Trail of Bits, Google Project Zero
+</Note>

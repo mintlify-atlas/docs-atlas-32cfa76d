@@ -1,0 +1,252 @@
+---
+title: 'Two Pointers'
+description: 'Master the two-pointer technique for optimal array and string traversal'
+---
+
+# Two Pointers
+
+The two-pointer technique is a powerful pattern for solving array and string problems efficiently. By maintaining two pointers that move through the data structure according to specific rules, we can often achieve O(n) time complexity.
+
+## Key Patterns & Techniques
+
+### 1. Opposite Directional (Left + Right)
+- Start from both ends, move inward
+- Used for palindrome checking, container problems
+- Classic: Two Sum on sorted array, Container with Most Water
+
+### 2. Same Direction (Slow + Fast)
+- Both pointers move in same direction at different speeds
+- Fast pointer explores, slow pointer builds result
+- Used for in-place modifications, cycle detection
+
+### 3. Sliding Window (Expandable)
+- Two pointers define window boundaries
+- Expand/contract based on conditions
+- Used for substring/subarray problems
+
+### 4. Three Pointers
+- Extension for 3Sum problems
+- Fix one element, use two pointers on remaining
+- Reduces O(n³) to O(n²)
+
+## Common Approaches
+
+### Left-Right Closing Pattern
+```python
+def twoSumSorted(nums: List[int], target: int) -> List[int]:
+    """
+    Two Sum on sorted array using two pointers.
+    Time: O(n), Space: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    
+    while left < right:
+        current_sum = nums[left] + nums[right]
+        
+        if current_sum == target:
+            return [left, right]
+        elif current_sum < target:
+            left += 1
+        else:
+            right -= 1
+    
+    return []
+```
+
+### 3Sum Pattern
+```python
+def threeSum(nums: List[int]) -> List[List[int]]:
+    """
+    Find all unique triplets that sum to zero.
+    Time: O(n²), Space: O(1) excluding output
+    """
+    nums.sort()
+    result = []
+    
+    for i in range(len(nums) - 2):
+        # Skip duplicates for first number
+        if i > 0 and nums[i] == nums[i-1]:
+            continue
+        
+        left, right = i + 1, len(nums) - 1
+        target = -nums[i]
+        
+        while left < right:
+            current_sum = nums[left] + nums[right]
+            
+            if current_sum == target:
+                result.append([nums[i], nums[left], nums[right]])
+                
+                # Skip duplicates
+                while left < right and nums[left] == nums[left+1]:
+                    left += 1
+                while left < right and nums[right] == nums[right-1]:
+                    right -= 1
+                
+                left += 1
+                right -= 1
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+    
+    return result
+```
+
+### Fast-Slow Pattern
+```python
+def removeDuplicates(nums: List[int]) -> int:
+    """
+    Remove duplicates in-place from sorted array.
+    Time: O(n), Space: O(1)
+    """
+    if not nums:
+        return 0
+    
+    slow = 0
+    for fast in range(1, len(nums)):
+        if nums[fast] != nums[slow]:
+            slow += 1
+            nums[slow] = nums[fast]
+    
+    return slow + 1
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="002. Valid Word Abbreviation" icon="spell-check" href="/problems/002-valid-word-abbreviation">
+    **Easy** | Frequency: 95.4%
+    
+    Two pointers to validate abbreviation - advance based on digits vs characters.
+  </Card>
+
+  <Card title="065. 3Sum" icon="hashtag" href="/problems/065-3sum">
+    **Medium** | Frequency: 47.0%
+    
+    Sort first, then fix one element and use two pointers for remaining pair.
+  </Card>
+
+  <Card title="073. Container With Most Water" icon="water" href="/problems/073-container-with-most-water">
+    **Medium** | Frequency: 40.7%
+    
+    Left-right pointers, move the shorter line inward to maximize area.
+  </Card>
+
+  <Card title="033. Merge Sorted Array" icon="merge" href="/problems/033-merge-sorted-array">
+    **Easy** | Frequency: 67.4%
+    
+    Three pointers - merge from end to avoid overwriting elements.
+  </Card>
+
+  <Card title="030. Next Permutation" icon="arrow-right" href="/problems/030-next-permutation">
+    **Medium** | Frequency: 67.4%
+    
+    Find pivot, swap, then reverse suffix using two pointers.
+  </Card>
+
+  <Card title="044. Squares of a Sorted Array" icon="superscript" href="/problems/044-squares-of-a-sorted-array">
+    **Easy** | Frequency: 59.4%
+    
+    Two pointers from both ends - larger absolute value goes to result.
+  </Card>
+
+  <Card title="088. Interval List Intersections" icon="intersection" href="/problems/088-interval-list-intersections">
+    **Medium** | Frequency: 32.0%
+    
+    Two pointers on two interval lists to find overlapping regions.
+  </Card>
+
+  <Card title="028. Dot Product of Two Sparse Vectors" icon="calculator" href="/problems/028-dot-product-of-two-sparse-vectors">
+    **Medium** | Frequency: 69.5%
+    
+    Two pointers on non-zero indices for efficient sparse computation.
+  </Card>
+
+  <Card title="078. Strobogrammatic Number" icon="rotate" href="/problems/078-strobogrammatic-number">
+    **Easy** | Frequency: 40.7%
+    
+    Two pointers from both ends checking if number looks same when rotated.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Left-Right | O(n) | O(1) | Sorted array, palindrome, max area |
+| Fast-Slow | O(n) | O(1) | In-place modification, cycle detection |
+| 3Sum (Fixed + Two) | O(n²) | O(1) | Three elements with condition |
+| Two Lists | O(m + n) | O(1) | Merging, intersecting sorted lists |
+| Partition | O(n) | O(1) | Quicksort partition, Dutch flag |
+
+## Interview Tips
+
+### Pattern Recognition
+- **Sorted array + "find two elements"** → Two pointers from ends
+- **"Remove/modify in-place"** → Fast-slow pointers
+- **"Three elements that sum to..."** → Sort + fix one + two pointers
+- **"Merge two sorted..."** → Two pointers, one per list
+- **"Palindrome validation"** → Two pointers from ends
+- **"Maximum area/container"** → Two pointers, move shorter side
+
+### Common Mistakes
+- Forgetting to skip duplicates in 3Sum
+- Moving wrong pointer (always move the one that helps)
+- Not handling edge cases (empty array, single element)
+- Off-by-one errors with pointer positions
+- Forgetting to sort when required
+
+### Key Insights
+1. **Why sort first?** Enables elimination: too large → move right left, too small → move left right
+2. **Which pointer to move?** Move the one that could improve the result
+3. **In-place modification** usually needs slow pointer to write, fast to read
+4. **Container problem** move the shorter side (taller side might help later)
+5. **Deduplication** skip same consecutive values after finding solution
+
+## Decision Tree
+
+```
+Is the array/string sorted?
+├─ Yes
+│  ├─ Need to find pair with sum/difference? → Left-Right pointers
+│  ├─ Need to find triplet? → Fix one + Two pointers
+│  └─ Need to merge/intersect? → Two pointers on separate lists
+└─ No
+   ├─ Can you sort it? → Sort first, then two pointers
+   ├─ Need in-place modification? → Fast-Slow pointers
+   └─ Need window of elements? → Consider sliding window instead
+```
+
+## Advanced Patterns
+
+### Dutch National Flag
+- Three pointers for three-way partitioning
+- Used in sorting with 3 colors/values
+- Time: O(n), Space: O(1)
+
+```python
+def sortColors(nums: List[int]) -> None:
+    """Sort array with values 0, 1, 2 in-place."""
+    left, mid, right = 0, 0, len(nums) - 1
+    
+    while mid <= right:
+        if nums[mid] == 0:
+            nums[left], nums[mid] = nums[mid], nums[left]
+            left += 1
+            mid += 1
+        elif nums[mid] == 1:
+            mid += 1
+        else:  # nums[mid] == 2
+            nums[mid], nums[right] = nums[right], nums[mid]
+            right -= 1
+```
+
+### Partitioning (QuickSort Style)
+- One pointer for partition boundary
+- Another scans through array
+- Used in Kth element problems
+
+---
+
+**Pro Tip:** Two pointers excel on sorted arrays or when you need O(1) space. Sort first if the problem allows it - it often unlocks the two-pointer solution.

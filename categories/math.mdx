@@ -1,0 +1,526 @@
+---
+title: 'Math & Computation'
+description: 'Master mathematical algorithms and computational techniques'
+---
+
+# Math & Computation
+
+Math problems test algorithmic thinking, number theory, and computational techniques. These problems often have elegant solutions using mathematical properties and efficient algorithms.
+
+## Core Concepts
+
+### Key Areas
+- **Arithmetic Operations**: Addition, multiplication, exponentiation
+- **Number Theory**: Prime numbers, GCD, modular arithmetic
+- **Combinatorics**: Permutations, combinations, counting
+- **Computational Geometry**: Points, lines, areas
+- **Bit Manipulation**: XOR, shifts, masks
+
+### Common Techniques
+- **Fast Exponentiation**: O(log n) instead of O(n)
+- **String Arithmetic**: Handle large numbers as strings
+- **Digit Manipulation**: Process numbers digit by digit
+- **Mathematical Properties**: Leverage patterns and formulas
+
+## Key Patterns & Techniques
+
+### 1. Fast Exponentiation
+- Compute x^n in O(log n) time
+- Binary exponentiation (repeated squaring)
+- Handle negative exponents
+
+### 2. String Arithmetic
+- Add/multiply large numbers as strings
+- Digit-by-digit processing with carry
+- Handle leading zeros
+
+### 3. Digit Manipulation
+- Extract digits: n % 10, n // 10
+- Reverse number, find max digit
+- Swap digits for optimization
+
+### 4. Mathematical Optimization
+- Greedy digit swapping
+- Use properties (divisibility, parity)
+- Avoid brute force with math insight
+
+## Common Approaches
+
+### Power(x, n) - Fast Exponentiation
+```python
+def myPow(x: float, n: int) -> float:
+    """
+    Calculate x^n using fast exponentiation.
+    Time: O(log n), Space: O(log n) recursion
+    """
+    def fastPow(x: float, n: int) -> float:
+        if n == 0:
+            return 1.0
+        
+        half = fastPow(x, n // 2)
+        
+        if n % 2 == 0:
+            return half * half
+        else:
+            return half * half * x
+    
+    # Handle negative exponent
+    if n < 0:
+        x = 1 / x
+        n = -n
+    
+    return fastPow(x, n)
+```
+
+### Iterative Fast Exponentiation
+```python
+def myPow(x: float, n: int) -> float:
+    """
+    Iterative fast exponentiation.
+    Time: O(log n), Space: O(1)
+    """
+    if n < 0:
+        x = 1 / x
+        n = -n
+    
+    result = 1
+    current_product = x
+    
+    while n > 0:
+        # If current bit is 1, include current_product
+        if n % 2 == 1:
+            result *= current_product
+        
+        # Square the current product
+        current_product *= current_product
+        
+        # Move to next bit
+        n //= 2
+    
+    return result
+```
+
+### Add Strings (Large Numbers)
+```python
+def addStrings(num1: str, num2: str) -> str:
+    """
+    Add two non-negative numbers as strings.
+    Time: O(max(m, n)), Space: O(max(m, n))
+    """
+    result = []
+    carry = 0
+    i, j = len(num1) - 1, len(num2) - 1
+    
+    while i >= 0 or j >= 0 or carry:
+        # Get digits (0 if out of bounds)
+        digit1 = int(num1[i]) if i >= 0 else 0
+        digit2 = int(num2[j]) if j >= 0 else 0
+        
+        # Add with carry
+        total = digit1 + digit2 + carry
+        carry = total // 10
+        digit = total % 10
+        
+        result.append(str(digit))
+        
+        i -= 1
+        j -= 1
+    
+    # Reverse since we built backwards
+    return ''.join(result[::-1])
+```
+
+### Maximum Swap
+```python
+def maximumSwap(num: int) -> int:
+    """
+    Maximize number by swapping at most two digits.
+    Time: O(n), Space: O(n), n = number of digits
+    """
+    # Convert to list of digits
+    digits = list(str(num))
+    n = len(digits)
+    
+    # Track last occurrence of each digit
+    last = {int(d): i for i, d in enumerate(digits)}
+    
+    # Find first digit that can be improved
+    for i, digit in enumerate(digits):
+        # Try to swap with largest digit after it
+        for d in range(9, int(digit), -1):
+            if d in last and last[d] > i:
+                # Swap
+                digits[i], digits[last[d]] = digits[last[d]], digits[i]
+                return int(''.join(digits))
+    
+    return num
+```
+
+### Add Two Integers (Bit Manipulation)
+```python
+def getSum(a: int, b: int) -> int:
+    """
+    Add two integers without using + or - operators.
+    Time: O(1), Space: O(1)
+    """
+    # Mask to handle 32-bit integers
+    mask = 0xFFFFFFFF
+    
+    while b != 0:
+        # Sum without carry
+        sum_without_carry = (a ^ b) & mask
+        
+        # Carry
+        carry = ((a & b) << 1) & mask
+        
+        a = sum_without_carry
+        b = carry
+    
+    # Handle negative numbers
+    return a if a <= 0x7FFFFFFF else ~(a ^ mask)
+```
+
+### Multiply Strings
+```python
+def multiply(num1: str, num2: str) -> str:
+    """
+    Multiply two non-negative numbers as strings.
+    Time: O(m * n), Space: O(m + n)
+    """
+    if num1 == "0" or num2 == "0":
+        return "0"
+    
+    m, n = len(num1), len(num2)
+    result = [0] * (m + n)
+    
+    # Multiply digit by digit
+    for i in range(m - 1, -1, -1):
+        for j in range(n - 1, -1, -1):
+            # Position in result array
+            p1, p2 = i + j, i + j + 1
+            
+            # Multiply and add to result
+            mul = int(num1[i]) * int(num2[j])
+            total = mul + result[p2]
+            
+            result[p2] = total % 10
+            result[p1] += total // 10
+    
+    # Convert to string, skip leading zeros
+    start = 0
+    while start < len(result) and result[start] == 0:
+        start += 1
+    
+    return ''.join(map(str, result[start:]))
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="021. Pow(x, n)" icon="superscript" href="/problems/021-pow-x-n">
+    **Medium** | Frequency: 74.9%
+    
+    Fast exponentiation using binary exponentiation in O(log n).
+  </Card>
+
+  <Card title="050. Add Strings" icon="plus" href="/problems/050-add-strings">
+    **Easy** | Frequency: 51.9%
+    
+    Digit-by-digit addition with carry handling.
+  </Card>
+
+  <Card title="072. Maximum Swap" icon="arrow-right-arrow-left" href="/problems/072-maximum-swap">
+    **Medium** | Frequency: 40.7%
+    
+    Greedy digit swapping to maximize number value.
+  </Card>
+
+  <Card title="085. Add Two Integers" icon="calculator" href="/problems/085-add-two-integers">
+    **Easy** | Frequency: 32.0%
+    
+    Bit manipulation using XOR for sum and AND for carry.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Fast Exponentiation | O(log n) | O(1) iterative | Power computation |
+| String Arithmetic | O(max(m,n)) | O(max(m,n)) | Large numbers beyond int |
+| Digit Manipulation | O(d) | O(1) or O(d) | d = number of digits |
+| GCD/LCM | O(log(min(a,b))) | O(1) | Divisibility, fractions |
+| Sieve of Eratosthenes | O(n log log n) | O(n) | Generate primes up to n |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"x^n" or "power"** → Fast exponentiation O(log n)
+- **"Large numbers" or "overflow"** → String arithmetic
+- **"Maximize/minimize digit swap"** → Greedy digit manipulation
+- **"Without +/-/*"** → Bit manipulation
+- **"GCD/LCM"** → Euclidean algorithm
+- **"Prime numbers"** → Sieve or trial division
+
+### Common Mistakes
+- Not handling negative exponents in power
+- Forgetting leading zeros in string arithmetic
+- Integer overflow in multiplication
+- Not reversing result in string addition
+- Off-by-one errors in digit indexing
+- Forgetting carry in final iteration
+
+### Key Insights
+1. **Fast exponentiation** reduces O(n) to O(log n) using binary representation
+2. **String arithmetic** handles arbitrarily large numbers
+3. **Greedy works** for digit swapping optimization
+4. **Bit manipulation** can replace arithmetic operations
+5. **Mathematical properties** often lead to elegant solutions
+6. **Carry handling** is crucial in string arithmetic
+
+## Mathematical Algorithms
+
+### GCD (Euclidean Algorithm)
+```python
+def gcd(a: int, b: int) -> int:
+    """
+    Greatest Common Divisor using Euclidean algorithm.
+    Time: O(log(min(a, b))), Space: O(1)
+    """
+    while b:
+        a, b = b, a % b
+    return a
+
+# LCM using GCD
+def lcm(a: int, b: int) -> int:
+    return (a * b) // gcd(a, b)
+```
+
+### Check Prime
+```python
+def isPrime(n: int) -> bool:
+    """
+    Check if number is prime.
+    Time: O(sqrt(n)), Space: O(1)
+    """
+    if n < 2:
+        return False
+    
+    if n == 2:
+        return True
+    
+    if n % 2 == 0:
+        return False
+    
+    # Check odd divisors up to sqrt(n)
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 2
+    
+    return True
+```
+
+### Sieve of Eratosthenes
+```python
+def sieveOfEratosthenes(n: int) -> List[int]:
+    """
+    Find all primes up to n.
+    Time: O(n log log n), Space: O(n)
+    """
+    if n < 2:
+        return []
+    
+    is_prime = [True] * (n + 1)
+    is_prime[0] = is_prime[1] = False
+    
+    for i in range(2, int(n**0.5) + 1):
+        if is_prime[i]:
+            # Mark multiples as not prime
+            for j in range(i * i, n + 1, i):
+                is_prime[j] = False
+    
+    return [i for i in range(n + 1) if is_prime[i]]
+```
+
+### Factorial with Modulo
+```python
+def factorial(n: int, mod: int) -> int:
+    """
+    Compute n! % mod.
+    Time: O(n), Space: O(1)
+    """
+    result = 1
+    for i in range(2, n + 1):
+        result = (result * i) % mod
+    return result
+```
+
+## Advanced Patterns
+
+### Fast Modular Exponentiation
+```python
+def powMod(base: int, exp: int, mod: int) -> int:
+    """
+    Compute (base^exp) % mod efficiently.
+    Time: O(log exp), Space: O(1)
+    """
+    result = 1
+    base = base % mod
+    
+    while exp > 0:
+        if exp % 2 == 1:
+            result = (result * base) % mod
+        
+        exp = exp // 2
+        base = (base * base) % mod
+    
+    return result
+```
+
+### Roman to Integer
+```python
+def romanToInt(s: str) -> int:
+    """
+    Convert Roman numeral to integer.
+    Time: O(n), Space: O(1)
+    """
+    values = {
+        'I': 1, 'V': 5, 'X': 10, 'L': 50,
+        'C': 100, 'D': 500, 'M': 1000
+    }
+    
+    result = 0
+    prev = 0
+    
+    for char in reversed(s):
+        value = values[char]
+        
+        # Subtract if smaller than previous (e.g., IV = 4)
+        if value < prev:
+            result -= value
+        else:
+            result += value
+        
+        prev = value
+    
+    return result
+```
+
+### Count Primes (Sieve)
+```python
+def countPrimes(n: int) -> int:
+    """
+    Count prime numbers less than n.
+    Time: O(n log log n), Space: O(n)
+    """
+    if n < 3:
+        return 0
+    
+    is_prime = [True] * n
+    is_prime[0] = is_prime[1] = False
+    
+    for i in range(2, int(n**0.5) + 1):
+        if is_prime[i]:
+            for j in range(i*i, n, i):
+                is_prime[j] = False
+    
+    return sum(is_prime)
+```
+
+### Reverse Integer
+```python
+def reverse(x: int) -> int:
+    """
+    Reverse integer digits, return 0 on overflow.
+    Time: O(log x), Space: O(1)
+    """
+    sign = -1 if x < 0 else 1
+    x = abs(x)
+    
+    result = 0
+    while x:
+        digit = x % 10
+        x //= 10
+        
+        # Check overflow before multiplying
+        if result > (2**31 - 1) // 10:
+            return 0
+        
+        result = result * 10 + digit
+    
+    return sign * result
+```
+
+### Happy Number
+```python
+def isHappy(n: int) -> bool:
+    """
+    Check if number is happy (reaches 1 by sum of squares).
+    Time: O(log n), Space: O(log n)
+    """
+    def sumOfSquares(num: int) -> int:
+        total = 0
+        while num:
+            digit = num % 10
+            total += digit * digit
+            num //= 10
+        return total
+    
+    seen = set()
+    
+    while n != 1 and n not in seen:
+        seen.add(n)
+        n = sumOfSquares(n)
+    
+    return n == 1
+```
+
+## Bit Manipulation Techniques
+
+### Common Operations
+```python
+# Set bit at position i
+x |= (1 << i)
+
+# Clear bit at position i
+x &= ~(1 << i)
+
+# Toggle bit at position i
+x ^= (1 << i)
+
+# Check if bit at position i is set
+(x & (1 << i)) != 0
+
+# Clear lowest set bit
+x &= (x - 1)
+
+# Get lowest set bit
+x & (-x)
+
+# Count set bits
+bin(x).count('1')  # Python
+# Or Brian Kernighan's algorithm
+count = 0
+while x:
+    x &= (x - 1)
+    count += 1
+```
+
+### XOR Properties
+```python
+# XOR properties
+a ^ a = 0
+a ^ 0 = a
+a ^ b ^ a = b  # Useful for finding unique element
+
+# Swap without temp variable
+a ^= b
+b ^= a
+a ^= b
+```
+
+---
+
+**Pro Tip:** For power operations, always use fast exponentiation (binary exponentiation) to achieve O(log n) instead of O(n). For large numbers, use string arithmetic to avoid overflow. Many math problems have elegant solutions using mathematical properties - look for patterns before implementing brute force.

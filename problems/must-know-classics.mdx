@@ -1,0 +1,778 @@
+---
+title: 'Must-Know Classic Problems'
+description: 'The absolute essential problems every software engineer should master, with core patterns and variations'
+icon: 'star'
+---
+
+<Note>
+These aren't just interview problems—they're **fundamental patterns** that appear in production code daily. Master these and you'll recognize variations instantly.
+</Note>
+
+## The Essential Seven
+
+These seven problems teach the patterns that power 80% of all interview questions.
+
+### 1. Two Sum - The Hash Table Foundation
+
+<Card title="Two Sum" icon="hashtag" href="/leetcode/017">
+**Difficulty:** Easy · **Frequency:** 76.4%
+
+Given an array and target, return indices of two numbers that sum to target.
+
+```python
+def twoSum(nums: List[int], target: int) -> List[int]:
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+```
+
+**Time:** O(n) · **Space:** O(n)
+</Card>
+
+**Why It's Essential:**
+
+The hash table pattern for O(1) complement lookup is fundamental to:
+- Pair sum problems (3Sum, 4Sum, Two Sum II)
+- Anagram detection
+- Frequency counting
+- Duplicate detection
+- Caching and memoization
+
+**Core Pattern:** For each element, check if its complement exists in a hash table. Store elements as you iterate.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Two Sum II - Sorted Array">
+    **Input is sorted** → Use two pointers instead of hash table
+    
+    ```python
+    def twoSum(numbers, target):
+        left, right = 0, len(numbers) - 1
+        while left < right:
+            total = numbers[left] + numbers[right]
+            if total == target:
+                return [left + 1, right + 1]
+            elif total < target:
+                left += 1
+            else:
+                right -= 1
+    ```
+    **Time:** O(n) · **Space:** O(1)
+  </Accordion>
+  
+  <Accordion title="3Sum - Find All Unique Triplets">
+    **Find three numbers** that sum to zero → Fix one, two-pointer for rest
+    
+    Key insight: Sort array, fix first element, use two pointers for remaining pair.
+    
+    **Time:** O(n²) · **Space:** O(1)
+  </Accordion>
+  
+  <Accordion title="4Sum - Generalize to K Numbers">
+    **Find four numbers** → Recursive reduction or two-pointer with nested loops
+    
+    Pattern extends to K-Sum using recursion or iterative reduction.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "What if the array is sorted?" → Two pointers
+- "What if we need all pairs?" → Handle duplicates carefully
+- "What if input is too large for memory?" → External merge sort
+
+---
+
+### 2. Valid Parentheses - The Stack Pattern
+
+<Card title="Valid Parentheses" icon="brackets" href="/leetcode/020">
+**Difficulty:** Easy · **Frequency:** 74.9%
+
+Determine if string of brackets is valid (properly nested and matched).
+
+```python
+def isValid(s: str) -> bool:
+    stack = []
+    mapping = {')': '(', '}': '{', ']': '['}
+    
+    for char in s:
+        if char in mapping:
+            top = stack.pop() if stack else '#'
+            if mapping[char] != top:
+                return False
+        else:
+            stack.append(char)
+    
+    return not stack
+```
+
+**Time:** O(n) · **Space:** O(n)
+</Card>
+
+**Why It's Essential:**
+
+Stacks are the go-to structure for:
+- Matching/balancing problems (parentheses, tags)
+- Expression evaluation (calculators, parsers)
+- Backtracking and undo operations
+- Monotonic stack problems (next greater element)
+- DFS traversal (iterative)
+
+**Core Pattern:** Use stack to track opening brackets. When you see closing bracket, check if top of stack matches.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Minimum Remove to Make Valid Parentheses">
+    **Remove minimum brackets** to make valid → Track invalid indices
+    
+    ```python
+    def minRemoveToMakeValid(s):
+        to_remove = set()
+        stack = []
+        
+        for i, char in enumerate(s):
+            if char == '(':
+                stack.append(i)
+            elif char == ')':
+                if stack:
+                    stack.pop()
+                else:
+                    to_remove.add(i)
+        
+        to_remove.update(stack)
+        return ''.join(char for i, char in enumerate(s) 
+                      if i not in to_remove)
+    ```
+    **Frequency: 100%** - The most asked parentheses variant!
+  </Accordion>
+  
+  <Accordion title="Basic Calculator II">
+    **Evaluate expression** with +, -, *, / → Stack for precedence
+    
+    Key insight: Use stack to handle operator precedence. Push numbers, apply high-precedence ops immediately.
+    
+    **Frequency: 84%** - Classic stack application
+  </Accordion>
+  
+  <Accordion title="Remove All Adjacent Duplicates II">
+    **Remove k consecutive duplicates** → Stack with counts
+    
+    Pattern: Store (char, count) pairs in stack, pop when count reaches k.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "What if we need to count minimum insertions?" → Counter approach
+- "Can you do it with O(1) space?" → Counter for simple cases
+- "What about nested tag validation?" → Stack with state
+
+---
+
+### 3. Merge Intervals - The Sorting + Greedy Pattern
+
+<Card title="Merge Intervals" icon="compress" href="/leetcode/016">
+**Difficulty:** Medium · **Frequency:** 77.9%
+
+Merge all overlapping intervals into non-overlapping intervals.
+
+```python
+def merge(intervals: List[List[int]]) -> List[List[int]]:
+    if not intervals:
+        return []
+    
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    
+    for current in intervals[1:]:
+        last = merged[-1]
+        if current[0] <= last[1]:
+            last[1] = max(last[1], current[1])
+        else:
+            merged.append(current)
+    
+    return merged
+```
+
+**Time:** O(n log n) · **Space:** O(n)
+</Card>
+
+**Why It's Essential:**
+
+This pattern solves:
+- Scheduling conflicts (meeting rooms, calendar)
+- Range queries and updates
+- Resource allocation
+- Time-based analytics
+- Interval tree problems
+
+**Core Pattern:** Sort by start time, then iterate and merge overlapping intervals by extending end time.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Insert Interval">
+    **Insert into sorted intervals** → Three phases: before, overlap, after
+    
+    ```python
+    def insert(intervals, newInterval):
+        result = []
+        i = 0
+        
+        # Add all intervals before newInterval
+        while i < len(intervals) and intervals[i][1] < newInterval[0]:
+            result.append(intervals[i])
+            i += 1
+        
+        # Merge overlapping intervals
+        while i < len(intervals) and intervals[i][0] <= newInterval[1]:
+            newInterval[0] = min(newInterval[0], intervals[i][0])
+            newInterval[1] = max(newInterval[1], intervals[i][1])
+            i += 1
+        result.append(newInterval)
+        
+        # Add remaining intervals
+        result.extend(intervals[i:])
+        return result
+    ```
+  </Accordion>
+  
+  <Accordion title="Meeting Rooms II">
+    **Minimum meeting rooms** needed → Min heap or sweep line
+    
+    Key insight: Track start/end times separately, or use min heap to track end times.
+    
+    Pattern extends to resource allocation problems.
+  </Accordion>
+  
+  <Accordion title="Non-overlapping Intervals">
+    **Minimum removals** to make non-overlapping → Greedy by end time
+    
+    Sort by end time, greedily select intervals that don't overlap.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "What if intervals aren't sorted?" → Must sort first
+- "How to handle infinite streams?" → Sweep line with priority queue
+- "Optimize for many queries?" → Interval tree
+
+---
+
+### 4. LRU Cache - The Design Pattern
+
+<Card title="LRU Cache" icon="memory" href="/leetcode/039">
+**Difficulty:** Medium · **Frequency:** 62.4%
+
+Design cache with O(1) get and put, evicting least recently used item at capacity.
+
+```python
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}  # key -> node
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+    
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            node = self.cache[key]
+            self._remove(node)
+            self._add(node)
+            return node.value
+        return -1
+    
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self._remove(self.cache[key])
+        node = Node(key, value)
+        self._add(node)
+        self.cache[key] = node
+        if len(self.cache) > self.capacity:
+            lru = self.head.next
+            self._remove(lru)
+            del self.cache[lru.key]
+```
+
+**Time:** O(1) get/put · **Space:** O(capacity)
+</Card>
+
+**Why It's Essential:**
+
+This teaches:
+- Combining data structures (hash table + linked list)
+- O(1) operation design
+- System design principles
+- Cache invalidation strategies
+- Real-world data structure implementation
+
+**Core Pattern:** Hash table for O(1) access, doubly linked list for O(1) reordering and eviction.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="LFU Cache - Least Frequently Used">
+    **Evict by frequency** instead of recency → Two hash maps + frequency buckets
+    
+    More complex: Track frequency counts and maintain frequency-ordered buckets.
+    
+    Real-world: Better for access patterns with hot/cold data.
+  </Accordion>
+  
+  <Accordion title="LRU Cache with Expiration">
+    **Add TTL** (time to live) → Additional timestamp tracking
+    
+    Pattern: Store timestamps, check expiration on get, periodic cleanup.
+  </Accordion>
+  
+  <Accordion title="Snapshot Array">
+    **Design with versioning** → Hash map per snapshot or delta tracking
+    
+    Extension of state management with historical queries.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "How to handle concurrent access?" → Locks or lock-free structures
+- "What if cache is distributed?" → Consistent hashing
+- "Memory vs performance tradeoffs?" → Discuss eviction policies
+
+---
+
+### 5. Best Time to Buy/Sell Stock - The DP Foundation
+
+<Card title="Best Time to Buy and Sell Stock" icon="chart-line" href="/leetcode/018">
+**Difficulty:** Easy · **Frequency:** 76.4%
+
+Find maximum profit from single buy and sell of stock.
+
+```python
+def maxProfit(prices: List[int]) -> int:
+    min_price = float('inf')
+    max_profit = 0
+    
+    for price in prices:
+        min_price = min(min_price, price)
+        profit = price - min_price
+        max_profit = max(max_profit, profit)
+    
+    return max_profit
+```
+
+**Time:** O(n) · **Space:** O(1)
+</Card>
+
+**Why It's Essential:**
+
+This simple problem introduces:
+- State-based dynamic programming
+- Tracking optimal solutions incrementally
+- Space optimization (reducing from O(n) to O(1))
+- Maximum subarray variants
+- Financial modeling patterns
+
+**Core Pattern:** Track minimum value seen so far, calculate profit at each step, maintain maximum.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Best Time to Buy/Sell Stock II">
+    **Multiple transactions** allowed → Sum all positive differences
+    
+    ```python
+    def maxProfit(prices):
+        profit = 0
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i-1]:
+                profit += prices[i] - prices[i-1]
+        return profit
+    ```
+    Key insight: Add profit for every upward move.
+  </Accordion>
+  
+  <Accordion title="Best Time to Buy/Sell Stock III">
+    **At most 2 transactions** → State machine DP
+    
+    Track 4 states: buy1, sell1, buy2, sell2. Classic state machine problem.
+    
+    **Difficulty: Hard** but follows same pattern with more states.
+  </Accordion>
+  
+  <Accordion title="Best Time to Buy/Sell Stock with Cooldown">
+    **Cooldown after selling** → Three-state DP
+    
+    States: holding stock, cooldown, available to buy. Pattern for state transitions.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "What if we can do k transactions?" → Generalized DP
+- "With transaction fees?" → Subtract fee in profit calculation
+- "Prove this is optimal" → Explain greedy property
+
+---
+
+### 6. Merge k Sorted Lists - The Heap Mastery
+
+<Card title="Merge k Sorted Lists" icon="list-tree" href="/leetcode/019">
+**Difficulty:** Hard · **Frequency:** 76.4%
+
+Merge k sorted linked lists into one sorted list.
+
+```python
+def mergeKLists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    min_heap = []
+    
+    # Initialize heap with first node from each list
+    for i, node in enumerate(lists):
+        if node:
+            heapq.heappush(min_heap, (node.val, i, node))
+    
+    dummy = ListNode(0)
+    current = dummy
+    
+    while min_heap:
+        val, i, node = heapq.heappop(min_heap)
+        current.next = node
+        current = current.next
+        
+        if node.next:
+            heapq.heappush(min_heap, (node.next.val, i, node.next))
+    
+    return dummy.next
+```
+
+**Time:** O(N log k) · **Space:** O(k)
+</Card>
+
+**Why It's Essential:**
+
+Heaps are critical for:
+- Top-K problems
+- Stream processing (finding median, top elements)
+- Priority scheduling
+- Merge operations
+- External sorting
+
+**Core Pattern:** Maintain min heap of size k, always pop smallest and add next from same source.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Kth Largest Element">
+    **Find kth largest** → Min heap of size k
+    
+    ```python
+    def findKthLargest(nums, k):
+        heap = nums[:k]
+        heapq.heapify(heap)
+        for num in nums[k:]:
+            if num > heap[0]:
+                heapq.heapreplace(heap, num)
+        return heap[0]
+    ```
+    Maintain heap of k largest elements, smallest is at top.
+  </Accordion>
+  
+  <Accordion title="Top K Frequent Elements">
+    **Most frequent k elements** → Heap or bucket sort
+    
+    Can use min heap of size k, or bucket sort for O(n) solution.
+    
+    **Frequency: 77.9%** - Essential for analytics queries.
+  </Accordion>
+  
+  <Accordion title="Find Median from Data Stream">
+    **Running median** → Two heaps (max heap + min heap)
+    
+    Max heap for lower half, min heap for upper half. Balance sizes to find median in O(1).
+    
+    **Difficulty: Hard** but fundamental pattern for stream processing.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "What if lists are very long?" → External merge sort
+- "Divide and conquer alternative?" → Merge pairs recursively
+- "How to handle duplicates?" → No change needed
+
+---
+
+### 7. Clone Graph - The Graph Traversal Template
+
+<Card title="Clone Graph" icon="diagram-project" href="/leetcode/025">
+**Difficulty:** Medium · **Frequency:** 71.4%
+
+Create deep copy of undirected graph.
+
+```python
+def cloneGraph(node: 'Node') -> 'Node':
+    if not node:
+        return None
+    
+    cloned = {}
+    
+    def dfs(node):
+        if node in cloned:
+            return cloned[node]
+        
+        clone = Node(node.val)
+        cloned[node] = clone
+        
+        for neighbor in node.neighbors:
+            clone.neighbors.append(dfs(neighbor))
+        
+        return clone
+    
+    return dfs(node)
+```
+
+**Time:** O(N + E) · **Space:** O(N)
+</Card>
+
+**Why It's Essential:**
+
+Graph traversal patterns power:
+- Social network queries
+- Dependency resolution
+- Path finding
+- Cycle detection
+- Connected components
+- Topological sorting
+
+**Core Pattern:** Use hash map to track visited nodes (and their clones). DFS or BFS to traverse, creating clones as you go.
+
+**Common Variations:**
+
+<AccordionGroup>
+  <Accordion title="Course Schedule (Cycle Detection)">
+    **Detect cycles** in directed graph → DFS with three states
+    
+    ```python
+    def canFinish(numCourses, prerequisites):
+        graph = [[] for _ in range(numCourses)]
+        for course, prereq in prerequisites:
+            graph[course].append(prereq)
+        
+        # 0: unvisited, 1: visiting, 2: visited
+        state = [0] * numCourses
+        
+        def hasCycle(course):
+            if state[course] == 1:
+                return True
+            if state[course] == 2:
+                return False
+            
+            state[course] = 1
+            for prereq in graph[course]:
+                if hasCycle(prereq):
+                    return True
+            state[course] = 2
+            return False
+        
+        return not any(hasCycle(i) for i in range(numCourses))
+    ```
+  </Accordion>
+  
+  <Accordion title="Number of Islands">
+    **Count connected components** → DFS/BFS on grid
+    
+    Classic pattern: Iterate through grid, DFS/BFS on each unvisited land cell.
+    
+    Extension: Union-find for dynamic connectivity queries.
+  </Accordion>
+  
+  <Accordion title="Word Ladder">
+    **Shortest path** in word graph → BFS
+    
+    Build graph of word transformations, use BFS to find shortest path.
+    
+    **Difficulty: Hard** - combines graph + BFS + string manipulation.
+  </Accordion>
+</AccordionGroup>
+
+**Interview Follow-Ups:**
+- "BFS vs DFS - when to use which?" → BFS for shortest path, DFS for all paths
+- "How to detect cycles?" → Three-state coloring or visited set with recursion stack
+- "Optimize for sparse vs dense graphs?" → Adjacency list vs matrix
+
+---
+
+## Pattern Recognition Guide
+
+When you see these keywords in a problem, immediately think:
+
+<CardGroup cols={2}>
+  <Card title="'Two numbers that sum...'" icon="plus">
+    **→ Hash Table or Two Pointers**
+    
+    Unsorted: Hash table O(n)
+    Sorted: Two pointers O(n)
+  </Card>
+
+  <Card title="'Valid/Matching parentheses...'" icon="brackets">
+    **→ Stack**
+    
+    Track opening brackets, match with closing.
+  </Card>
+
+  <Card title="'Kth largest/smallest...'" icon="ranking-star">
+    **→ Min/Max Heap**
+    
+    Heap of size k, top element is answer.
+  </Card>
+
+  <Card title="'Merge intervals/ranges...'" icon="compress">
+    **→ Sort + Greedy**
+    
+    Sort by start, merge overlapping.
+  </Card>
+
+  <Card title="'Design a cache...'" icon="memory">
+    **→ Hash Table + Linked List**
+    
+    Combine structures for O(1) operations.
+  </Card>
+
+  <Card title="'Maximum profit/subarray...'" icon="chart-line">
+    **→ Dynamic Programming**
+    
+    Track optimal state at each step.
+  </Card>
+
+  <Card title="'Merge k sorted...'" icon="list">
+    **→ Min Heap**
+    
+    Heap to track minimum across k sources.
+  </Card>
+
+  <Card title="'Clone/copy graph...'" icon="clone">
+    **→ DFS/BFS + Hash Map**
+    
+    Map original → clone during traversal.
+  </Card>
+</CardGroup>
+
+## Mastery Checklist
+
+For each problem above, you should be able to:
+
+<Steps>
+  <Step title="Recognize the Pattern Instantly">
+    Within 30 seconds of reading the problem, identify the core pattern and approach.
+  </Step>
+  
+  <Step title="Code Without Looking">
+    Write the solution from scratch without referencing notes. Muscle memory matters.
+  </Step>
+  
+  <Step title="Explain the Intuition">
+    Articulate **why** this approach works and why alternatives don't. Explain to someone else clearly.
+  </Step>
+  
+  <Step title="Optimize and Analyze">
+    State time and space complexity. Explain why this is optimal and what the lower bounds are.
+  </Step>
+  
+  <Step title="Handle Variations">
+    When given a variant, quickly adapt the core pattern to the new constraints.
+  </Step>
+  
+  <Step title="Discuss Tradeoffs">
+    Compare alternative approaches (e.g., heap vs quickselect for kth largest) and when each is preferred.
+  </Step>
+</Steps>
+
+## Study Strategy
+
+<Tabs>
+  <Tab title="Day 1-7: Core Mastery">
+    **Focus on the Essential Seven**
+    
+    - **Days 1-2:** Two Sum + Valid Parentheses
+    - **Days 3-4:** Merge Intervals + Best Time to Buy/Sell Stock
+    - **Days 5-6:** LRU Cache + Merge k Sorted Lists
+    - **Day 7:** Clone Graph
+    
+    For each problem:
+    1. Solve without hints (30 min max)
+    2. Study optimal solution
+    3. Solve again from scratch
+    4. Solve 2 variations
+  </Tab>
+  
+  <Tab title="Day 8-14: Variations">
+    **Master the variations of each core problem**
+    
+    - **Days 8-9:** Two Sum variants (Two Sum II, 3Sum, 4Sum)
+    - **Days 10-11:** Parentheses variants (Min Remove, Calculator)
+    - **Days 12-13:** Interval variants (Insert, Meeting Rooms)
+    - **Day 14:** Review all patterns
+    
+    Goal: Recognize when a variant uses the core pattern.
+  </Tab>
+  
+  <Tab title="Day 15-21: Speed & Depth">
+    **Timed practice and deep understanding**
+    
+    - Time yourself on all Essential Seven
+    - Aim for: Easy in 10 min, Medium in 20 min, Hard in 35 min
+    - Practice explaining solutions out loud
+    - Write solutions in your weaker programming language
+    - Implement without IDE autocomplete
+    
+    Goal: Automatic pattern recognition and fast implementation.
+  </Tab>
+  
+  <Tab title="Day 22-30: Real Interviews">
+    **Simulate interview conditions**
+    
+    - Use online judges with time pressure
+    - Practice on whiteboard or paper
+    - Explain approach before coding
+    - Test with edge cases
+    - Discuss time/space complexity after coding
+    
+    Do 2-3 mock interviews covering these patterns.
+  </Tab>
+</Tabs>
+
+## Why These Seven?
+
+These problems aren't arbitrary—they were chosen because:
+
+1. **High Frequency:** Appear in 62-77% of interviews at top companies
+2. **Fundamental Patterns:** Each teaches a pattern that appears in 50+ other problems
+3. **Building Blocks:** More complex problems combine these patterns
+4. **Real-World Relevance:** These patterns appear daily in production code
+5. **Interview Signals:** Success on these indicates strong foundational knowledge
+
+<Tip>
+Master these seven problems and their core patterns, and you'll be able to solve 80% of interview problems you encounter. The remaining 20% are just combinations or minor variations of these fundamentals.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Study Plan" icon="calendar" href="/preparation/study-plan">
+    Follow our structured 30-day plan to master these problems systematically.
+  </Card>
+
+  <Card title="Pattern Guide" icon="book" href="/patterns/overview">
+    Deep dive into each pattern with 20+ variations and examples.
+  </Card>
+
+  <Card title="Top Frequency Problems" icon="fire" href="/problems/top-frequency">
+    Expand to the top 50 most frequently asked problems across all companies.
+  </Card>
+
+  <Card title="Company-Specific Lists" icon="building" href="/companies/overview">
+    See which companies ask which patterns most frequently.
+  </Card>
+</CardGroup>

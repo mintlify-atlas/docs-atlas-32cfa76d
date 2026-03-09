@@ -1,80 +1,296 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Quickstart Guide"
+description: "Get started with Questions100 - Navigate the collection and begin mastering interview problems"
 ---
 
-## Get started in three steps
+Welcome to Questions100! This guide will help you navigate the collection efficiently and start solving problems right away.
 
-Get your documentation site running locally and make your first customization.
+## Understanding the Collection
 
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+Questions100 contains **100 carefully curated LeetCode problems** with comprehensive documentation for each:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Complete Solutions" icon="code">
+    Python implementations with O(n) complexity analysis
+  </Card>
+  <Card title="Real Examples" icon="lightbulb">
+    3-4 test cases per problem with detailed explanations
+  </Card>
+  <Card title="Interview Focus" icon="briefcase">
+    Frequency data showing how often problems appear in interviews
+  </Card>
+  <Card title="Applications" icon="rocket">
+    Real-world and cybersecurity use cases for each algorithm
+  </Card>
 </CardGroup>
 
+## Quick Navigation
+
+### By Difficulty
+
+<Steps>
+  <Step title="Easy (21 problems)">
+    Perfect for building fundamentals. Start here if you're new to algorithms.
+    
+    **Recommended First Problems:**
+    - **#017 - Two Sum** (76.4% frequency) - Hash Table basics
+    - **#020 - Valid Parentheses** (74.9% frequency) - Stack fundamentals
+    - **#018 - Best Time to Buy and Sell Stock** (76.4% frequency) - Dynamic Programming intro
+  </Step>
+  
+  <Step title="Medium (63 problems)">
+    Core interview problems. This is where most interview questions come from.
+    
+    **Must-Know Problems:**
+    - **#001 - Minimum Remove to Make Valid Parentheses** (100% frequency)
+    - **#016 - Merge Intervals** (77.9% frequency)
+    - **#039 - LRU Cache** (62.4% frequency)
+  </Step>
+  
+  <Step title="Hard (16 problems)">
+    Advanced problems for senior roles and competitive preparation.
+    
+    **Top Hard Problems:**
+    - **#037 - Minimum Window Substring**
+    - **#019 - Merge k Sorted Lists**
+    - **#100 - Median of Two Sorted Arrays**
+  </Step>
+</Steps>
+
+### By Category
+
+The collection is organized into key algorithmic categories:
+
+<AccordionGroup>
+  <Accordion title="Arrays & Hashing" icon="grid">
+    **Problems:** Two Sum (#017), Merge Intervals (#016), Subarray Sum Equals K (#026), 3Sum (#065), Top K Frequent Elements (#015)
+    
+    **When to use:** When you need fast lookups, frequency counting, or set operations.
+  </Accordion>
+  
+  <Accordion title="Two Pointers" icon="arrows-left-right">
+    **Problems:** Valid Palindrome (#029), Valid Palindrome II (#004), Merge Sorted Array (#033), Container With Most Water (#073)
+    
+    **When to use:** Working with sorted arrays, finding pairs, or optimizing from O(n²) to O(n).
+  </Accordion>
+  
+  <Accordion title="Stack" icon="layer-group">
+    **Problems:** Valid Parentheses (#020), Minimum Remove to Make Valid Parentheses (#001), Basic Calculator II (#008), Simplify Path (#035)
+    
+    **When to use:** Parsing expressions, matching pairs, or tracking nested structures.
+  </Accordion>
+  
+  <Accordion title="Binary Search" icon="magnifying-glass">
+    **Problems:** Find Peak Element (#010), Binary Search (#042), Koko Eating Bananas (#094), Capacity To Ship Packages Within D Days (#079)
+    
+    **When to use:** Searching sorted data or minimizing/maximizing with a decision function.
+  </Accordion>
+  
+  <Accordion title="Trees (Binary Tree, BST)" icon="sitemap">
+    **Problems:** Diameter of Binary Tree (#014), Binary Tree Right Side View (#007), Lowest Common Ancestor (#009), Range Sum of BST (#027)
+    
+    **When to use:** Hierarchical data, tree traversals, or ancestor/descendant relationships.
+  </Accordion>
+  
+  <Accordion title="Graphs (DFS/BFS)" icon="diagram-project">
+    **Problems:** Clone Graph (#025), Course Schedule (#063), Shortest Path in Binary Matrix (#031), Making A Large Island (#036)
+    
+    **When to use:** Connectivity problems, shortest paths, or exploring all possibilities.
+  </Accordion>
+  
+  <Accordion title="Dynamic Programming" icon="chart-line">
+    **Problems:** Best Time to Buy and Sell Stock (#018, #099), Maximum Subarray (#087), Word Break (#075), Longest Palindromic Substring (#096)
+    
+    **When to use:** Optimization problems with overlapping subproblems.
+  </Accordion>
+  
+  <Accordion title="Sliding Window" icon="window-maximize">
+    **Problems:** Longest Substring Without Repeating Characters (#080), Max Consecutive Ones III (#040), Minimum Window Substring (#037)
+    
+    **When to use:** Finding subarrays or substrings with specific properties.
+  </Accordion>
+</AccordionGroup>
+
+## How to Use Each Problem Page
+
+Every problem in Questions100 follows a consistent structure:
+
+### Problem Structure
+
+```plaintext
+# NNN. Problem Title
+
+Metadata:
+├── Difficulty (Easy/Medium/Hard)
+├── Interview Frequency (%)
+├── Acceptance Rate
+└── LeetCode Link
+
+Content:
+├── Problem Description with Constraints
+├── 3-4 Real Examples with Explanations
+├── Optimal Solution with Python Code
+├── Time & Space Complexity Analysis
+├── Categories & Tags
+└── Real-World Applications
+```
+
+### Example: Two Sum (#017)
+
+<CodeGroup>
+```python Solution
+def twoSum(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using hash map.
+    
+    Time: O(n), Space: O(n)
+    """
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+```
+
+```plaintext Examples
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: nums[0] + nums[1] == 9
+
+Input: nums = [3,2,4], target = 6
+Output: [1,2]
+Explanation: nums[1] + nums[2] == 6
+```
+</CodeGroup>
+
+**Time Complexity:** O(n) - single pass through array  
+**Space Complexity:** O(n) - hash map storage
+
+## Top 10 Problems to Start With
+
+Based on interview frequency and foundational importance:
+
+<CardGroup cols={2}>
+  <Card title="1. Two Sum" icon="1" href="/problems/017-two-sum">
+    **Easy** • 76.4% frequency  
+    Hash Table fundamentals
+  </Card>
+  
+  <Card title="2. Valid Parentheses" icon="2" href="/problems/020-valid-parentheses">
+    **Easy** • 74.9% frequency  
+    Stack basics
+  </Card>
+  
+  <Card title="3. Merge Intervals" icon="3" href="/problems/016-merge-intervals">
+    **Medium** • 77.9% frequency  
+    Sorting and greedy algorithms
+  </Card>
+  
+  <Card title="4. LRU Cache" icon="4" href="/problems/039-lru-cache">
+    **Medium** • 62.4% frequency  
+    Design with hash map + linked list
+  </Card>
+  
+  <Card title="5. Best Time to Buy/Sell" icon="5" href="/problems/018-stock">
+    **Easy** • 76.4% frequency  
+    Dynamic programming intro
+  </Card>
+  
+  <Card title="6. Min Remove Parentheses" icon="6" href="/problems/001-min-remove">
+    **Medium** • 100% frequency  
+    Stack + string manipulation
+  </Card>
+  
+  <Card title="7. Binary Tree Vertical" icon="7" href="/problems/003-vertical-order">
+    **Medium** • 93.4% frequency  
+    BFS + hash map for trees
+  </Card>
+  
+  <Card title="8. Kth Largest Element" icon="8" href="/problems/006-kth-largest">
+    **Medium** • 86.9% frequency  
+    Heap/quickselect
+  </Card>
+  
+  <Card title="9. Valid Palindrome II" icon="9" href="/problems/004-palindrome-ii">
+    **Easy** • 92.7% frequency  
+    Two pointers + greedy
+  </Card>
+  
+  <Card title="10. Basic Calculator II" icon="10" href="/problems/008-calculator">
+    **Medium** • 84.0% frequency  
+    Stack for expression parsing
+  </Card>
+</CardGroup>
+
+## Effective Practice Strategy
+
+<Steps>
+  <Step title="Read the Problem Thoroughly">
+    - Understand constraints (they often hint at the approach)
+    - Check input/output ranges
+    - Note special cases mentioned
+  </Step>
+  
+  <Step title="Try to Solve (20-30 minutes)">
+    - Start with brute force approach
+    - Identify bottlenecks
+    - Think about data structures that could help
+    - **Don't look at the solution immediately!**
+  </Step>
+  
+  <Step title="Study the Optimal Solution">
+    - Understand WHY it works, not just HOW
+    - Compare complexity with your approach
+    - Notice patterns and techniques
+  </Step>
+  
+  <Step title="Implement from Scratch">
+    - Close the solution
+    - Write code without looking
+    - Test with the provided examples
+    - Add edge cases
+  </Step>
+  
+  <Step title="Review and Connect">
+    - Read real-world applications
+    - See how this pattern appears in other problems
+    - Practice explaining your approach out loud
+  </Step>
+</Steps>
+
+## Collection Statistics
+
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Total Problems:** 100  
+  **Documentation Size:** ~800 KB, ~19,000 lines  
+  **Code Examples:** 100+ working Python solutions  
+  **Test Cases:** 400+ example inputs/outputs  
+  **Real-World Applications:** 500+ specific named applications  
+  **Security Use Cases:** 600+ cybersecurity applications
 </Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Study Plans" icon="calendar-days" href="/study-plans">
+    Follow structured weekly plans for 1-8 week preparation timelines
+  </Card>
+  
+  <Card title="Browse by Category" icon="folder-tree" href="/categories/array-hashing">
+    Explore problems organized by algorithmic pattern
+  </Card>
+  
+  <Card title="Top Interview Problems" icon="star" href="/problems/top-frequency">
+    Focus on the most frequently asked problems
+  </Card>
+  
+  <Card title="Interview Tips" icon="lightbulb" href="/resources/interview-tips">
+    Learn how to communicate your approach during interviews
+  </Card>
+</CardGroup>
+
+<Tip>
+  **Pro Tip:** Start with one category at a time. Master 5-7 problems in Arrays & Hashing before moving to the next pattern. This builds pattern recognition faster than jumping between categories.
+</Tip>

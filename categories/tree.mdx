@@ -1,0 +1,336 @@
+---
+title: 'Binary Tree'
+description: 'Master binary tree traversal, construction, and query patterns'
+---
+
+# Binary Tree
+
+Binary tree problems involve hierarchical data structures where each node has at most two children. Mastering tree traversal and recursion is essential for solving these problems efficiently.
+
+## Key Patterns & Techniques
+
+### 1. Tree Traversal
+- **Inorder (Left-Root-Right)**: BST gives sorted order
+- **Preorder (Root-Left-Right)**: Create copy, serialize
+- **Postorder (Left-Right-Root)**: Delete tree, calculate height
+- **Level-order (BFS)**: Level by level, shortest path
+
+### 2. Divide and Conquer
+- Solve for left subtree
+- Solve for right subtree
+- Combine results
+- Used in height, diameter, path sum problems
+
+### 3. Path Problems
+- Root to leaf paths
+- Node to node paths
+- Path sum variations
+- Lowest Common Ancestor (LCA)
+
+### 4. Tree Construction
+- Build from traversal orders
+- Clone/copy tree with additional pointers
+- Serialize and deserialize
+
+## Common Approaches
+
+### DFS Recursive Template
+```python
+def dfs(root: TreeNode) -> ResultType:
+    """
+    Standard DFS recursive template.
+    Time: O(n), Space: O(h) for recursion stack
+    """
+    # Base case
+    if not root:
+        return base_result
+    
+    # Process current node
+    current_result = process(root.val)
+    
+    # Recurse on children
+    left_result = dfs(root.left)
+    right_result = dfs(root.right)
+    
+    # Combine results
+    return combine(current_result, left_result, right_result)
+```
+
+### Level Order Traversal (BFS)
+```python
+def levelOrder(root: TreeNode) -> List[List[int]]:
+    """
+    Level-order traversal using queue.
+    Time: O(n), Space: O(w), w = max width
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level_size = len(queue)
+        level = []
+        
+        for _ in range(level_size):
+            node = queue.popleft()
+            level.append(node.val)
+            
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        result.append(level)
+    
+    return result
+```
+
+### Tree Diameter Pattern
+```python
+def diameterOfBinaryTree(root: TreeNode) -> int:
+    """
+    Find longest path between any two nodes.
+    Time: O(n), Space: O(h)
+    """
+    max_diameter = 0
+    
+    def height(node: TreeNode) -> int:
+        nonlocal max_diameter
+        
+        if not node:
+            return 0
+        
+        # Get heights of subtrees
+        left_height = height(node.left)
+        right_height = height(node.right)
+        
+        # Update diameter (path through this node)
+        max_diameter = max(max_diameter, left_height + right_height)
+        
+        # Return height of this subtree
+        return 1 + max(left_height, right_height)
+    
+    height(root)
+    return max_diameter
+```
+
+### Lowest Common Ancestor
+```python
+def lowestCommonAncestor(root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+    """
+    Find LCA of two nodes in binary tree.
+    Time: O(n), Space: O(h)
+    """
+    if not root or root == p or root == q:
+        return root
+    
+    # Search in subtrees
+    left = lowestCommonAncestor(root.left, p, q)
+    right = lowestCommonAncestor(root.right, p, q)
+    
+    # Both found in different subtrees -> root is LCA
+    if left and right:
+        return root
+    
+    # Return whichever side found something
+    return left if left else right
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="014. Diameter of Binary Tree" icon="arrows-left-right" href="/problems/014-diameter-of-binary-tree">
+    **Easy** | Frequency: 79.2%
+    
+    Find longest path between any two nodes using height calculation.
+  </Card>
+
+  <Card title="009. Lowest Common Ancestor" icon="code-branch" href="/problems/009-lowest-common-ancestor-of-a-binary-tree">
+    **Medium** | Frequency: 82.9%
+    
+    Classic LCA problem - search both subtrees and combine results.
+  </Card>
+
+  <Card title="007. Binary Tree Right Side View" icon="eye" href="/problems/007-binary-tree-right-side-view">
+    **Medium** | Frequency: 86.0%
+    
+    Level-order traversal, capture rightmost node at each level.
+  </Card>
+
+  <Card title="003. Binary Tree Vertical Order Traversal" icon="table-columns" href="/problems/003-binary-tree-vertical-order-traversal">
+    **Medium** | Frequency: 93.4%
+    
+    BFS with column tracking to group nodes by vertical position.
+  </Card>
+
+  <Card title="013. Sum Root to Leaf Numbers" icon="calculator" href="/problems/013-sum-root-to-leaf-numbers">
+    **Medium** | Frequency: 80.5%
+    
+    DFS to accumulate digits along path, sum all root-to-leaf numbers.
+  </Card>
+
+  <Card title="005. Lowest Common Ancestor III" icon="code-branch" href="/problems/005-lowest-common-ancestor-of-a-binary-tree-iii">
+    **Medium** | Frequency: 89.6%
+    
+    LCA variant with parent pointers - convert to linked list intersection.
+  </Card>
+
+  <Card title="011. Nested List Weight Sum" icon="layer-group" href="/problems/011-nested-list-weight-sum">
+    **Medium** | Frequency: 81.7%
+    
+    DFS on nested structure with depth tracking for weighted sum.
+  </Card>
+
+  <Card title="066. All Nodes Distance K" icon="circle-dot" href="/problems/066-all-nodes-distance-k-in-binary-tree">
+    **Medium** | Frequency: 47.0%
+    
+    Build parent pointers, then BFS from target with distance tracking.
+  </Card>
+
+  <Card title="076. Binary Tree Maximum Path Sum" icon="trophy" href="/problems/076-binary-tree-maximum-path-sum">
+    **Hard** | Frequency: 40.7%
+    
+    Similar to diameter - track max sum through each node.
+  </Card>
+
+  <Card title="061. Vertical Order Traversal" icon="grip-vertical" href="/problems/061-vertical-order-traversal-of-a-binary-tree">
+    **Hard** | Frequency: 47.0%
+    
+    Complex sorting: group by column, sort by row and value.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| DFS Recursive | O(n) | O(h) | Most tree problems, height, paths |
+| BFS Level-order | O(n) | O(w) | Level info, right view, zigzag |
+| Path Finding | O(n) | O(h) | Root-to-leaf, node-to-node paths |
+| Tree Construction | O(n) | O(n) | Build from traversals, clone |
+| Morris Traversal | O(n) | O(1) | Space-optimized inorder |
+
+n = number of nodes, h = height, w = max width
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Root to leaf path"** → DFS with path accumulation
+- **"Level by level" or "right/left view"** → BFS level-order
+- **"Find node(s) at distance k"** → BFS with distance tracking
+- **"Lowest Common Ancestor"** → Post-order DFS, combine results
+- **"Diameter/max path"** → Calculate at each node, track global max
+- **"Vertical/diagonal order"** → BFS/DFS with coordinate tracking
+
+### Common Mistakes
+- Forgetting base case (null check)
+- Not handling single-node tree
+- Confusing node value with node reference
+- Wrong order of operations in traversal
+- Stack overflow on deep trees (use iterative)
+- Modifying tree structure unintentionally
+
+### Key Insights
+1. **Recursion = Smaller subproblem** - solve for subtrees, combine
+2. **DFS uses stack** (recursion or explicit), **BFS uses queue**
+3. **Height problems** use post-order (children before parent)
+4. **Path problems** often need to pass state down the tree
+5. **Global variable** useful for tracking max/min across all paths
+6. **Parent pointers** convert tree to graph for bidirectional traversal
+
+## Traversal Cheat Sheet
+
+### When to Use Each Traversal
+
+| Traversal | Order | Use Cases |
+|-----------|-------|----------|
+| **Inorder** | Left-Root-Right | BST sorted, validate BST |
+| **Preorder** | Root-Left-Right | Copy tree, serialize, prefix expression |
+| **Postorder** | Left-Right-Root | Delete tree, diameter, height |
+| **Level-order** | Level by level | Right view, zigzag, shortest path |
+
+### Iterative Traversal Templates
+
+```python
+def inorderIterative(root: TreeNode) -> List[int]:
+    """Iterative inorder using stack."""
+    result, stack = [], []
+    curr = root
+    
+    while curr or stack:
+        # Go left as far as possible
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        # Process node
+        curr = stack.pop()
+        result.append(curr.val)
+        # Go right
+        curr = curr.right
+    
+    return result
+```
+
+## Advanced Patterns
+
+### Morris Traversal (O(1) Space)
+```python
+def morrisInorder(root: TreeNode) -> List[int]:
+    """
+    Inorder traversal with O(1) space using threading.
+    Temporarily modifies tree, then restores.
+    """
+    result = []
+    curr = root
+    
+    while curr:
+        if not curr.left:
+            result.append(curr.val)
+            curr = curr.right
+        else:
+            # Find predecessor
+            pred = curr.left
+            while pred.right and pred.right != curr:
+                pred = pred.right
+            
+            if not pred.right:
+                # Create thread
+                pred.right = curr
+                curr = curr.left
+            else:
+                # Remove thread
+                pred.right = None
+                result.append(curr.val)
+                curr = curr.right
+    
+    return result
+```
+
+### Serialize and Deserialize
+```python
+def serialize(root: TreeNode) -> str:
+    """Encode tree to string."""
+    def dfs(node):
+        if not node:
+            return ['null']
+        return [str(node.val)] + dfs(node.left) + dfs(node.right)
+    return ','.join(dfs(root))
+
+def deserialize(data: str) -> TreeNode:
+    """Decode string to tree."""
+    def dfs(nodes):
+        val = next(nodes)
+        if val == 'null':
+            return None
+        node = TreeNode(int(val))
+        node.left = dfs(nodes)
+        node.right = dfs(nodes)
+        return node
+    return dfs(iter(data.split(',')))
+```
+
+---
+
+**Pro Tip:** Most tree problems are variations of tree traversal. Master the four basic traversals (inorder, preorder, postorder, level-order) both recursively and iteratively. Then recognize which traversal fits the problem.

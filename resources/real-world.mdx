@@ -1,0 +1,658 @@
+---
+title: 'Real-World Applications'
+description: 'How interview algorithms power production systems - AWS, Google, Netflix, and more'
+---
+
+Algorithms aren't just interview puzzles - they're the foundation of systems you use every day. This guide maps interview problems to production systems at scale.
+
+## Infrastructure & Cloud
+
+<AccordionGroup>
+  <Accordion title="Load Balancing & Traffic Distribution" icon="cloud">
+    
+    ### Problem: Two Sum, Subarray Sum Equals K
+    **Real Systems:** AWS ELB, Google Cloud Load Balancer, Nginx
+    
+    **How it's used:**
+    - Hash maps track server capacity and request counts in O(1) time
+    - AWS ELB uses consistent hashing (hash table) to route requests to same backend servers
+    - Netflix's Ribbon load balancer maintains hash maps of available instances
+    - Prefix sum techniques calculate rolling window metrics for health checks
+    
+    **Scale Impact:**
+    - AWS ELB processes millions of requests/second using hash-based routing
+    - Google's Maglev load balancer uses consistent hashing to distribute 1M+ QPS
+    
+    **Key Algorithms:**
+    - Hash maps: O(1) server lookup
+    - Consistent hashing: minimize reassignments during scaling
+    - Prefix sums: rolling window statistics
+
+  </Accordion>
+
+  <Accordion title="Resource Scheduling & Allocation" icon="server">
+    
+    ### Problem: Merge Intervals, Meeting Rooms
+    **Real Systems:** Kubernetes, AWS EC2 Auto Scaling, Google Borg
+    
+    **How it's used:**
+    - Kubernetes scheduler merges overlapping time windows to find optimal pod placement
+    - AWS Auto Scaling groups use interval merging to prevent conflicting scale operations
+    - Google's Borg scheduler allocates CPU/memory using interval intersection algorithms
+    - Docker Swarm uses interval trees for resource reservation
+    
+    **Production Examples:**
+    ```python
+    # Kubernetes pod scheduling
+    # Merge intervals to find available time slots
+    available_slots = merge_intervals(existing_jobs)
+    if can_fit(new_pod, available_slots):
+        schedule(new_pod)
+    ```
+    
+    **Scale Impact:**
+    - Google Borg schedules billions of containers per week
+    - AWS EC2 manages millions of scaling events daily
+
+  </Accordion>
+
+  <Accordion title="Cache Invalidation & Eviction" icon="database">
+    
+    ### Problem: LRU Cache, LFU Cache
+    **Real Systems:** Redis, Memcached, Varnish, CDN edge servers
+    
+    **How it's used:**
+    - Redis implements LRU eviction using hash map + doubly linked list
+    - Cloudflare CDN uses LRU cache for edge servers (200+ cities)
+    - Nginx proxy cache uses LRU for hot content
+    - Chrome browser cache implements LRU for visited pages
+    
+    **Production Implementation:**
+    - **Hash Map:** O(1) cache key lookup
+    - **Doubly Linked List:** O(1) move to front on access
+    - **Combined:** O(1) get/put operations at scale
+    
+    **Scale Impact:**
+    - Redis serves 100K+ ops/second with LRU eviction
+    - Cloudflare CDN caches petabytes using LRU variants
+    
+    **Key Insight:** LRU is chosen because cache hits follow temporal locality - recently accessed items are likely to be accessed again.
+
+  </Accordion>
+</AccordionGroup>
+
+## Databases & Storage
+
+<AccordionGroup>
+  <Accordion title="Query Optimization & Indexing" icon="magnifying-glass">
+    
+    ### Problem: Binary Search, Range Sum Query
+    **Real Systems:** PostgreSQL, MySQL, MongoDB, Elasticsearch
+    
+    **How it's used:**
+    - **B-Tree indexes:** PostgreSQL uses binary search on sorted keys (O(log n) lookup)
+    - **Range queries:** Prefix sum techniques for aggregations (COUNT, SUM, AVG)
+    - **MongoDB:** Binary search in sorted index for {$gt, $lt} queries
+    - **Elasticsearch:** Binary search in term dictionaries for full-text search
+    
+    **Production Query Flow:**
+    ```sql
+    -- PostgreSQL query optimizer
+    SELECT SUM(amount) FROM transactions 
+    WHERE date BETWEEN '2024-01-01' AND '2024-12-31';
+    
+    -- Uses:
+    -- 1. Binary search to find start/end in B-tree index
+    -- 2. Prefix sum for fast aggregation
+    ```
+    
+    **Scale Impact:**
+    - PostgreSQL B-tree indexes reduce query time from O(n) to O(log n)
+    - Elasticsearch serves billions of queries/day using binary search
+    
+  </Accordion>
+
+  <Accordion title="Database Transactions & Concurrency" icon="lock">
+    
+    ### Problem: Topological Sort, Graph Cycle Detection
+    **Real Systems:** PostgreSQL, MySQL InnoDB, Oracle Database
+    
+    **How it's used:**
+    - **Deadlock detection:** Cycle detection in wait-for graphs
+    - **Transaction ordering:** Topological sort for serializable isolation
+    - PostgreSQL uses DFS cycle detection to identify deadlocked transactions
+    - MySQL InnoDB implements wait-for graph traversal for deadlock resolution
+    
+    **Production Example:**
+    ```
+    Transaction A waits for lock held by B
+    Transaction B waits for lock held by C  
+    Transaction C waits for lock held by A  ← CYCLE!
+    
+    Detection: DFS from each transaction node
+    Resolution: Abort youngest transaction
+    ```
+    
+    **Scale Impact:**
+    - PostgreSQL checks for deadlocks every second in high-concurrency workloads
+    - MySQL InnoDB resolves 100K+ potential deadlocks/day in busy systems
+
+  </Accordion>
+
+  <Accordion title="Log Compaction & Merge" icon="table">
+    
+    ### Problem: Merge K Sorted Lists
+    **Real Systems:** Apache Kafka, Apache Cassandra, LevelDB, RocksDB
+    
+    **How it's used:**
+    - **Kafka log compaction:** Merge multiple sorted segments by key
+    - **LSM trees:** LevelDB/RocksDB merge sorted runs during compaction
+    - **Cassandra:** Merge SSTables (sorted string tables) in background
+    - **ClickHouse:** Merge sorted parts for efficient analytics
+    
+    **Algorithm:**
+    - K-way merge using min heap: O(N log K) time
+    - Each segment is sorted; heap tracks minimum across all segments
+    
+    **Production Impact:**
+    ```
+    Cassandra compaction:
+    - Input: 10 SSTables (1GB each)
+    - Algorithm: Min heap with 10 entries (one per SSTable)
+    - Output: 1 merged SSTable (10GB)
+    - Time: O(N log 10) where N = total rows
+    ```
+    
+    **Scale:**
+    - Kafka compacts trillions of messages
+    - RocksDB at Facebook merges petabytes daily
+
+  </Accordion>
+</AccordionGroup>
+
+## Search & Information Retrieval
+
+<AccordionGroup>
+  <Accordion title="Autocomplete & Type-ahead Search" icon="keyboard">
+    
+    ### Problem: Trie (Prefix Tree), Top K Frequent Elements
+    **Real Systems:** Google Search, Amazon product search, IDE autocomplete
+    
+    **How it's used:**
+    - **Trie data structure:** Store all possible completions
+    - **Google Search:** Prefix tree + frequency ranking for suggestions
+    - **Amazon:** Product names stored in trie, ranked by popularity
+    - **VS Code:** Trie for symbol completion (variables, functions)
+    
+    **Production Architecture:**
+    ```
+    User types: "pyth"
+    1. Trie lookup: Find all words with prefix "pyth"
+    2. Heap: Get top 10 by frequency (O(n log k))
+    3. Return: ["python", "pythagoras", "pythagorean", ...]
+    ```
+    
+    **Optimization:**
+    - Trie nodes store top-K at each prefix (precomputed)
+    - Google serves suggestions in &lt;10ms using distributed tries
+    
+    **Scale:**
+    - Google processes 8.5 billion searches/day
+    - Each keystroke = 1 trie lookup = O(m) where m = prefix length
+
+  </Accordion>
+
+  <Accordion title="Document Ranking & Relevance" icon="ranking-star">
+    
+    ### Problem: Top K Elements, Priority Queue
+    **Real Systems:** Elasticsearch, Apache Solr, Google Search
+    
+    **How it's used:**
+    - **TF-IDF scoring:** Min heap tracks top K documents by relevance score
+    - **Elasticsearch:** Uses priority queue for result aggregation
+    - **Google PageRank:** Heap-based sorting for top results
+    - **Amazon search:** Product ranking by relevance + popularity
+    
+    **Production Query:**
+    ```
+    Search: "laptop gaming"
+    1. Match: 1M documents contain these terms
+    2. Score: TF-IDF score for each document
+    3. Heap: Maintain top 100 results (O(n log k))
+    4. Return: Paginated top results
+    ```
+    
+    **Why Heap?**
+    - Don't need to fully sort 1M results
+    - Only need top 100 → min heap of size 100
+    - O(n log 100) vs O(n log n) for full sort
+
+  </Accordion>
+
+  <Accordion title="Fuzzy Matching & Spell Check" icon="spell-check">
+    
+    ### Problem: Edit Distance (Levenshtein), Longest Common Subsequence
+    **Real Systems:** Google "Did you mean?", Grammarly, IDEs
+    
+    **How it's used:**
+    - **Google Search:** Edit distance ≤ 2 for spell corrections
+    - **Grammarly:** DP algorithm for word suggestions
+    - **Git:** Levenshtein distance for "did you mean this branch?"
+    - **IDEs:** Fuzzy symbol search using edit distance
+    
+    **Algorithm:**
+    ```python
+    # Edit distance using DP
+    # O(m*n) time, O(m*n) space
+    def edit_distance(word, dictionary_word):
+        dp[i][j] = min(
+            dp[i-1][j] + 1,      # delete
+            dp[i][j-1] + 1,      # insert
+            dp[i-1][j-1] + cost  # replace
+        )
+    ```
+    
+    **Production Optimization:**
+    - Pre-filter candidates by length difference
+    - Use BK-tree for fast edit-distance queries
+    - Google checks millions of dictionary words in milliseconds
+
+  </Accordion>
+</AccordionGroup>
+
+## Networking & Communication
+
+<AccordionGroup>
+  <Accordion title="IP Routing & Packet Forwarding" icon="network-wired">
+    
+    ### Problem: Trie (for IP prefixes), Binary Search
+    **Real Systems:** Cisco routers, Linux kernel routing table, BGP
+    
+    **How it's used:**
+    - **IP routing:** Trie (radix tree) for longest prefix matching
+    - **Linux kernel:** Trie-based routing table (150K+ routes)
+    - **BGP routers:** Prefix tree for path selection
+    - **SDN controllers:** Trie for flow rule lookup
+    
+    **Why Trie for IPs:**
+    ```
+    IP: 192.168.1.0/24 stored as bit trie
+    Lookup: Match longest prefix in O(32) time (IPv4)
+    
+    Example routes:
+    0.0.0.0/0           → default gateway
+    192.168.0.0/16      → local network
+    192.168.1.0/24      → specific subnet
+    
+    Query 192.168.1.5:
+    - Matches all three
+    - Choose longest: /24 (most specific)
+    ```
+    
+    **Scale:**
+    - Internet routers handle 500K+ routes
+    - Linux forwards millions packets/second using trie lookup
+
+  </Accordion>
+
+  <Accordion title="Rate Limiting & Throttling" icon="gauge-high">
+    
+    ### Problem: Sliding Window, Queue
+    **Real Systems:** API Gateways (Kong, AWS API Gateway), Nginx, CDNs
+    
+    **How it's used:**
+    - **Token bucket:** Fixed-size queue for request tokens
+    - **Sliding window:** Track requests in time windows using queue
+    - **AWS API Gateway:** Rate limit per API key using sliding window
+    - **Stripe API:** 100 requests/second enforced via sliding window
+    
+    **Algorithms:**
+    ```python
+    # Sliding window rate limiter
+    class RateLimiter:
+        def __init__(self, max_requests, window_seconds):
+            self.queue = deque()  # timestamps
+            self.max = max_requests
+            self.window = window_seconds
+        
+        def allow_request(self):
+            now = time.time()
+            # Remove old requests outside window
+            while self.queue and self.queue[0] < now - self.window:
+                self.queue.popleft()
+            
+            if len(self.queue) < self.max:
+                self.queue.append(now)
+                return True
+            return False
+    ```
+    
+    **Production:**
+    - Redis sorted sets for distributed rate limiting
+    - Stripe tracks 50K+ API keys with individual rate limits
+
+  </Accordion>
+
+  <Accordion title="DNS Resolution & Caching" icon="dns">
+    
+    ### Problem: Hash Map, Trie, LRU Cache
+    **Real Systems:** BIND, Cloudflare DNS, Google Public DNS
+    
+    **How it's used:**
+    - **Domain lookup:** Hash map for O(1) domain → IP resolution
+    - **Subdomain matching:** Trie for wildcard DNS (*.example.com)
+    - **DNS cache:** LRU cache for frequently queried domains
+    - **TTL expiration:** Min heap for cache entry expiration
+    
+    **Production System:**
+    ```
+    Cloudflare DNS (1.1.1.1):
+    - Hash map: 100M+ domain records
+    - LRU cache: Top 1M domains (hit rate >95%)
+    - Trie: Wildcard matching for subdomains
+    - Queries: 500 billion/day
+    ```
+    
+    **Why these structures:**
+    - Hash map: O(1) exact domain match
+    - Trie: Efficient wildcard/prefix matching
+    - LRU: Keep hot domains in memory
+
+  </Accordion>
+</AccordionGroup>
+
+## Media & Content Delivery
+
+<AccordionGroup>
+  <Accordion title="Video Streaming & ABR" icon="video">
+    
+    ### Problem: Binary Search, Sliding Window Maximum
+    **Real Systems:** Netflix, YouTube, Twitch adaptive bitrate
+    
+    **How it's used:**
+    - **Adaptive Bitrate:** Binary search to find optimal quality based on bandwidth
+    - **Buffer management:** Sliding window tracks download rate
+    - **YouTube:** Binary search through available resolutions (144p-8K)
+    - **Netflix:** ABR algorithm adjusts quality every 2-10 seconds
+    
+    **Production Algorithm:**
+    ```python
+    # Netflix ABR (simplified)
+    def select_bitrate(available_bitrates, bandwidth, buffer_level):
+        # Binary search for highest sustainable bitrate
+        left, right = 0, len(available_bitrates) - 1
+        while left < right:
+            mid = (left + right + 1) // 2
+            if can_sustain(available_bitrates[mid], bandwidth, buffer_level):
+                left = mid
+            else:
+                right = mid - 1
+        return available_bitrates[left]
+    ```
+    
+    **Scale:**
+    - Netflix serves 250M+ subscribers
+    - YouTube: 1 billion hours watched daily
+    - Bitrate changes every few seconds per stream
+
+  </Accordion>
+
+  <Accordion title="Image Processing & CDN" icon="image">
+    
+    ### Problem: Matrix Traversal, BFS/DFS
+    **Real Systems:** Instagram filters, Cloudinary, Imgix
+    
+    **How it's used:**
+    - **Image resizing:** Matrix operations for pixel manipulation
+    - **Flood fill:** BFS/DFS for background removal, filters
+    - **Instagram filters:** Matrix convolution using 2D arrays
+    - **CDN optimization:** Graph algorithms for closest edge server
+    
+    **Production Examples:**
+    - **Thumbnail generation:** Matrix resize algorithm
+    - **Smart crop:** BFS to find regions of interest
+    - **Cloudinary:** Processes billions of images using matrix algorithms
+
+  </Accordion>
+
+  <Accordion title="Music Recommendation & Playlists" icon="music">
+    
+    ### Problem: Graph Algorithms, Top K Elements
+    **Real Systems:** Spotify, Apple Music, YouTube Music
+    
+    **How it's used:**
+    - **Collaborative filtering:** Graph of users → songs
+    - **Similar songs:** BFS/DFS on song similarity graph
+    - **Discover Weekly:** Graph traversal + heap for top recommendations
+    - **Radio feature:** DFS from seed song to build playlist
+    
+    **Spotify Architecture:**
+    ```
+    User listens to Song A
+    1. Graph: Find songs with similar listeners (BFS)
+    2. Score: Calculate similarity scores
+    3. Heap: Get top 50 recommendations (O(n log k))
+    4. Deliver: Personalized playlist
+    ```
+    
+    **Scale:**
+    - Spotify: 500M users, 100M songs
+    - Graph: Billions of user-song edges
+    - Daily: Generate millions of personalized playlists
+
+  </Accordion>
+</AccordionGroup>
+
+## E-commerce & Transactions
+
+<AccordionGroup>
+  <Accordion title="Inventory Management" icon="warehouse">
+    
+    ### Problem: Range Updates, Segment Tree
+    **Real Systems:** Amazon, Shopify, Walmart e-commerce
+    
+    **How it's used:**
+    - **Stock updates:** Range update queries for warehouse inventory
+    - **Multi-location inventory:** Segment tree for fast aggregation
+    - **Amazon:** Track millions of SKUs across hundreds of warehouses
+    - **Real-time availability:** O(log n) query for stock levels
+    
+    **Production Flow:**
+    ```
+    User views product page:
+    1. Query: Check inventory across all warehouses
+    2. Segment tree: Aggregate available stock in O(log n)
+    3. Display: "In stock" if sum > 0
+    
+    User purchases:
+    1. Update: Decrement stock at specific warehouse
+    2. Range update: O(log n) time
+    ```
+
+  </Accordion>
+
+  <Accordion title="Price Optimization & Dynamic Pricing" icon="dollar-sign">
+    
+    ### Problem: Sliding Window, DP (Stock prices)
+    **Real Systems:** Uber surge pricing, Amazon pricing, airline tickets
+    
+    **How it's used:**
+    - **Surge pricing:** Sliding window tracks demand over time
+    - **Best time to buy:** DP algorithm finds optimal purchase windows
+    - **Uber:** Adjusts prices every few minutes based on supply/demand
+    - **Amazon:** Dynamic pricing changes 2.5M times per day
+    
+    **Algorithm:**
+    ```python
+    # Uber surge pricing (simplified)
+    def calculate_surge(recent_requests, available_drivers):
+        window_size = 5  # minutes
+        demand = sliding_window_average(recent_requests)
+        supply = count(available_drivers)
+        surge_multiplier = demand / supply
+        return max(1.0, min(surge_multiplier, 5.0))
+    ```
+
+  </Accordion>
+
+  <Accordion title="Fraud Detection & Anomaly Detection" icon="shield-halved">
+    
+    ### Problem: Sliding Window, Hash Map
+    **Real Systems:** Stripe, PayPal, credit card processors
+    
+    **How it's used:**
+    - **Transaction velocity:** Sliding window counts transactions per hour
+    - **Duplicate detection:** Hash map tracks recent transactions
+    - **Stripe Radar:** ML + sliding window for fraud patterns
+    - **Credit cards:** Flag if >5 transactions in 10 minutes (sliding window)
+    
+    **Production Rules:**
+    ```python
+    # Fraud detection heuristics
+    def check_fraud(card_id, transaction):
+        window = get_transactions(card_id, last_hour=True)
+        
+        # Sliding window rules:
+        if len(window) > 10:  # Velocity check
+            return "SUSPICIOUS"
+        
+        # Geographic distance (hash lookup)
+        last_location = locations[card_id]
+        if distance(last_location, transaction.location) > 100:
+            return "SUSPICIOUS"  # 100 miles in 10 minutes
+        
+        return "OK"
+    ```
+
+  </Accordion>
+</AccordionGroup>
+
+## Developer Tools & Infrastructure
+
+<AccordionGroup>
+  <Accordion title="Git & Version Control" icon="code-branch">
+    
+    ### Problem: Graph Algorithms, Topological Sort, LCA
+    **Real Systems:** Git, GitHub, GitLab, Mercurial
+    
+    **How it's used:**
+    - **Commit history:** DAG (Directed Acyclic Graph)
+    - **Merge base:** Lowest Common Ancestor of two branches
+    - **git log:** Topological sort of commit graph
+    - **git rebase:** Graph traversal and rewriting
+    
+    **Production Commands:**
+    ```bash
+    # Git internally uses:
+    git merge-base A B    # LCA of commits A and B
+    git log --graph       # Topological sort + pretty print
+    git bisect           # Binary search through commits
+    ```
+    
+    **Why these algorithms:**
+    - **LCA:** Find common ancestor for merge (O(log n) with preprocessing)
+    - **Topological sort:** Display commits in dependency order
+    - **Binary search:** Find bug-introducing commit (git bisect)
+    
+    **Scale:**
+    - Linux kernel: 1M+ commits
+    - Chromium: 1.2M+ commits
+    - Git handles massive repos efficiently
+
+  </Accordion>
+
+  <Accordion title="Code Compilation & Dependency Resolution" icon="gears">
+    
+    ### Problem: Topological Sort, DFS
+    **Real Systems:** Make, Gradle, npm, Maven
+    
+    **How it's used:**
+    - **Build order:** Topological sort of dependency graph
+    - **Makefile:** Determine compilation order for C/C++ files
+    - **npm install:** Resolve package dependencies using DFS
+    - **Maven:** Build multi-module projects in correct order
+    
+    **Production Example:**
+    ```
+    Project dependencies:
+    - App depends on [LibA, LibB]
+    - LibA depends on [LibC]
+    - LibB depends on [LibC]
+    
+    Build order (topological sort):
+    1. LibC
+    2. LibA, LibB (parallel)
+    3. App
+    ```
+    
+    **Cycle detection:**
+    - Circular dependencies → DFS detects cycles
+    - npm/yarn error: "Circular dependency detected"
+
+  </Accordion>
+
+  <Accordion title="IDE Autocomplete & Code Intelligence" icon="wand-magic-sparkles">
+    
+    ### Problem: Trie, DFS/BFS, Hash Map
+    **Real Systems:** VS Code IntelliSense, JetBrains IDEs, Sublime Text
+    
+    **How it's used:**
+    - **Symbol completion:** Trie stores all symbols (functions, variables)
+    - **Go to definition:** Hash map for O(1) symbol → location lookup
+    - **Find references:** DFS through call graph
+    - **Import suggestions:** Trie of all available modules
+    
+    **VS Code Architecture:**
+    ```
+    User types: "consol"
+    1. Trie lookup: Find completions ["console"]
+    2. Hash map: Get console methods ["log", "error", "warn"]
+    3. Return: Ranked suggestions in <50ms
+    ```
+    
+    **Scale:**
+    - Large codebases: Millions of symbols
+    - Trie enables instant completion (&lt;100ms)
+    - Microsoft uses these techniques in TypeScript compiler
+
+  </Accordion>
+</AccordionGroup>
+
+## Key Takeaways
+
+<Card title="Production vs Interview" icon="lightbulb">
+  **Interview problems teach foundational patterns used everywhere:**
+  
+  - **Two Sum → Load balancing:** Hash maps for O(1) routing
+  - **LRU Cache → Redis, CDNs:** Cache eviction at scale  
+  - **Merge K Lists → Databases:** Log compaction, LSM trees
+  - **Binary Search → Everything:** Indexes, routing, ABR
+  - **Graph algorithms → Version control:** Git, dependency resolution
+  
+  **The difference:**
+  - Interview: Clean input, clear constraints
+  - Production: Distributed systems, failure handling, monitoring
+  
+  **But the core algorithm? Identical.**
+</Card>
+
+<Card title="Why These Algorithms?" icon="question">
+  Companies don't ask these problems randomly:
+  
+  1. **Hash Maps (Two Sum):** Used billions of times per second in production
+  2. **Heaps (Top K):** Core of search, recommendation, monitoring
+  3. **Binary Search:** Foundation of databases, networking, media
+  4. **Graph algorithms:** Version control, social networks, maps
+  5. **DP:** Resource optimization, pricing, ML
+  
+  Master the interview problem → understand the production system.
+</Card>
+
+---
+
+<Note>
+  **For deeper dives:**
+  - [System Design Primer](https://github.com/donnemartin/system-design-primer)
+  - Engineering blogs: Netflix, Uber, Stripe, Cloudflare
+  - Open source: Redis, PostgreSQL, Kubernetes (see the algorithms in code)
+</Note>

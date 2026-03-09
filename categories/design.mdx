@@ -1,0 +1,427 @@
+---
+title: 'Design'
+description: 'Master data structure and system design problems'
+---
+
+# Design
+
+Design problems test your ability to implement custom data structures and systems that meet specific requirements. These problems focus on API design, data structure choice, and algorithmic optimization.
+
+## Core Concepts
+
+### Key Skills
+- **Requirements Analysis**: Understand constraints and operations
+- **Data Structure Selection**: Choose right structures for efficiency
+- **API Design**: Clean, intuitive interfaces
+- **Trade-offs**: Balance time, space, and complexity
+
+### Common Design Patterns
+- **Cache Systems**: LRU, LFU caches
+- **Rate Limiters**: Token bucket, sliding window
+- **Data Stream**: Moving average, median finder
+- **Hash + LinkedList**: Combined for O(1) operations
+
+## Key Patterns & Techniques
+
+### 1. Hash Map + Doubly Linked List
+- Used in LRU cache
+- O(1) access, insertion, deletion
+- Hash map for O(1) lookup
+- DLL for O(1) reordering
+
+### 2. Multiple Data Structures
+- Combine structures for different operations
+- Trade space for time efficiency
+- Each structure optimizes specific operation
+
+### 3. Lazy Evaluation
+- Defer computation until needed
+- Amortized time complexity
+- Cache computed results
+
+### 4. Circular Buffer
+- Fixed-size sliding window
+- Efficient for streaming data
+- Overwrite old data automatically
+
+## Common Approaches
+
+### LRU Cache
+```python
+class Node:
+    def __init__(self, key: int, value: int):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    """
+    Least Recently Used Cache.
+    Time: O(1) for get and put
+    Space: O(capacity)
+    """
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}  # key -> node
+        
+        # Dummy head and tail
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+    
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        
+        # Move to most recently used (tail)
+        node = self.cache[key]
+        self._remove(node)
+        self._add(node)
+        
+        return node.value
+    
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            # Update existing
+            self._remove(self.cache[key])
+        
+        # Create new node
+        node = Node(key, value)
+        self._add(node)
+        self.cache[key] = node
+        
+        # Evict LRU if over capacity
+        if len(self.cache) > self.capacity:
+            lru = self.head.next
+            self._remove(lru)
+            del self.cache[lru.key]
+    
+    def _remove(self, node: Node):
+        """Remove node from doubly linked list."""
+        prev = node.prev
+        next = node.next
+        prev.next = next
+        next.prev = prev
+    
+    def _add(self, node: Node):
+        """Add node before tail (most recently used)."""
+        prev = self.tail.prev
+        prev.next = node
+        node.prev = prev
+        node.next = self.tail
+        self.tail.prev = node
+```
+
+### Moving Average from Data Stream
+```python
+from collections import deque
+
+class MovingAverage:
+    """
+    Calculate moving average of last size values.
+    Time: O(1) per operation
+    Space: O(size)
+    """
+    def __init__(self, size: int):
+        self.size = size
+        self.queue = deque()
+        self.sum = 0
+    
+    def next(self, val: int) -> float:
+        self.queue.append(val)
+        self.sum += val
+        
+        # Remove oldest if exceeds size
+        if len(self.queue) > self.size:
+            old = self.queue.popleft()
+            self.sum -= old
+        
+        return self.sum / len(self.queue)
+```
+
+### Design HashMap
+```python
+class MyHashMap:
+    """
+    Simple hash map with chaining for collisions.
+    Time: O(1) average, O(n) worst
+    Space: O(n)
+    """
+    def __init__(self):
+        self.size = 1000
+        self.buckets = [[] for _ in range(self.size)]
+    
+    def _hash(self, key: int) -> int:
+        return key % self.size
+    
+    def put(self, key: int, value: int) -> None:
+        bucket = self.buckets[self._hash(key)]
+        
+        # Update if exists
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                bucket[i] = (key, value)
+                return
+        
+        # Add new
+        bucket.append((key, value))
+    
+    def get(self, key: int) -> int:
+        bucket = self.buckets[self._hash(key)]
+        
+        for k, v in bucket:
+            if k == key:
+                return v
+        
+        return -1
+    
+    def remove(self, key: int) -> None:
+        bucket = self.buckets[self._hash(key)]
+        
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                bucket.pop(i)
+                return
+```
+
+### Min Stack
+```python
+class MinStack:
+    """
+    Stack with O(1) min operation.
+    Time: O(1) for all operations
+    Space: O(n)
+    """
+    def __init__(self):
+        self.stack = []  # (value, min_so_far)
+    
+    def push(self, val: int) -> None:
+        if not self.stack:
+            self.stack.append((val, val))
+        else:
+            current_min = min(val, self.stack[-1][1])
+            self.stack.append((val, current_min))
+    
+    def pop(self) -> None:
+        self.stack.pop()
+    
+    def top(self) -> int:
+        return self.stack[-1][0]
+    
+    def getMin(self) -> int:
+        return self.stack[-1][1]
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="039. LRU Cache" icon="database" href="/problems/039-lru-cache">
+    **Medium** | Frequency: 62.4%
+    
+    Hash map + doubly linked list for O(1) get and put operations.
+  </Card>
+
+  <Card title="048. Moving Average from Data Stream" icon="wave-square" href="/problems/048-moving-average-from-data-stream">
+    **Easy** | Frequency: 56.0%
+    
+    Queue and running sum for O(1) moving average calculation.
+  </Card>
+</CardGroup>
+
+## Design Interview Tips
+
+### Approach Methodology
+1. **Clarify Requirements**
+   - What operations are needed?
+   - What are the time/space constraints?
+   - What's the expected usage pattern?
+   - Edge cases and scale?
+
+2. **Choose Data Structures**
+   - List operations and required time complexity
+   - Select structures that optimize critical operations
+   - Consider trade-offs
+
+3. **Design API**
+   - Clear, intuitive method names
+   - Consistent return types
+   - Handle edge cases
+
+4. **Implement and Test**
+   - Start with core functionality
+   - Add edge case handling
+   - Test with examples
+
+### Common Patterns
+
+| Problem Type | Data Structures | Key Insight |
+|--------------|----------------|-------------|
+| **LRU Cache** | Hash + DLL | O(1) access + reorder |
+| **LFU Cache** | Hash + Min Heap | Track frequency |
+| **Moving Average** | Queue + Sum | Circular buffer |
+| **Min/Max Stack** | Stack + Auxiliary | Store min/max at each level |
+| **Design HashMap** | Array + Chaining | Handle collisions |
+| **Time-based KV Store** | Hash + TreeMap | Binary search on time |
+
+### Trade-off Considerations
+
+#### Time vs Space
+```
+Option 1: Store all results - O(1) query, O(n) space
+Option 2: Compute on demand - O(n) query, O(1) space
+Hybrid: Cache recent results - Balanced
+```
+
+#### Simplicity vs Optimization
+```
+Start Simple: Easy to understand and debug
+Optimize: Only if needed for requirements
+Measure: Profile before optimizing
+```
+
+## Advanced Design Patterns
+
+### LFU Cache
+```python
+class LFUCache:
+    """
+    Least Frequently Used Cache.
+    Time: O(1) for get and put
+    Space: O(capacity)
+    """
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.min_freq = 0
+        self.key_to_val = {}  # key -> value
+        self.key_to_freq = {}  # key -> frequency
+        self.freq_to_keys = defaultdict(OrderedDict)  # freq -> {key: None}
+    
+    def get(self, key: int) -> int:
+        if key not in self.key_to_val:
+            return -1
+        
+        # Increase frequency
+        self._increase_freq(key)
+        return self.key_to_val[key]
+    
+    def put(self, key: int, value: int) -> None:
+        if self.capacity == 0:
+            return
+        
+        if key in self.key_to_val:
+            # Update existing
+            self.key_to_val[key] = value
+            self._increase_freq(key)
+            return
+        
+        # Evict if at capacity
+        if len(self.key_to_val) >= self.capacity:
+            # Remove LFU (and LRU among LFU)
+            evict_key, _ = self.freq_to_keys[self.min_freq].popitem(last=False)
+            del self.key_to_val[evict_key]
+            del self.key_to_freq[evict_key]
+        
+        # Add new key
+        self.key_to_val[key] = value
+        self.key_to_freq[key] = 1
+        self.freq_to_keys[1][key] = None
+        self.min_freq = 1
+    
+    def _increase_freq(self, key: int):
+        freq = self.key_to_freq[key]
+        
+        # Remove from old frequency
+        del self.freq_to_keys[freq][key]
+        if not self.freq_to_keys[freq] and freq == self.min_freq:
+            self.min_freq += 1
+        
+        # Add to new frequency
+        self.key_to_freq[key] = freq + 1
+        self.freq_to_keys[freq + 1][key] = None
+```
+
+### Rate Limiter (Token Bucket)
+```python
+import time
+
+class RateLimiter:
+    """
+    Token bucket rate limiter.
+    """
+    def __init__(self, capacity: int, refill_rate: float):
+        self.capacity = capacity
+        self.tokens = capacity
+        self.refill_rate = refill_rate  # tokens per second
+        self.last_refill = time.time()
+    
+    def allow_request(self) -> bool:
+        self._refill()
+        
+        if self.tokens >= 1:
+            self.tokens -= 1
+            return True
+        
+        return False
+    
+    def _refill(self):
+        now = time.time()
+        elapsed = now - self.last_refill
+        
+        # Add tokens based on elapsed time
+        self.tokens = min(self.capacity, 
+                         self.tokens + elapsed * self.refill_rate)
+        self.last_refill = now
+```
+
+### Time-based Key-Value Store
+```python
+from collections import defaultdict
+import bisect
+
+class TimeMap:
+    """
+    Key-value store with timestamp.
+    Time: O(log n) for get, O(1) for set
+    """
+    def __init__(self):
+        self.store = defaultdict(list)  # key -> [(timestamp, value)]
+    
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        self.store[key].append((timestamp, value))
+    
+    def get(self, key: str, timestamp: int) -> str:
+        if key not in self.store:
+            return ""
+        
+        values = self.store[key]
+        
+        # Binary search for largest timestamp <= target
+        idx = bisect.bisect_right(values, (timestamp, chr(127)))
+        
+        return values[idx - 1][1] if idx > 0 else ""
+```
+
+## Common Interview Questions
+
+### Initial Questions to Ask
+1. What operations are needed and their frequency?
+2. What's the expected scale (number of items/operations)?
+3. What are the time complexity requirements?
+4. What happens on edge cases (empty, full, duplicates)?
+5. Are there any special constraints (memory, thread-safety)?
+
+### Design Checklist
+- [ ] Clarified all requirements
+- [ ] Identified critical operations
+- [ ] Chose appropriate data structures
+- [ ] Defined clear API
+- [ ] Handled edge cases
+- [ ] Analyzed time/space complexity
+- [ ] Considered trade-offs
+- [ ] Tested with examples
+
+---
+
+**Pro Tip:** For design problems, start by listing all required operations with target time complexity. Then work backwards to choose data structures that enable those complexities. Often the solution combines multiple structures, each optimizing different operations.

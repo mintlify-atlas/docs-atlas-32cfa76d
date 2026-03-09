@@ -1,0 +1,401 @@
+---
+title: 'Heap (Priority Queue)'
+description: 'Master heap data structure for efficient top-K, streaming, and priority-based problems'
+---
+
+# Heap (Priority Queue)
+
+Heaps are binary tree-based data structures that efficiently maintain the minimum or maximum element. They enable O(log n) insert and O(1) peek operations, making them ideal for priority queues and top-K problems.
+
+## Core Concepts
+
+### Heap Types
+- **Min Heap**: Parent ≤ children, root is minimum
+- **Max Heap**: Parent ≥ children, root is maximum
+- Python's `heapq` is a min heap by default
+
+### Key Operations
+- **Insert**: O(log n) - add element and bubble up
+- **Peek Min/Max**: O(1) - access root
+- **Extract Min/Max**: O(log n) - remove root and heapify
+- **Heapify**: O(n) - build heap from array
+
+### When to Use Heap
+- Find top K elements
+- Maintain running median
+- Merge K sorted structures
+- Scheduling/priority tasks
+- Best/worst elements in stream
+
+## Key Patterns & Techniques
+
+### 1. Top K Elements
+- Use min heap of size K
+- For K largest: push all, pop if size > K
+- For K smallest: use max heap (negate values)
+- Time: O(n log k), Space: O(k)
+
+### 2. K-Way Merge
+- Merge K sorted lists/arrays
+- Use heap to track smallest from each
+- Time: O(N log k), N = total elements
+
+### 3. Two Heaps (Median)
+- Max heap for smaller half
+- Min heap for larger half
+- Balance heaps to find median in O(1)
+
+### 4. Heap as Sorted Structure
+- Better than sorting for partial results
+- O(n log k) vs O(n log n)
+
+## Common Approaches
+
+### Top K Frequent Elements
+```python
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: List[int], k: int) -> List[int]:
+    """
+    Find k most frequent elements using heap.
+    Time: O(n log k), Space: O(n)
+    """
+    # Count frequencies
+    count = Counter(nums)
+    
+    # Min heap of size k: (freq, num)
+    heap = []
+    
+    for num, freq in count.items():
+        heapq.heappush(heap, (freq, num))
+        
+        # Keep only k elements
+        if len(heap) > k:
+            heapq.heappop(heap)
+    
+    # Extract numbers from heap
+    return [num for freq, num in heap]
+```
+
+### Kth Largest Element
+```python
+def findKthLargest(nums: List[int], k: int) -> int:
+    """
+    Find kth largest using min heap of size k.
+    Time: O(n log k), Space: O(k)
+    """
+    heap = []
+    
+    for num in nums:
+        heapq.heappush(heap, num)
+        
+        # Maintain heap size k
+        if len(heap) > k:
+            heapq.heappop(heap)
+    
+    # Root is kth largest
+    return heap[0]
+```
+
+### Merge K Sorted Lists
+```python
+def mergeKLists(lists: List[ListNode]) -> ListNode:
+    """
+    Merge k sorted linked lists using heap.
+    Time: O(N log k), Space: O(k)
+    N = total nodes, k = number of lists
+    """
+    dummy = ListNode(0)
+    curr = dummy
+    heap = []
+    
+    # Add first node from each list
+    for i, node in enumerate(lists):
+        if node:
+            heapq.heappush(heap, (node.val, i, node))
+    
+    # Extract min and add next
+    while heap:
+        val, i, node = heapq.heappop(heap)
+        curr.next = node
+        curr = curr.next
+        
+        if node.next:
+            heapq.heappush(heap, (node.next.val, i, node.next))
+    
+    return dummy.next
+```
+
+### Find Median from Data Stream
+```python
+class MedianFinder:
+    """
+    Find median using two heaps.
+    Time: O(log n) for add, O(1) for median
+    Space: O(n)
+    """
+    def __init__(self):
+        # Max heap for smaller half (negate for max)
+        self.small = []  
+        # Min heap for larger half
+        self.large = []  
+    
+    def addNum(self, num: int) -> None:
+        # Add to max heap (small half)
+        heapq.heappush(self.small, -num)
+        
+        # Balance: move largest from small to large
+        if self.small and self.large and (-self.small[0] > self.large[0]):
+            val = -heapq.heappop(self.small)
+            heapq.heappush(self.large, val)
+        
+        # Maintain size property: small.size >= large.size
+        if len(self.small) < len(self.large):
+            val = heapq.heappop(self.large)
+            heapq.heappush(self.small, -val)
+        
+        if len(self.small) > len(self.large) + 1:
+            val = -heapq.heappop(self.small)
+            heapq.heappush(self.large, val)
+    
+    def findMedian(self) -> float:
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        return (-self.small[0] + self.large[0]) / 2
+```
+
+### Random Pick with Weight
+```python
+import random
+
+class Solution:
+    """
+    Pick index with probability proportional to weight.
+    Time: O(n) init, O(log n) pick
+    Space: O(n)
+    """
+    def __init__(self, w: List[int]):
+        self.prefix_sums = []
+        total = 0
+        for weight in w:
+            total += weight
+            self.prefix_sums.append(total)
+        self.total = total
+    
+    def pickIndex(self) -> int:
+        # Random in [1, total]
+        target = random.randint(1, self.total)
+        
+        # Binary search for target in prefix sums
+        left, right = 0, len(self.prefix_sums) - 1
+        
+        while left < right:
+            mid = left + (right - left) // 2
+            if self.prefix_sums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid
+        
+        return left
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="006. Kth Largest Element" icon="trophy" href="/problems/006-kth-largest-element-in-an-array">
+    **Medium** | Frequency: 86.9%
+    
+    Min heap of size k to track k largest elements.
+  </Card>
+
+  <Card title="015. Top K Frequent Elements" icon="chart-bar" href="/problems/015-top-k-frequent-elements">
+    **Medium** | Frequency: 77.9%
+    
+    Bucket sort O(n) or heap O(n log k) for top k by frequency.
+  </Card>
+
+  <Card title="019. Merge k Sorted Lists" icon="list" href="/problems/019-merge-k-sorted-lists">
+    **Hard** | Frequency: 76.4%
+    
+    Heap tracks minimum across k lists for efficient merge.
+  </Card>
+
+  <Card title="082. Find Median from Data Stream" icon="chart-line" href="/problems/082-find-median-from-data-stream">
+    **Hard** | Frequency: 40.7%
+    
+    Two heaps maintain balance for O(1) median queries.
+  </Card>
+
+  <Card title="034. Sliding Window Median" icon="window-maximize" href="/problems/034-sliding-window-median">
+    **Hard** | Frequency: 65.0%
+    
+    Two heaps with removal tracking for window median.
+  </Card>
+
+  <Card title="012. Random Pick with Weight" icon="dice" href="/problems/012-random-pick-with-weight">
+    **Medium** | Frequency: 80.5%
+    
+    Prefix sum with binary search for weighted random selection.
+  </Card>
+
+  <Card title="091. Random Pick Index" icon="shuffle" href="/problems/091-random-pick-index">
+    **Medium** | Frequency: 32.0%
+    
+    Reservoir sampling for random selection with equal probability.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Operation | Time | Space | Notes |
+|-----------|------|-------|-------|
+| Insert | O(log n) | - | Bubble up |
+| Peek Min/Max | O(1) | - | Access root |
+| Extract Min/Max | O(log n) | - | Remove and heapify |
+| Heapify Array | O(n) | O(1) | Build heap |
+| Top K | O(n log k) | O(k) | Better than sort O(n log n) |
+| K-way Merge | O(N log k) | O(k) | N = total elements |
+| Two Heaps Median | O(log n) add, O(1) median | O(n) | Maintain balance |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Top K elements"** → Min heap of size k (for largest) or max heap (for smallest)
+- **"Kth largest/smallest"** → Min/max heap of size k
+- **"Merge K sorted..."** → Heap with k elements
+- **"Running median"** → Two heaps (max for small, min for large)
+- **"Closest K points/elements"** → Heap with distance comparator
+- **"Frequency-based top K"** → Counter + heap or bucket sort
+
+### Common Mistakes
+- Using max heap in Python without negating values
+- Not maintaining heap size k (memory grows to n)
+- Forgetting to heapify when building from array
+- Confusing heap[0] (min) with sorted array[0]
+- Not handling ties in comparisons (use tuple with tiebreaker)
+
+### Key Insights
+1. **Min heap of size k for k largest** - counterintuitive but efficient
+2. **Heap is partial order** - only root is guaranteed min/max
+3. **O(n log k) vs O(n log n)** - heap wins when k &lt;&lt; n
+4. **Two heaps for median** - balance property enables O(1) query
+5. **Heapify is O(n)** - better than n insertions O(n log n)
+6. **Python heapq is min heap** - negate for max heap behavior
+
+## Python heapq Tips
+
+### Basic Operations
+```python
+import heapq
+
+# Create heap from list
+heap = [3, 1, 4, 1, 5]
+heapq.heapify(heap)  # O(n)
+
+# Insert
+heapq.heappush(heap, 2)  # O(log n)
+
+# Extract min
+min_val = heapq.heappop(heap)  # O(log n)
+
+# Peek min (don't remove)
+min_val = heap[0]  # O(1)
+
+# Push and pop in one operation
+val = heapq.heappushpop(heap, 6)  # More efficient
+
+# Pop and push in one operation
+val = heapq.heapreplace(heap, 7)  # More efficient
+
+# N largest/smallest
+largest = heapq.nlargest(k, iterable, key=func)
+smallest = heapq.nsmallest(k, iterable, key=func)
+```
+
+### Max Heap in Python
+```python
+# Negate values for max heap
+max_heap = []
+heapq.heappush(max_heap, -value)
+max_val = -heapq.heappop(max_heap)
+
+# Or use tuple with negated first element
+heapq.heappush(max_heap, (-priority, value))
+```
+
+### Custom Comparators
+```python
+# Heap with tuples - compares first element, then second
+heap = []
+heapq.heappush(heap, (priority, data))
+
+# For complex objects, use tuple with sortable key
+heapq.heappush(heap, (obj.distance, obj.id, obj))
+```
+
+## Advanced Patterns
+
+### Lazy Deletion for Sliding Window
+```python
+from collections import defaultdict
+
+class SlidingWindowMedian:
+    """
+    Handle deletions in two-heap median.
+    """
+    def __init__(self):
+        self.small = []  # max heap
+        self.large = []  # min heap
+        self.delayed = defaultdict(int)  # lazy deletion
+    
+    def _remove_delayed(self, heap):
+        """Remove invalidated elements from top."""
+        while heap and heap[0] in self.delayed:
+            if self.delayed[heap[0]] == 1:
+                del self.delayed[heap[0]]
+            else:
+                self.delayed[heap[0]] -= 1
+            heapq.heappop(heap)
+```
+
+### Heap with Custom Objects
+```python
+from dataclasses import dataclass, field
+from typing import Any
+
+@dataclass(order=True)
+class PrioritizedItem:
+    priority: int
+    item: Any = field(compare=False)
+
+# Use in heap
+heap = []
+heapq.heappush(heap, PrioritizedItem(1, "high priority"))
+heapq.heappush(heap, PrioritizedItem(5, "low priority"))
+```
+
+### K Closest Points to Origin
+```python
+def kClosest(points: List[List[int]], k: int) -> List[List[int]]:
+    """
+    Find k closest points using max heap.
+    Time: O(n log k), Space: O(k)
+    """
+    heap = []
+    
+    for x, y in points:
+        dist = x*x + y*y
+        
+        # Max heap: negate distance
+        heapq.heappush(heap, (-dist, [x, y]))
+        
+        if len(heap) > k:
+            heapq.heappop(heap)
+    
+    return [point for dist, point in heap]
+```
+
+---
+
+**Pro Tip:** For top K problems, use a min heap of size k to find k largest (or max heap for k smallest). This gives O(n log k) instead of O(n log n) for sorting, which is much better when k &lt;&lt; n.

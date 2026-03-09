@@ -1,0 +1,391 @@
+---
+title: Hard Problems
+description: Master advanced algorithms with 16 carefully selected hard-level problems
+---
+
+# Hard Problems (16 Problems)
+
+## Overview
+
+The Hard difficulty tier features 16 challenging problems that test advanced algorithmic thinking, complex optimization, and the ability to combine multiple techniques. These problems distinguish senior engineers and represent the pinnacle of technical interview challenges.
+
+### What You'll Master
+
+- **Advanced Dynamic Programming** - Multi-dimensional DP, state optimization
+- **Complex Graph Algorithms** - BFS/DFS with constraints, Union-Find
+- **Advanced Data Structures** - Dual heaps, segment trees, Trie
+- **Optimization Techniques** - Binary search on complex spaces, greedy algorithms
+- **Problem Synthesis** - Combining multiple patterns in novel ways
+
+### Study Approach
+
+**For Advanced Preparation:**
+1. Ensure mastery of medium problems first
+2. Start with #037 (Minimum Window Substring) - iconic sliding window
+3. Master dual heap pattern (#082, #034)
+4. Progress to graph challenges (#081, #070)
+5. Tackle multi-dimensional DP (#083, #099)
+
+**For Interview Prep:**
+- Allow 45-60 minutes per problem
+- Focus on problem decomposition
+- Practice explaining complex trade-offs
+- Implement optimal solution on first attempt
+
+**Estimated Time Investment:**
+- First-time learning: 35-45 hours
+- Interview refresh: 12-16 hours
+- Quick review: 6-8 hours
+
+---
+
+## Problems by Category
+
+### Heap & Priority Queue (3 problems)
+
+<CardGroup cols={2}>
+  <Card title="#019 - Merge k Sorted Lists" icon="hashtag" href="/problems/019">
+    **Frequency:** 76.4% | Min heap, linked list merge
+  </Card>
+  <Card title="#034 - Sliding Window Median" icon="hashtag" href="/problems/034">
+    **Frequency:** 65.0% | Dual heap technique
+  </Card>
+  <Card title="#082 - Find Median from Data Stream" icon="hashtag" href="/problems/082">
+    **Frequency:** 40.7% | Dual heap design
+  </Card>
+</CardGroup>
+
+### Graph & DFS/BFS (4 problems)
+
+<CardGroup cols={2}>
+  <Card title="#036 - Making A Large Island" icon="hashtag" href="/problems/036">
+    **Frequency:** 65.0% | Union-Find, DFS
+  </Card>
+  <Card title="#053 - Robot Room Cleaner" icon="hashtag" href="/problems/053">
+    **Frequency:** 51.9% | DFS with backtracking
+  </Card>
+  <Card title="#070 - Swim in Rising Water" icon="hashtag" href="/problems/070">
+    **Frequency:** 40.7% | Binary search + BFS/Union-Find
+  </Card>
+  <Card title="#081 - Word Ladder" icon="hashtag" href="/problems/081">
+    **Frequency:** 40.7% | Bidirectional BFS
+  </Card>
+</CardGroup>
+
+### Sliding Window (1 problem)
+
+<CardGroup cols={2}>
+  <Card title="#037 - Minimum Window Substring" icon="hashtag" href="/problems/037">
+    **Frequency:** 62.4% | Advanced sliding window with frequency map
+  </Card>
+</CardGroup>
+
+### Tree (2 problems)
+
+<CardGroup cols={2}>
+  <Card title="#061 - Vertical Order Traversal of a Binary Tree" icon="hashtag" href="/problems/061">
+    **Frequency:** 47.0% | DFS with coordinates, complex sorting
+  </Card>
+  <Card title="#076 - Binary Tree Maximum Path Sum" icon="hashtag" href="/problems/076">
+    **Frequency:** 40.7% | DFS with global state
+  </Card>
+</CardGroup>
+
+### Dynamic Programming (2 problems)
+
+<CardGroup cols={2}>
+  <Card title="#083 - Valid Palindrome III" icon="hashtag" href="/problems/083">
+    **Frequency:** 40.7% | 2D DP, edit distance variant
+  </Card>
+  <Card title="#099 - Best Time to Buy and Sell Stock III" icon="hashtag" href="/problems/099">
+    **Frequency:** 32.0% | State machine DP
+  </Card>
+</CardGroup>
+
+### String (2 problems)
+
+<CardGroup cols={2}>
+  <Card title="#058 - Valid Number" icon="hashtag" href="/problems/058">
+    **Frequency:** 47.0% | String parsing with state machine
+  </Card>
+  <Card title="#097 - Text Justification" icon="hashtag" href="/problems/097">
+    **Frequency:** 32.0% | String formatting, greedy
+  </Card>
+</CardGroup>
+
+### Parentheses (1 problem)
+
+<CardGroup cols={2}>
+  <Card title="#056 - Remove Invalid Parentheses" icon="hashtag" href="/problems/056">
+    **Frequency:** 47.0% | BFS/DFS with pruning
+  </Card>
+</CardGroup>
+
+### Binary Search (1 problem)
+
+<CardGroup cols={2}>
+  <Card title="#100 - Median of Two Sorted Arrays" icon="hashtag" href="/problems/100">
+    **Frequency:** 32.0% | Binary search on partitions
+  </Card>
+</CardGroup>
+
+---
+
+## High Priority Problems
+
+These hard problems appear most frequently in interviews:
+
+**Top 10 Must-Know:**
+1. **#019 - Merge k Sorted Lists** (76.4%) - Classic heap problem
+2. **#036 - Making A Large Island** (65.0%) - Union-Find application
+3. **#034 - Sliding Window Median** (65.0%) - Dual heap pattern
+4. **#037 - Minimum Window Substring** (62.4%) - Advanced sliding window
+5. **#053 - Robot Room Cleaner** (51.9%) - Interactive DFS
+6. **#061 - Vertical Order Traversal of a Binary Tree** (47.0%) - Complex tree problem
+7. **#056 - Remove Invalid Parentheses** (47.0%) - BFS with pruning
+8. **#058 - Valid Number** (47.0%) - String parsing challenge
+9. **#076 - Binary Tree Maximum Path Sum** (40.7%) - Global optimization in trees
+10. **#070 - Swim in Rising Water** (40.7%) - Binary search + graph
+
+---
+
+## Advanced Patterns
+
+### Pattern 1: Dual Heap for Running Median
+**Problems:** #034, #082
+**Key Insight:** Max heap for smaller half, min heap for larger half. Balance to keep sizes equal.
+
+```python
+# Template:
+max_heap = []  # smaller half (negated for max behavior)
+min_heap = []  # larger half
+
+def add_num(num):
+    if not max_heap or num <= -max_heap[0]:
+        heappush(max_heap, -num)
+    else:
+        heappush(min_heap, num)
+    # Balance heaps...
+
+def find_median():
+    if len(max_heap) > len(min_heap):
+        return -max_heap[0]
+    return (-max_heap[0] + min_heap[0]) / 2
+```
+
+### Pattern 2: Binary Search on Answer with Validation
+**Problems:** #070, #100
+**Key Insight:** Binary search the result space, validate each candidate with helper function
+
+### Pattern 3: Bidirectional BFS
+**Problems:** #081
+**Key Insight:** Search from both start and end simultaneously, meet in middle
+
+### Pattern 4: Union-Find with Size Tracking
+**Problems:** #036
+**Key Insight:** Track component sizes for optimization problems
+
+### Pattern 5: State Machine DP
+**Problems:** #099
+**Key Insight:** Model problem states (e.g., holding stock, sold, cooldown) and transitions
+
+### Pattern 6: DFS with Backtracking and Pruning
+**Problems:** #053, #056
+**Key Insight:** Explore all possibilities but prune invalid branches early
+
+---
+
+## Study Tips
+
+### Tackling Hard Problems
+
+1. **Break Down Complexity**
+   - What would brute force look like? (helps clarify logic)
+   - What's the bottleneck? (guides optimization)
+   - Can I solve a simpler version first? (build up)
+
+2. **Recognize Advanced Patterns**
+   - Dual heap → running median, sliding window median
+   - Bidirectional BFS → shortest path in large space
+   - Union-Find → connected components with modifications
+   - State machine DP → problems with discrete states and transitions
+
+3. **Optimize Systematically**
+   - Start with correct solution (even if slow)
+   - Profile: where is time spent?
+   - Apply data structure or algorithm to bottleneck
+   - Verify correctness doesn't break
+
+4. **Handle Edge Cases**
+   - Empty input
+   - Single element
+   - All same values
+   - Maximum constraints
+   - Negative numbers, overflow
+
+5. **Practice Implementation**
+   - Hard problems have complex implementation
+   - Focus on clean, modular code
+   - Use helper functions
+   - Test incrementally
+
+### Common Challenges
+
+**Challenge 1: Problem Decomposition**
+- Hard problems combine multiple concepts
+- Solution: Identify each component separately, then combine
+
+**Challenge 2: Complex State Management**
+- Multiple variables to track (DP, graph search)
+- Solution: Define state clearly upfront, use meaningful variable names
+
+**Challenge 3: Optimization Requirements**
+- Brute force often obvious but too slow
+- Solution: Analyze time complexity, identify bottleneck, apply optimization pattern
+
+**Challenge 4: Implementation Bugs**
+- More code = more bugs
+- Solution: Implement incrementally, test each part, use helper functions
+
+---
+
+## Problem-Specific Insights
+
+### #019 - Merge k Sorted Lists
+**Why Hard:** Efficiently merging k lists (not just 2)
+**Key Technique:** Min heap to track smallest current element from each list
+**Time Complexity:** O(N log k) where N = total nodes
+
+### #037 - Minimum Window Substring
+**Why Hard:** Sliding window with complex validity check
+**Key Technique:** Expand window until valid, contract while maintaining validity
+**Time Complexity:** O(m + n) with two-pass approach
+
+### #082 - Find Median from Data Stream
+**Why Hard:** Maintaining median as data arrives
+**Key Technique:** Dual heap to split data, balance for O(1) median
+**Time Complexity:** O(log n) insert, O(1) get median
+
+### #081 - Word Ladder
+**Why Hard:** Large search space (all valid words)
+**Key Technique:** Bidirectional BFS from start and end
+**Time Complexity:** O(N * M²) where N = words, M = word length
+
+### #099 - Best Time to Buy and Sell Stock III
+**Why Hard:** Multiple transactions with constraints
+**Key Technique:** State machine DP (4 states: buy1, sell1, buy2, sell2)
+**Time Complexity:** O(n)
+
+### #100 - Median of Two Sorted Arrays
+**Why Hard:** O(log(m+n)) requirement, complex binary search
+**Key Technique:** Binary search on partition point
+**Time Complexity:** O(log(min(m,n)))
+
+---
+
+## Progression Path
+
+### Phase 1: Foundation (Week 1)
+- Master prerequisite medium problems
+- Start with #019 (merge k lists) - extends merge 2 lists
+- Practice #037 (minimum window) - builds on basic sliding window
+
+### Phase 2: Advanced Techniques (Week 2)
+- Dual heap problems: #082, #034
+- Graph challenges: #036, #070, #081
+- Focus on one pattern at a time
+
+### Phase 3: Complex Synthesis (Week 3)
+- Multi-pattern problems: #053, #076
+- State machine DP: #083, #099
+- String challenges: #058, #097
+
+### Phase 4: Mastery (Week 4)
+- Solve problems under time pressure (45 min)
+- Practice explaining approach before coding
+- Review and optimize previous solutions
+
+---
+
+## Interview Strategy
+
+### When You See a Hard Problem
+
+1. **Don't Panic** (2 min)
+   - Hard problems test problem-solving process, not just solution
+   - Interviewer expects you to struggle and talk through it
+   - Focus on demonstrating structured thinking
+
+2. **Clarify Thoroughly** (3-5 min)
+   - Ask about constraints (size, range, edge cases)
+   - Confirm input/output format
+   - Discuss examples, especially edge cases
+
+3. **Start Simple** (5 min)
+   - Explain brute force approach
+   - State its complexity
+   - Identify why it's too slow (this guides optimization)
+
+4. **Optimize Incrementally** (10-15 min)
+   - "What if we used a hash table here?"
+   - "Could binary search help?"
+   - "Is this a known pattern?" (dual heap, bidirectional BFS, etc.)
+
+5. **Implement Carefully** (20 min)
+   - Write clean, modular code
+   - Use helper functions
+   - Test as you go
+
+6. **Test Thoroughly** (5 min)
+   - Walk through example
+   - Test edge cases
+   - Discuss time/space complexity
+
+### What Interviewers Look For
+
+- **Problem-solving approach** (more important than perfect solution)
+- **Communication** (explain thinking clearly)
+- **Optimization ability** (identify bottlenecks, apply techniques)
+- **Code quality** (clean, readable, modular)
+- **Testing mindset** (think about edge cases)
+
+---
+
+## Ready for the Top?
+
+You've mastered hard problems when you can:
+- Decompose complex problems into manageable parts
+- Identify advanced patterns (dual heap, bidirectional BFS, etc.)
+- Optimize from correct solution systematically
+- Implement complex algorithms with few bugs
+- Explain trade-offs between multiple approaches
+- Solve most hard problems in 45-50 minutes
+
+<Card title="Back to Overview" icon="arrow-left" href="/problems">
+  Return to all 100 problems organized by category
+</Card>
+
+---
+
+## Quick Reference
+
+**Total Problems:** 16
+**Average Frequency:** 47.5%
+**Recommended Time:** 45-60 minutes per problem
+**Total Study Time:** 35-45 hours (first attempt)
+
+**Key Categories:**
+- Graph & DFS/BFS: 4 problems
+- Heap & Priority Queue: 3 problems
+- Dynamic Programming: 2 problems
+- Tree: 2 problems
+- String: 2 problems
+- Sliding Window: 1 problem
+- Parentheses: 1 problem
+- Binary Search: 1 problem
+
+**Success Metrics:**
+- Top companies ask 1-2 hard problems per interview loop
+- Solving 50% of hard problems independently is excellent
+- Focus on demonstrating strong problem-solving process
+- Communication and optimization approach often valued over perfect solution

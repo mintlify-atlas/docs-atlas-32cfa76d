@@ -1,0 +1,401 @@
+---
+title: 'Graph (DFS & BFS)'
+description: 'Master graph traversal with DFS and BFS for connectivity, pathfinding, and topological problems'
+---
+
+# Graph (DFS & BFS)
+
+Graph problems involve nodes (vertices) connected by edges. Depth-First Search (DFS) and Breadth-First Search (BFS) are fundamental algorithms for graph traversal, each with specific use cases.
+
+## Key Concepts
+
+### Graph Representations
+- **Adjacency List**: `graph[node] = [neighbors]` - O(V+E) space, efficient
+- **Adjacency Matrix**: `matrix[i][j] = edge` - O(V²) space, fast lookup
+- **Edge List**: List of (u, v) pairs - O(E) space, simple
+
+### DFS vs BFS
+| Aspect | DFS | BFS |
+|--------|-----|-----|
+| Data Structure | Stack (recursion) | Queue |
+| Path | Not shortest | Shortest (unweighted) |
+| Memory | O(h) depth | O(w) width |
+| Use Case | Connectivity, cycles | Shortest path, levels |
+
+## Key Patterns & Techniques
+
+### 1. DFS Patterns
+- **Connectivity**: Find connected components
+- **Cycle Detection**: Track visited nodes in current path
+- **Backtracking**: Explore all paths, undo choices
+- **Topological Sort**: Post-order DFS
+
+### 2. BFS Patterns
+- **Shortest Path**: Level-by-level in unweighted graphs
+- **Level Order**: Process nodes at same distance
+- **Multi-source BFS**: Start from multiple sources
+
+### 3. Union-Find (Disjoint Set)
+- Find connected components
+- Detect cycles
+- O(α(n)) amortized per operation
+
+### 4. Topological Sort
+- Order nodes in DAG (Directed Acyclic Graph)
+- Used in dependency resolution
+- DFS or Kahn's algorithm (BFS)
+
+## Common Approaches
+
+### DFS Template (Recursive)
+```python
+def dfs(graph: Dict[int, List[int]], start: int) -> Set[int]:
+    """
+    DFS to find all reachable nodes.
+    Time: O(V + E), Space: O(V)
+    """
+    visited = set()
+    
+    def explore(node: int):
+        if node in visited:
+            return
+        
+        visited.add(node)
+        
+        for neighbor in graph.get(node, []):
+            explore(neighbor)
+    
+    explore(start)
+    return visited
+```
+
+### DFS Template (Iterative)
+```python
+def dfs_iterative(graph: Dict[int, List[int]], start: int) -> Set[int]:
+    """
+    Iterative DFS using explicit stack.
+    Time: O(V + E), Space: O(V)
+    """
+    visited = set()
+    stack = [start]
+    
+    while stack:
+        node = stack.pop()
+        
+        if node in visited:
+            continue
+        
+        visited.add(node)
+        
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                stack.append(neighbor)
+    
+    return visited
+```
+
+### BFS Template
+```python
+from collections import deque
+
+def bfs(graph: Dict[int, List[int]], start: int) -> Dict[int, int]:
+    """
+    BFS to find shortest distance to all nodes.
+    Time: O(V + E), Space: O(V)
+    """
+    visited = {start}
+    queue = deque([(start, 0)])  # (node, distance)
+    distances = {start: 0}
+    
+    while queue:
+        node, dist = queue.popleft()
+        
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                distances[neighbor] = dist + 1
+                queue.append((neighbor, dist + 1))
+    
+    return distances
+```
+
+### Clone Graph (DFS)
+```python
+def cloneGraph(node: 'Node') -> 'Node':
+    """
+    Deep clone graph using DFS with hash map.
+    Time: O(V + E), Space: O(V)
+    """
+    if not node:
+        return None
+    
+    cloned = {}  # old_node -> new_node
+    
+    def dfs(node):
+        if node in cloned:
+            return cloned[node]
+        
+        # Create clone
+        clone = Node(node.val)
+        cloned[node] = clone
+        
+        # Clone neighbors
+        for neighbor in node.neighbors:
+            clone.neighbors.append(dfs(neighbor))
+        
+        return clone
+    
+    return dfs(node)
+```
+
+### Topological Sort (Kahn's Algorithm)
+```python
+def topologicalSort(n: int, edges: List[List[int]]) -> List[int]:
+    """
+    Topological sort using BFS (Kahn's algorithm).
+    Time: O(V + E), Space: O(V + E)
+    """
+    # Build graph and indegree count
+    graph = defaultdict(list)
+    indegree = [0] * n
+    
+    for u, v in edges:
+        graph[u].append(v)
+        indegree[v] += 1
+    
+    # Start with nodes having no incoming edges
+    queue = deque([i for i in range(n) if indegree[i] == 0])
+    result = []
+    
+    while queue:
+        node = queue.popleft()
+        result.append(node)
+        
+        # Remove edges from this node
+        for neighbor in graph[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    # Check if valid (no cycles)
+    return result if len(result) == n else []
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="025. Clone Graph" icon="clone" href="/problems/025-clone-graph">
+    **Medium** | Frequency: 71.4%
+    
+    DFS with hash map to track original to clone mapping.
+  </Card>
+
+  <Card title="063. Course Schedule" icon="graduation-cap" href="/problems/063-course-schedule">
+    **Medium** | Frequency: 47.0%
+    
+    Detect cycle in directed graph using DFS or topological sort.
+  </Card>
+
+  <Card title="031. Shortest Path in Binary Matrix" icon="grid" href="/problems/031-shortest-path-in-binary-matrix">
+    **Medium** | Frequency: 67.4%
+    
+    BFS on grid for shortest path with 8-directional movement.
+  </Card>
+
+  <Card title="038. Accounts Merge" icon="users" href="/problems/038-accounts-merge">
+    **Medium** | Frequency: 62.4%
+    
+    Union-Find or DFS to merge connected email accounts.
+  </Card>
+
+  <Card title="055. Subsets" icon="list" href="/problems/055-subsets">
+    **Medium** | Frequency: 47.0%
+    
+    Backtracking DFS to generate all possible subsets.
+  </Card>
+
+  <Card title="081. Word Ladder" icon="ladder" href="/problems/081-word-ladder">
+    **Hard** | Frequency: 40.7%
+    
+    BFS for shortest transformation sequence between words.
+  </Card>
+
+  <Card title="053. Robot Room Cleaner" icon="robot" href="/problems/053-robot-room-cleaner">
+    **Hard** | Frequency: 51.9%
+    
+    DFS with backtracking to explore unknown grid.
+  </Card>
+
+  <Card title="070. Swim in Rising Water" icon="water" href="/problems/070-swim-in-rising-water">
+    **Hard** | Frequency: 40.7%
+    
+    Binary search + BFS or Dijkstra's for minimum time path.
+  </Card>
+
+  <Card title="036. Making A Large Island" icon="island" href="/problems/036-making-a-large-island">
+    **Hard** | Frequency: 65.0%
+    
+    DFS to find component sizes, try flipping each 0.
+  </Card>
+
+  <Card title="086. Shortest Path in Hidden Grid" icon="map" href="/problems/086-shortest-path-in-a-hidden-grid">
+    **Medium** | Frequency: 32.0%
+    
+    DFS to discover grid, then BFS for shortest path.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| DFS | O(V + E) | O(V) | Connectivity, cycles, paths |
+| BFS | O(V + E) | O(V) | Shortest path, levels |
+| Union-Find | O(E * α(V)) | O(V) | Dynamic connectivity |
+| Topological Sort | O(V + E) | O(V) | Task scheduling, dependencies |
+| Dijkstra | O((V+E) log V) | O(V) | Weighted shortest path |
+
+V = vertices, E = edges, α = inverse Ackermann (effectively constant)
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Connected components"** → DFS or Union-Find
+- **"Shortest path" (unweighted)** → BFS
+- **"Detect cycle"** → DFS with recursion stack or Union-Find
+- **"All paths/combinations"** → DFS with backtracking
+- **"Task scheduling/dependencies"** → Topological sort
+- **"Grid with obstacles"** → BFS for shortest path
+- **"Weighted shortest path"** → Dijkstra or Bellman-Ford
+
+### Common Mistakes
+- Forgetting to mark visited before adding to queue (BFS)
+- Not unmarking visited in backtracking problems
+- Confusing directed vs undirected graphs
+- Stack overflow in DFS on large graphs (use iterative)
+- Not handling disconnected graphs (multiple components)
+
+### Key Insights
+1. **DFS = Exploration** - go deep, good for exhaustive search
+2. **BFS = Level-order** - guarantees shortest path in unweighted graphs
+3. **Visited set is crucial** - prevents infinite loops in cycles
+4. **Grid = Implicit graph** - cells are nodes, adjacency is edges
+5. **Multi-source BFS** - add all sources to queue initially
+6. **Backtracking** - mark visited on enter, unmark on exit
+
+## Grid as Graph
+
+```python
+def gridBFS(grid: List[List[int]], start: Tuple[int, int]) -> int:
+    """
+    BFS on grid - treat as implicit graph.
+    Time: O(rows * cols), Space: O(rows * cols)
+    """
+    rows, cols = len(grid), len(grid[0])
+    directions = [(0,1), (1,0), (0,-1), (-1,0)]  # right, down, left, up
+    
+    visited = {start}
+    queue = deque([start])
+    distance = 0
+    
+    while queue:
+        for _ in range(len(queue)):
+            r, c = queue.popleft()
+            
+            # Check if reached target
+            if grid[r][c] == TARGET:
+                return distance
+            
+            # Explore neighbors
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                
+                # Check bounds and obstacles
+                if (0 <= nr < rows and 0 <= nc < cols and
+                    (nr, nc) not in visited and
+                    grid[nr][nc] != OBSTACLE):
+                    
+                    visited.add((nr, nc))
+                    queue.append((nr, nc))
+        
+        distance += 1
+    
+    return -1  # Target not reachable
+```
+
+## Advanced Patterns
+
+### Union-Find (Disjoint Set)
+```python
+class UnionFind:
+    """Union-Find with path compression and union by rank."""
+    def __init__(self, n: int):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+        self.components = n
+    
+    def find(self, x: int) -> int:
+        """Find with path compression."""
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    def union(self, x: int, y: int) -> bool:
+        """Union by rank. Returns True if merged."""
+        px, py = self.find(x), self.find(y)
+        
+        if px == py:
+            return False  # Already connected
+        
+        # Union by rank
+        if self.rank[px] < self.rank[py]:
+            px, py = py, px
+        
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]:
+            self.rank[px] += 1
+        
+        self.components -= 1
+        return True
+```
+
+### Bidirectional BFS
+```python
+def bidirectionalBFS(start: str, end: str, neighbors_func) -> int:
+    """
+    BFS from both ends - faster for long paths.
+    Time: O(b^(d/2)) vs O(b^d) for regular BFS
+    """
+    if start == end:
+        return 0
+    
+    front = {start}
+    back = {end}
+    visited = {start, end}
+    distance = 1
+    
+    while front and back:
+        # Always expand smaller frontier
+        if len(front) > len(back):
+            front, back = back, front
+        
+        next_front = set()
+        
+        for node in front:
+            for neighbor in neighbors_func(node):
+                if neighbor in back:
+                    return distance
+                
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    next_front.add(neighbor)
+        
+        front = next_front
+        distance += 1
+    
+    return -1
+```
+
+---
+
+**Pro Tip:** BFS guarantees shortest path in unweighted graphs. Use it for "minimum steps" problems. DFS is simpler for connectivity and uses less memory. For weighted graphs, use Dijkstra's algorithm.

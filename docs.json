@@ -1,122 +1,110 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Questions100",
+  "theme": "maple",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#e74c3c",
+    "light": "#f39c12",
+    "dark": "#c0392b"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/sparktsao/Questions100"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/sparktsao/Questions100"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
+              "introduction",
               "quickstart",
-              "development"
+              "study-plans"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Problem Categories",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "categories/array-hashing",
+              "categories/two-pointers",
+              "categories/stack",
+              "categories/binary-search",
+              "categories/tree",
+              "categories/bst",
+              "categories/graph",
+              "categories/dynamic-programming",
+              "categories/sliding-window",
+              "categories/linked-list",
+              "categories/heap",
+              "categories/design",
+              "categories/string",
+              "categories/intervals",
+              "categories/palindrome",
+              "categories/parentheses",
+              "categories/math"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "By Difficulty",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "difficulty/easy",
+              "difficulty/medium",
+              "difficulty/hard"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Problems",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Top Interview Problems",
             "pages": [
-              "api-reference/introduction"
+              "problems/top-frequency",
+              "problems/must-know-classics"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "All Problems",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "problems/001-020",
+              "problems/021-040",
+              "problems/041-060",
+              "problems/061-080",
+              "problems/081-100"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Study Resources",
+            "pages": [
+              "resources/patterns",
+              "resources/complexity-analysis",
+              "resources/interview-tips"
+            ]
+          },
+          {
+            "group": "Applications",
+            "pages": [
+              "resources/real-world",
+              "resources/cybersecurity"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

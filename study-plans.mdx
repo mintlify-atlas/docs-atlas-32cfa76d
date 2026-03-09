@@ -1,0 +1,730 @@
+---
+title: "Study Plans"
+description: "Structured learning paths for interview preparation - Choose your timeline and follow a proven progression"
+---
+
+Choose a study plan based on your preparation timeline. Each plan is designed to build knowledge progressively, starting with fundamentals and advancing to complex algorithms.
+
+## Choose Your Timeline
+
+<CardGroup cols={2}>
+  <Card title="1 Week Sprint" icon="bolt">
+    **Intensive preparation** - Focus on highest-frequency problems only
+    
+    Best for: Quick refreshers or specific company prep
+  </Card>
+  
+  <Card title="2 Week Bootcamp" icon="fire">
+    **Accelerated learning** - Core patterns and must-know problems
+    
+    Best for: Upcoming interviews with tight deadline
+  </Card>
+  
+  <Card title="4 Week Program" icon="chart-line">
+    **Balanced approach** - Comprehensive coverage with practice time
+    
+    Best for: Standard interview preparation
+  </Card>
+  
+  <Card title="8 Week Mastery" icon="graduation-cap">
+    **Deep understanding** - Complete mastery of all patterns
+    
+    Best for: Career transition or senior roles
+  </Card>
+</CardGroup>
+
+---
+
+## 1 Week Sprint (7 days)
+
+<Note>
+  **Goal:** Master 25-30 highest-frequency problems covering essential patterns.  
+  **Time commitment:** 4-6 hours/day  
+  **Focus:** Breadth over depth - recognize patterns quickly
+</Note>
+
+### Week 1: Essential Patterns
+
+<AccordionGroup>
+  <Accordion title="Day 1: Arrays & Hash Tables (4-5 problems)" icon="1">
+    **Morning Session (2-3 hours):**
+    - **#017 - Two Sum** (Easy, 76.4% frequency)
+      - Master: Hash map for O(n) lookups
+      - Pattern: Complement search
+    - **#016 - Merge Intervals** (Medium, 77.9% frequency)
+      - Master: Sorting + greedy merge
+      - Pattern: Interval overlaps
+    - **#026 - Subarray Sum Equals K** (Medium)
+      - Master: Prefix sums + hash map
+      - Pattern: Cumulative sum tracking
+    
+    **Afternoon Session (2-3 hours):**
+    - **#015 - Top K Frequent Elements** (Medium, 86.9% frequency)
+      - Master: Hash map + heap or bucket sort
+      - Pattern: Frequency counting
+    - **#065 - 3Sum** (Medium)
+      - Master: Sort + two pointers
+      - Pattern: Fixed + moving pointers
+    
+    <Tip>Focus on understanding the hash map pattern - it appears in 30% of interview problems</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 2: Two Pointers & Stack (4-5 problems)" icon="2">
+    **Morning: Two Pointers (2 hours)**
+    - **#029 - Valid Palindrome** (Easy)
+      - Pattern: Opposite-direction pointers
+    - **#004 - Valid Palindrome II** (Easy, 92.7% frequency)
+      - Pattern: Two pointers + greedy choice
+    - **#033 - Merge Sorted Array** (Easy)
+      - Pattern: Two pointers from end
+    
+    **Afternoon: Stack (2-3 hours)**
+    - **#020 - Valid Parentheses** (Easy, 74.9% frequency)
+      - Pattern: Stack for matching pairs
+    - **#001 - Min Remove to Make Valid Parentheses** (Medium, 100% frequency)
+      - Pattern: Stack + index tracking
+    - **#008 - Basic Calculator II** (Medium, 84.0% frequency)
+      - Pattern: Stack for operator precedence
+    
+    <Tip>Stack problems are about "what do I need to remember?" - think LIFO</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 3: Binary Search & Trees (4-5 problems)" icon="3">
+    **Morning: Binary Search (2 hours)**
+    - **#042 - Binary Search** (Easy)
+      - Pattern: Classic template
+    - **#010 - Find Peak Element** (Medium, 82.9% frequency)
+      - Pattern: Binary search on unsorted array
+    - **#041 - Kth Missing Positive Number** (Easy)
+      - Pattern: Binary search on answer space
+    
+    **Afternoon: Tree Basics (2-3 hours)**
+    - **#014 - Diameter of Binary Tree** (Easy)
+      - Pattern: DFS + global variable
+    - **#007 - Binary Tree Right Side View** (Medium, 86.0% frequency)
+      - Pattern: BFS level order
+    - **#027 - Range Sum of BST** (Easy)
+      - Pattern: BST properties for pruning
+    
+    <Tip>Binary search has two types: search on data vs. search on answer space</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 4: More Trees & Linked Lists (4-5 problems)" icon="4">
+    **Morning: Advanced Trees (2-3 hours)**
+    - **#009 - Lowest Common Ancestor** (Medium)
+      - Pattern: Recursive tree traversal
+    - **#003 - Binary Tree Vertical Order Traversal** (Medium, 93.4% frequency)
+      - Pattern: BFS + hash map coordinates
+    - **#013 - Sum Root to Leaf Numbers** (Medium)
+      - Pattern: DFS with accumulated value
+    
+    **Afternoon: Linked Lists (2 hours)**
+    - **#019 - Merge k Sorted Lists** (Hard)
+      - Pattern: Min heap with k elements
+    - **#032 - Copy List with Random Pointer** (Medium)
+      - Pattern: Hash map for node cloning
+    
+    <Tip>Tree problems often combine DFS/BFS with another data structure</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 5: Design & Dynamic Programming (4-5 problems)" icon="5">
+    **Morning: Design (2 hours)**
+    - **#039 - LRU Cache** (Medium, 62.4% frequency)
+      - Pattern: Hash map + doubly linked list
+      - Master: O(1) get and put operations
+    - **#048 - Moving Average from Data Stream** (Easy)
+      - Pattern: Queue with size limit
+    
+    **Afternoon: DP Intro (2-3 hours)**
+    - **#018 - Best Time to Buy and Sell Stock** (Easy, 76.4% frequency)
+      - Pattern: Track minimum so far
+    - **#087 - Maximum Subarray** (Medium)
+      - Pattern: Kadane's algorithm
+    - **#075 - Word Break** (Medium)
+      - Pattern: 1D DP with substring check
+    
+    <Tip>Design problems test your ability to choose the right data structures</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 6: Sliding Window & Graphs (4-5 problems)" icon="6">
+    **Morning: Sliding Window (2-3 hours)**
+    - **#080 - Longest Substring Without Repeating** (Medium)
+      - Pattern: Expandable window + hash set
+    - **#040 - Max Consecutive Ones III** (Medium)
+      - Pattern: Window with constraint counter
+    - **#037 - Minimum Window Substring** (Hard)
+      - Pattern: Two hash maps for matching
+    
+    **Afternoon: Graph Basics (2 hours)**
+    - **#025 - Clone Graph** (Medium)
+      - Pattern: DFS/BFS + hash map cloning
+    - **#063 - Course Schedule** (Medium)
+      - Pattern: Topological sort (cycle detection)
+    
+    <Tip>Sliding window is optimization - turn nested loops into single pass</Tip>
+  </Accordion>
+  
+  <Accordion title="Day 7: Review & Hard Problems (4-5 problems)" icon="7">
+    **Morning: Weak Areas (2 hours)**
+    - Revisit problems you struggled with
+    - Implement solutions from scratch
+    - Time yourself (45 min per problem)
+    
+    **Afternoon: Challenge Problems (2-3 hours)**
+    - **#100 - Median of Two Sorted Arrays** (Hard)
+      - Pattern: Binary search on merged position
+    - **#099 - Best Time to Buy and Sell Stock III** (Hard)
+      - Pattern: State machine DP
+    - **#082 - Find Median from Data Stream** (Hard)
+      - Pattern: Two heaps (max heap + min heap)
+    
+    **Evening: Mock Interview (1 hour)**
+    - Pick 2 random problems (1 Easy + 1 Medium)
+    - Solve on whiteboard or in basic editor
+    - Practice explaining your approach out loud
+    
+    <Tip>Day 7 is about confidence building - you should feel comfortable with patterns</Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## 2 Week Bootcamp (14 days)
+
+<Note>
+  **Goal:** Master 50-60 problems with deeper understanding of each pattern.  
+  **Time commitment:** 3-4 hours/day  
+  **Focus:** Pattern recognition and variation handling
+</Note>
+
+### Week 1: Foundations
+
+<Steps>
+  <Step title="Days 1-2: Arrays & Hashing (8-10 problems)">
+    Follow Day 1 from 1-Week Sprint, then add:
+    - **#022 - Buildings with Ocean View** (Medium)
+    - **#024 - K Closest Points to Origin** (Medium)
+    - **#023 - Custom Sort String** (Medium)
+    - **#062 - Group Shifted Strings** (Medium)
+    
+    **Key Learning:** Different hash map applications (frequency, grouping, coordinates)
+  </Step>
+  
+  <Step title="Days 3-4: Two Pointers & Stack (8-10 problems)">
+    Follow Day 2 from 1-Week Sprint, then add:
+    - **#044 - Squares of a Sorted Array** (Easy)
+    - **#073 - Container With Most Water** (Medium)
+    - **#035 - Simplify Path** (Medium)
+    - **#093 - Decode String** (Medium)
+    - **#098 - Remove All Adjacent Duplicates II** (Medium)
+    
+    **Key Learning:** Stack for nested structures and state tracking
+  </Step>
+  
+  <Step title="Days 5-6: Binary Search (8-10 problems)">
+    Follow Day 3 Binary Search section, then add:
+    - **#074 - Cutting Ribbons** (Medium)
+    - **#079 - Capacity To Ship Packages Within D Days** (Medium)
+    - **#094 - Koko Eating Bananas** (Medium)
+    - **#084 - Kth Smallest Element in Sorted Matrix** (Hard)
+    - **#100 - Median of Two Sorted Arrays** (Hard)
+    
+    **Key Learning:** Binary search on answer space (minimization/maximization)
+  </Step>
+  
+  <Step title="Day 7: Rest & Review">
+    - No new problems
+    - Review all problems from Week 1
+    - Identify patterns you're struggling with
+    - Re-implement 3-5 problems from memory
+  </Step>
+</Steps>
+
+### Week 2: Advanced Patterns
+
+<Steps>
+  <Step title="Days 8-9: Trees & BST (10-12 problems)">
+    **Day 8: Binary Trees**
+    - All problems from 1-Week Sprint Days 3-4
+    - Add: **#061 - Vertical Order Traversal** (Hard)
+    - Add: **#066 - All Nodes Distance K** (Medium)
+    - Add: **#076 - Binary Tree Maximum Path Sum** (Hard)
+    
+    **Day 9: BST Specific**
+    - **#060 - Closest BST Value** (Easy)
+    - **#092 - Kth Smallest Element in BST** (Medium)
+    - **#051 - BST Iterator** (Medium)
+    
+    **Key Learning:** BST properties enable O(log n) operations
+  </Step>
+  
+  <Step title="Days 10-11: Linked Lists & Graphs (8-10 problems)">
+    **Day 10: Linked Lists**
+    - **#054 - Add Two Numbers** (Medium)
+    - **#045 - Remove Nth Node From End** (Medium)
+    - **#064 - Insert into Sorted Circular Linked List** (Medium)
+    
+    **Day 11: Graphs**
+    - **#031 - Shortest Path in Binary Matrix** (Medium)
+    - **#036 - Making A Large Island** (Hard)
+    - **#070 - Swim in Rising Water** (Hard)
+    - **#081 - Word Ladder** (Hard)
+    
+    **Key Learning:** BFS for shortest path, DFS for connectivity
+  </Step>
+  
+  <Step title="Days 12-13: DP & Sliding Window (10-12 problems)">
+    **Day 12: Dynamic Programming**
+    - All from 1-Week Sprint Day 5
+    - **#096 - Longest Palindromic Substring** (Medium)
+    - **#057 - Palindromic Substrings** (Medium)
+    - **#083 - Valid Palindrome III** (Hard)
+    - **#099 - Best Time to Buy and Sell Stock III** (Hard)
+    
+    **Day 13: Sliding Window**
+    - All from 1-Week Sprint Day 6
+    - **#059 - Continuous Subarray Sum** (Medium)
+    - **#068 - Contains Duplicate II** (Easy)
+    - **#090 - Frequency of Most Frequent Element** (Medium)
+    
+    **Key Learning:** DP patterns (1D, 2D, state machine)
+  </Step>
+  
+  <Step title="Day 14: Mock Interviews & Hard Problems">
+    **Morning: 3 Mock Problems (3 hours)**
+    - 1 Medium from each: Arrays, Trees, DP
+    - Time limit: 45 minutes each
+    - Write clean, working code
+    
+    **Afternoon: Hard Problem Deep Dive (2 hours)**
+    - **#053 - Robot Room Cleaner** (Hard)
+    - **#034 - Sliding Window Median** (Hard)
+    - Focus on implementation details
+    
+    **Evening: Reflection (30 min)**
+    - Review your progress
+    - Note patterns you're confident with
+    - Identify 2-3 areas needing more practice
+  </Step>
+</Steps>
+
+---
+
+## 4 Week Program (28 days)
+
+<Note>
+  **Goal:** Complete 80+ problems with deep pattern understanding.  
+  **Time commitment:** 2-3 hours/day  
+  **Focus:** Mastery through repetition and variation
+</Note>
+
+### Week 1: Core Fundamentals
+
+<Accordion title="Full Week 1 Breakdown">
+**Days 1-2: Arrays & Hashing** (12 problems)
+- All Easy array problems for warm-up
+- Progress to Medium frequency counting
+- Master hash map patterns: lookup, frequency, grouping
+
+**Days 3-4: Two Pointers** (10 problems)
+- Same-direction vs opposite-direction pointers
+- Fast-slow pointer technique
+- Applications: palindromes, arrays, linked lists
+
+**Days 5-6: Stack** (12 problems)
+- Matching pairs (parentheses variants)
+- Expression evaluation (calculators)
+- Monotonic stack applications
+
+**Day 7: Review & Pattern Recognition**
+- Implement 5 problems from scratch
+- Create your own cheat sheet
+- Practice identifying which pattern to use
+</Accordion>
+
+### Week 2: Search & Trees
+
+<Accordion title="Full Week 2 Breakdown">
+**Days 8-10: Binary Search** (15 problems)
+- Classic binary search variants
+- Binary search on answer space
+- Minimization/maximization problems
+- 2D matrix search problems
+
+**Days 11-13: Binary Trees & BST** (15 problems)
+- Tree traversals (DFS: preorder, inorder, postorder)
+- BFS level-order applications
+- BST-specific problems (utilizing sorted property)
+- Tree construction and modification
+
+**Day 14: Mid-Program Assessment**
+- Solve 3 new problems (1 Easy, 1 Medium, 1 Hard)
+- Time yourself strictly
+- Focus on clean code and edge cases
+</Accordion>
+
+### Week 3: Advanced Data Structures & Algorithms
+
+<Accordion title="Full Week 3 Breakdown">
+**Days 15-17: Graphs & DFS/BFS** (12 problems)
+- Graph representation (adjacency list/matrix)
+- DFS for cycle detection and connectivity
+- BFS for shortest paths
+- Topological sorting
+
+**Days 18-19: Heap & Priority Queue** (10 problems)
+- K-th largest/smallest problems
+- Merge k sorted structures
+- Running median with two heaps
+- Custom comparators
+
+**Days 20-21: Design Problems** (8 problems)
+- Data structure design (LRU Cache, etc.)
+- Stream processing
+- Iterator patterns
+- Choose data structures for O(1) operations
+
+**Day 21: Review Week 3**
+</Accordion>
+
+### Week 4: Dynamic Programming & Advanced Topics
+
+<Accordion title="Full Week 4 Breakdown">
+**Days 22-24: Dynamic Programming** (15 problems)
+- 1D DP (house robber, climbing stairs pattern)
+- 2D DP (grid problems, longest common patterns)
+- State machine DP (stock problems)
+- Palindrome DP problems
+
+**Days 25-26: Sliding Window** (8 problems)
+- Fixed-size windows
+- Variable-size windows with constraints
+- Two hash maps for pattern matching
+- Advanced: nested sliding windows
+
+**Days 27-28: Final Review & Hard Problems**
+
+**Day 27: Weak Areas**
+- Revisit your 10 most difficult problems
+- Implement without looking at solutions
+- Ensure you can explain the approach clearly
+
+**Day 28: Comprehensive Mock Interview**
+- Morning: 2 Medium problems (90 min total)
+- Afternoon: 1 Hard problem (60 min)
+- Evening: System design discussion for top problems
+- Record yourself to review communication
+</Accordion>
+
+<Tip>
+  **4-Week Advantage:** You have time for spaced repetition. Revisit problems from Week 1 during Week 3 - you'll be amazed at your progress!
+</Tip>
+
+---
+
+## 8 Week Mastery (56 days)
+
+<Note>
+  **Goal:** Complete all 100 problems with expert-level understanding.  
+  **Time commitment:** 1.5-2 hours/day  
+  **Focus:** Deep understanding, multiple solutions, pattern variations
+</Note>
+
+### Weeks 1-2: Foundation Building
+
+<CardGroup cols={2}>
+  <Card title="Week 1: Easy Problems" icon="seedling">
+    Complete all 21 Easy problems
+    - Focus on implementation speed
+    - Multiple approaches for each
+    - Aim for bug-free first submissions
+  </Card>
+  
+  <Card title="Week 2: Core Patterns" icon="shapes">
+    Arrays, Two Pointers, Stack (30 problems)
+    - Deep dive into when to use each pattern
+    - Create pattern recognition flashcards
+    - Practice explaining to others
+  </Card>
+</CardGroup>
+
+### Weeks 3-4: Search & Trees
+
+<CardGroup cols={2}>
+  <Card title="Week 3: Binary Search Mastery" icon="magnifying-glass">
+    All 10 Binary Search problems + variations
+    - Search on data vs answer space
+    - Minimization vs maximization
+    - Handling duplicates and edge cases
+  </Card>
+  
+  <Card title="Week 4: Tree Expertise" icon="sitemap">
+    All 15+ Tree and BST problems
+    - Master all traversal techniques
+    - Understand tree recursion deeply
+    - Connect tree problems to graph problems
+  </Card>
+</CardGroup>
+
+### Weeks 5-6: Graphs & Advanced Data Structures
+
+<CardGroup cols={2}>
+  <Card title="Week 5: Graph Algorithms" icon="diagram-project">
+    All Graph, DFS, BFS problems (12-15)
+    - Implement from scratch multiple times
+    - Understand time/space trade-offs
+    - Practice on different representations
+  </Card>
+  
+  <Card title="Week 6: Heap & Design" icon="layer-group">
+    Heap, Priority Queue, Design (15 problems)
+    - Focus on system design aspects
+    - Understand when heaps are optimal
+    - Practice O(1) operation designs
+  </Card>
+</CardGroup>
+
+### Weeks 7-8: Dynamic Programming & Mastery
+
+<Steps>
+  <Step title="Week 7: Dynamic Programming Deep Dive">
+    **Days 43-47:** All DP problems (15+ problems)
+    - Identify DP vs Greedy
+    - Master state transitions
+    - Understand space optimization
+    - Practice bottom-up and top-down
+    
+    **Days 48-49:** Sliding Window complete (all 8 problems)
+  </Step>
+  
+  <Step title="Week 8: Comprehensive Review & Hard Problems">
+    **Days 50-53:** All remaining Hard problems
+    - Focus on implementation complexity
+    - Handle edge cases gracefully
+    - Optimize for readability and efficiency
+    
+    **Days 54-55:** Random problem selection
+    - Solve 10 random problems (mixed difficulty)
+    - Simulate interview conditions
+    - No hints or solutions lookups
+    
+    **Day 56: Final Assessment**
+    
+    **Morning Session: Speed Round (2 hours)**
+    - 3 Easy problems in 45 minutes
+    - 2 Medium problems in 60 minutes
+    - Should feel straightforward
+    
+    **Afternoon Session: Deep Problem (2 hours)**
+    - 1 Hard problem with full implementation
+    - Multiple test cases
+    - Edge case analysis
+    - Complexity optimization discussion
+    
+    **Evening: Reflection**
+    - Review your journey
+    - Identify your strongest patterns
+    - Note areas for continued practice
+    - Celebrate your achievement!
+  </Step>
+</Steps>
+
+---
+
+## Study Tips for All Plans
+
+<AccordionGroup>
+  <Accordion title="Active Learning Techniques" icon="brain">
+    **Don't Just Read Solutions:**
+    - Try for at least 20-30 minutes before looking
+    - If stuck, look at hints only, not full solution
+    - After seeing solution, implement from scratch
+    
+    **Explain Out Loud:**
+    - Pretend you're in an interview
+    - Explain your approach before coding
+    - Justify complexity and space usage
+    
+    **Pattern Journaling:**
+    - Keep a notebook of patterns
+    - Write down when each pattern applies
+    - Create your own problem-to-pattern mappings
+  </Accordion>
+  
+  <Accordion title="Time Management" icon="clock">
+    **Problem Time Budgets:**
+    - Easy: 15-20 minutes
+    - Medium: 30-45 minutes
+    - Hard: 45-60 minutes
+    
+    **Daily Structure:**
+    - Warm up with easier problem (10 min)
+    - Focus time on new problems (60-90 min)
+    - Review previous problems (20-30 min)
+    - Read solutions/discussions (10-15 min)
+    
+    **Weekly Rhythm:**
+    - Days 1-5: Learn new patterns
+    - Day 6: Mixed practice from the week
+    - Day 7: Review + mock interview
+  </Accordion>
+  
+  <Accordion title="Dealing with Frustration" icon="heart">
+    **When Stuck:**
+    1. Take a 5-minute break
+    2. Re-read the problem constraints
+    3. Draw examples on paper
+    4. Think about similar problems you've solved
+    5. Look up the pattern (not the solution)
+    
+    **After Multiple Attempts:**
+    - It's okay to look at the solution
+    - Understand the key insight you were missing
+    - Retry the problem 2 days later
+    - Most people need 2-3 attempts to master hard problems
+    
+    **Growth Mindset:**
+    - Struggle means you're learning
+    - Your first solution doesn't need to be optimal
+    - Pattern recognition improves with practice
+  </Accordion>
+  
+  <Accordion title="Tracking Progress" icon="chart-line">
+    **Create a Tracker:**
+    ```plaintext
+    Problem # | Title | Date | Time | Solved? | Revisit?
+    001       | ...   | ...  | 35m  | Yes     | -
+    002       | ...   | ...  | 50m  | No      | ✓
+    ```
+    
+    **Mark for Review:**
+    - Problems that took >2x expected time
+    - Problems you couldn't solve
+    - Problems with interesting optimizations
+    - Problems with patterns you're weak on
+    
+    **Celebrate Milestones:**
+    - ✅ First Easy problem solved
+    - ✅ 10 problems completed
+    - ✅ First Medium without hints
+    - ✅ 50 problems mastered
+    - ✅ First Hard problem solved
+    - ✅ 100 problems conquered!
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Pattern Recognition Cheat Sheet
+
+Quick reference for identifying which pattern to use:
+
+<CodeGroup>
+```plaintext When to Use Hash Map
+• Need O(1) lookups
+• Counting frequency
+• Checking existence
+• Grouping related items
+• Complement search (Two Sum pattern)
+
+Examples: #017, #001, #026, #062
+```
+
+```plaintext When to Use Two Pointers
+• Array is sorted
+• Need to find pairs with property
+• Comparing ends of sequence
+• Fast-slow pointer for cycles
+• Optimizing from O(n²) to O(n)
+
+Examples: #029, #004, #033, #073
+```
+
+```plaintext When to Use Stack
+• Matching/validating pairs
+• Nested structures
+• Expression evaluation
+• Tracking previous elements
+• Monotonic sequences
+
+Examples: #020, #001, #008, #035
+```
+
+```plaintext When to Use Binary Search
+• Data is sorted
+• Finding threshold/boundary
+• Minimizing maximum value
+• Maximizing minimum value
+• O(n) validation function available
+
+Examples: #010, #074, #079, #094
+```
+
+```plaintext When to Use DFS/BFS
+• Graph traversal
+• Tree traversal
+• Connected components
+• Shortest path (BFS)
+• Explore all possibilities (DFS)
+
+Examples: #025, #063, #031, #007
+```
+
+```plaintext When to Use Dynamic Programming
+• Optimization problem (min/max)
+• Count number of ways
+• Overlapping subproblems
+• Optimal substructure
+• Keywords: "maximum", "minimum", "count ways"
+
+Examples: #018, #087, #075, #096
+```
+
+```plaintext When to Use Sliding Window
+• Contiguous subarray/substring
+• Finding optimal window
+• All windows of certain property
+• Running aggregates
+
+Examples: #080, #040, #037, #059
+```
+
+```plaintext When to Use Heap
+• Find k-th largest/smallest
+• Maintain running median
+• Merge k sorted structures
+• Stream processing with priority
+
+Examples: #006, #015, #082, #019
+```
+</CodeGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Start Learning" icon="rocket" href="/quickstart">
+    Jump into the quickstart guide to begin your journey
+  </Card>
+  
+  <Card title="Browse Problems" icon="list" href="/problems/top-frequency">
+    Explore the highest frequency interview problems
+  </Card>
+  
+  <Card title="Learn Patterns" icon="puzzle-piece" href="/resources/patterns">
+    Deep dive into algorithmic patterns and techniques
+  </Card>
+  
+  <Card title="Interview Tips" icon="comments" href="/resources/interview-tips">
+    Master the art of communicating your solutions
+  </Card>
+</CardGroup>
+
+<Note>
+  **Remember:** Consistency beats intensity. Solving 3 problems daily for 4 weeks is better than cramming 20 problems in one day. Your brain needs time to form neural pathways for pattern recognition.
+</Note>
+
+<Tip>
+  **Pro Tip:** After completing your chosen plan, maintain your skills by solving 1-2 problems weekly. This keeps patterns fresh and builds long-term retention.
+</Tip>

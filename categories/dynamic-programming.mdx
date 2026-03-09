@@ -1,0 +1,365 @@
+---
+title: 'Dynamic Programming'
+description: 'Master DP patterns for optimization problems with overlapping subproblems'
+---
+
+# Dynamic Programming
+
+Dynamic Programming (DP) solves complex problems by breaking them into simpler overlapping subproblems. It's essential for optimization problems where you need to find the best solution among many possibilities.
+
+## Core Concepts
+
+### When to Use DP
+1. **Optimal Substructure**: Solution to problem contains solutions to subproblems
+2. **Overlapping Subproblems**: Same subproblems solved multiple times
+3. **Decision at each step**: Choose between multiple options
+4. **Optimization**: Minimize/maximize some value
+
+### DP Approaches
+- **Top-Down (Memoization)**: Recursive with caching
+- **Bottom-Up (Tabulation)**: Iterative, fill table
+- **Space Optimization**: Reduce from O(n) to O(1)
+
+## Key Patterns & Techniques
+
+### 1. Linear DP (1D)
+- State depends on previous elements
+- Examples: Fibonacci, house robber, stock prices
+- Usually O(n) time, O(n) or O(1) space
+
+### 2. Grid DP (2D)
+- State depends on 2D position
+- Examples: Unique paths, min path sum
+- Usually O(m*n) time and space
+
+### 3. Knapsack Pattern
+- Include/exclude decision for each item
+- 0/1 knapsack, subset sum
+- O(n * capacity) time
+
+### 4. String DP
+- Subsequence, substring problems
+- LCS, edit distance, word break
+- Often O(n*m) for two strings
+
+## Common Approaches
+
+### Basic DP Template (Top-Down)
+```python
+def dpTopDown(n: int) -> int:
+    """
+    Top-down DP with memoization.
+    Time: O(n), Space: O(n)
+    """
+    memo = {}
+    
+    def dp(i: int) -> int:
+        # Base case
+        if i <= 0:
+            return BASE_VALUE
+        
+        # Check cache
+        if i in memo:
+            return memo[i]
+        
+        # Recurrence relation
+        memo[i] = RECURRENCE_FORMULA
+        
+        return memo[i]
+    
+    return dp(n)
+```
+
+### Basic DP Template (Bottom-Up)
+```python
+def dpBottomUp(n: int) -> int:
+    """
+    Bottom-up DP with tabulation.
+    Time: O(n), Space: O(n)
+    """
+    if n <= 0:
+        return BASE_VALUE
+    
+    # Initialize DP table
+    dp = [0] * (n + 1)
+    dp[0] = BASE_VALUE_0
+    dp[1] = BASE_VALUE_1
+    
+    # Fill table
+    for i in range(2, n + 1):
+        dp[i] = RECURRENCE_FORMULA
+    
+    return dp[n]
+```
+
+### Stock Buy/Sell (Linear DP)
+```python
+def maxProfit(prices: List[int]) -> int:
+    """
+    Find maximum profit with single transaction.
+    Time: O(n), Space: O(1)
+    """
+    min_price = float('inf')
+    max_profit = 0
+    
+    for price in prices:
+        # Track minimum price seen so far
+        min_price = min(min_price, price)
+        # Calculate profit if selling today
+        profit = price - min_price
+        # Update maximum profit
+        max_profit = max(max_profit, profit)
+    
+    return max_profit
+```
+
+### Word Break (String DP)
+```python
+def wordBreak(s: str, wordDict: List[str]) -> bool:
+    """
+    Check if string can be segmented into dictionary words.
+    Time: O(n^2 * m), Space: O(n)
+    n = len(s), m = avg word length
+    """
+    word_set = set(wordDict)
+    n = len(s)
+    
+    # dp[i] = can segment s[0:i]
+    dp = [False] * (n + 1)
+    dp[0] = True  # Empty string
+    
+    for i in range(1, n + 1):
+        for j in range(i):
+            # If s[0:j] can be segmented and s[j:i] is a word
+            if dp[j] and s[j:i] in word_set:
+                dp[i] = True
+                break
+    
+    return dp[n]
+```
+
+### Maximum Subarray (Kadane's Algorithm)
+```python
+def maxSubArray(nums: List[int]) -> int:
+    """
+    Find maximum sum contiguous subarray.
+    Time: O(n), Space: O(1)
+    """
+    max_sum = nums[0]
+    current_sum = nums[0]
+    
+    for num in nums[1:]:
+        # Either extend current subarray or start new
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    
+    return max_sum
+```
+
+### Stock III (Multiple States)
+```python
+def maxProfit(prices: List[int]) -> int:
+    """
+    Maximum profit with at most 2 transactions.
+    Time: O(n), Space: O(1)
+    """
+    # State machine: track best profit at each state
+    buy1 = buy2 = float('-inf')
+    sell1 = sell2 = 0
+    
+    for price in prices:
+        # First transaction
+        buy1 = max(buy1, -price)
+        sell1 = max(sell1, buy1 + price)
+        
+        # Second transaction (can only start after first sells)
+        buy2 = max(buy2, sell1 - price)
+        sell2 = max(sell2, buy2 + price)
+    
+    return sell2
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="018. Best Time to Buy and Sell Stock" icon="chart-line" href="/problems/018-best-time-to-buy-and-sell-stock">
+    **Easy** | Frequency: 76.4%
+    
+    Linear DP - track minimum price and maximum profit in single pass.
+  </Card>
+
+  <Card title="087. Maximum Subarray" icon="wave-square" href="/problems/087-maximum-subarray">
+    **Medium** | Frequency: 32.0%
+    
+    Kadane's algorithm - classic DP for maximum contiguous sum.
+  </Card>
+
+  <Card title="075. Word Break" icon="book" href="/problems/075-word-break">
+    **Medium** | Frequency: 40.7%
+    
+    String DP - check if string can be segmented into dictionary words.
+  </Card>
+
+  <Card title="099. Best Time to Buy and Sell Stock III" icon="money-bill-trend-up" href="/problems/099-best-time-to-buy-and-sell-stock-iii">
+    **Hard** | Frequency: 32.0%
+    
+    State machine DP - track multiple transaction states.
+  </Card>
+
+  <Card title="055. Subsets" icon="list" href="/problems/055-subsets">
+    **Medium** | Frequency: 47.0%
+    
+    Backtracking/DP - generate all possible subsets.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | Optimization Possible |
+|---------|----------------|------------------|----------------------|
+| 1D Linear DP | O(n) | O(n) → O(1) | Yes, track last k states |
+| 2D Grid DP | O(m*n) | O(m*n) → O(n) | Yes, only need prev row |
+| Knapsack | O(n*W) | O(n*W) → O(W) | Yes, 1D array |
+| String (LCS) | O(m*n) | O(m*n) → O(min(m,n)) | Yes, track prev row |
+| Tree DP | O(n) | O(h) | No, need recursion stack |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Maximum/minimum profit"** → DP with state tracking
+- **"Count ways to..."** → DP counting paths/combinations
+- **"Can you reach/form..."** → Boolean DP
+- **"Longest/shortest subsequence"** → String DP
+- **"Contiguous subarray max/min"** → Kadane's algorithm
+- **"Include/exclude decision"** → Knapsack pattern
+
+### Common Mistakes
+- Not identifying overlapping subproblems
+- Wrong base cases
+- Off-by-one errors in indices
+- Not considering all transitions
+- Forgetting to optimize space
+
+### Key Insights
+1. **Identify state**: What information do you need to solve subproblem?
+2. **Define recurrence**: How does state i relate to previous states?
+3. **Base cases**: What are the simplest subproblems?
+4. **Order of computation**: Bottom-up must compute in right order
+5. **Space optimization**: Often only need last k states, not entire array
+
+## DP vs Greedy vs Divide & Conquer
+
+| Approach | Overlapping Subproblems | Optimal Substructure | When to Use |
+|----------|------------------------|---------------------|-------------|
+| **DP** | Yes | Yes | Multiple optimal choices, need all subproblems |
+| **Greedy** | No | Yes | Local optimal → global optimal |
+| **D&C** | No | Yes | Independent subproblems |
+
+## DP Patterns Summary
+
+### 1. Fibonacci/Climbing Stairs
+```python
+# State: dp[i] = ways to reach step i
+# Recurrence: dp[i] = dp[i-1] + dp[i-2]
+```
+
+### 2. House Robber
+```python
+# State: dp[i] = max money robbing up to house i
+# Recurrence: dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+```
+
+### 3. Longest Increasing Subsequence
+```python
+# State: dp[i] = length of LIS ending at i
+# Recurrence: dp[i] = max(dp[j] + 1) for all j < i where nums[j] < nums[i]
+```
+
+### 4. Coin Change
+```python
+# State: dp[i] = min coins to make amount i
+# Recurrence: dp[i] = min(dp[i - coin] + 1) for all coins
+```
+
+### 5. Edit Distance
+```python
+# State: dp[i][j] = min ops to convert s1[0:i] to s2[0:j]
+# Recurrence: if s1[i] == s2[j]: dp[i-1][j-1]
+#             else: 1 + min(insert, delete, replace)
+```
+
+## Advanced Patterns
+
+### State Machine DP
+```python
+def maxProfitWithCooldown(prices: List[int]) -> int:
+    """
+    Stock with cooldown - state machine DP.
+    States: held, sold, cooldown
+    """
+    held = float('-inf')
+    sold = 0
+    cooldown = 0
+    
+    for price in prices:
+        prev_sold = sold
+        
+        # Can sell if currently holding
+        sold = held + price
+        
+        # Can buy if in cooldown, or stay held
+        held = max(held, cooldown - price)
+        
+        # Enter cooldown after selling
+        cooldown = max(cooldown, prev_sold)
+    
+    return max(sold, cooldown)
+```
+
+### Digit DP
+```python
+def countDigitOne(n: int) -> int:
+    """
+    Count digit 1 in range [1, n] using digit DP.
+    Time: O(log n), Space: O(log n)
+    """
+    # Complex pattern - build numbers digit by digit
+    # Track: position, count of 1s, tight bound
+```
+
+### Bitmask DP
+```python
+def shortestPathVisitingAllNodes(graph: List[List[int]]) -> int:
+    """
+    Visit all nodes in graph - bitmask DP.
+    State: (node, visited_mask)
+    """
+    # Use bitmask to represent set of visited nodes
+    # dp[(node, mask)] = min steps to reach node with mask visited
+```
+
+## Space Optimization Example
+
+```python
+# Original: O(n) space
+def fib(n: int) -> int:
+    dp = [0] * (n + 1)
+    dp[0], dp[1] = 0, 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i-1] + dp[i-2]
+    return dp[n]
+
+# Optimized: O(1) space
+def fib(n: int) -> int:
+    if n <= 1:
+        return n
+    prev2, prev1 = 0, 1
+    for _ in range(2, n + 1):
+        curr = prev1 + prev2
+        prev2, prev1 = prev1, curr
+    return prev1
+```
+
+---
+
+**Pro Tip:** Start with top-down memoization (easier to write), then optimize to bottom-up if needed. Always check if you can reduce space complexity by only keeping last k states instead of entire DP array.

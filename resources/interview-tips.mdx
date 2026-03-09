@@ -1,0 +1,602 @@
+---
+title: Interview Tips & Strategies
+description: Proven strategies for acing coding interviews, from preparation to problem-solving frameworks
+---
+
+# Interview Tips & Strategies
+
+This guide provides practical advice for succeeding in technical coding interviews, based on insights from the top 100 most frequently asked problems.
+
+---
+
+## Before the Interview
+
+### Preparation Strategy
+
+**Study Plan (4 Weeks)**
+
+**Week 1: Foundations**
+- Days 1-2: Arrays & Hashing ([#017 Two Sum](/problems/array-hashing/017-two-sum), [#016 Merge Intervals](/problems/array-hashing/016-merge-intervals))
+- Days 3-4: Two Pointers ([#029 Valid Palindrome](/problems/two-pointers/029-valid-palindrome), [#033 Merge Sorted Array](/problems/two-pointers/033-merge-sorted-array))
+- Days 5-7: Stack ([#020 Valid Parentheses](/problems/stack/020-valid-parentheses), [#001 Minimum Remove Valid Parentheses](/problems/parentheses/001-minimum-remove-to-make-valid-parentheses))
+
+**Week 2: Data Structures**
+- Days 1-3: Trees ([#014 Diameter of Binary Tree](/problems/tree/014-diameter-of-binary-tree), [#007 Binary Tree Right Side View](/problems/tree/007-binary-tree-right-side-view))
+- Days 4-5: Linked Lists ([#019 Merge k Sorted Lists](/problems/heap-priority-queue/019-merge-k-sorted-lists), [#032 Copy List with Random Pointer](/problems/linked-list/032-copy-list-with-random-pointer))
+- Days 6-7: Design ([#039 LRU Cache](/problems/design/039-lru-cache))
+
+**Week 3: Algorithms**
+- Days 1-2: Binary Search ([#010 Find Peak Element](/problems/binary-search/010-find-peak-element), [#094 Koko Eating Bananas](/problems/binary-search/094-koko-eating-bananas))
+- Days 3-4: DFS/BFS ([#025 Clone Graph](/problems/graph-dfs-bfs/025-clone-graph), [#063 Course Schedule](/problems/graph-dfs-bfs/063-course-schedule))
+- Days 5-7: Dynamic Programming ([#018 Best Time to Buy and Sell Stock](/problems/dynamic-programming/018-best-time-to-buy-and-sell-stock), [#075 Word Break](/problems/dynamic-programming/075-word-break))
+
+**Week 4: Advanced + Mock Interviews**
+- Days 1-2: Sliding Window ([#037 Minimum Window Substring](/problems/sliding-window/037-minimum-window-substring), [#080 Longest Substring Without Repeating Characters](/problems/sliding-window/080-longest-substring-without-repeating-characters))
+- Days 3-4: Heap/Priority Queue ([#006 Kth Largest Element](/problems/heap-priority-queue/006-kth-largest-element-in-an-array), [#082 Find Median from Data Stream](/problems/heap-priority-queue/082-find-median-from-data-stream))
+- Days 5-7: Mock interviews and hard problems ([#100 Median of Two Sorted Arrays](/problems/binary-search/100-median-of-two-sorted-arrays))
+
+### Practice Tips
+
+**Time Yourself**
+- Easy: 15-20 minutes
+- Medium: 25-35 minutes
+- Hard: 35-45 minutes
+
+**Focus on Understanding, Not Memorization**
+- Don't just memorize solutions
+- Understand why each approach works
+- Practice explaining your reasoning out loud
+- Identify the pattern behind each problem
+
+**Quality Over Quantity**
+- Better to deeply understand 50 problems than superficially know 200
+- Review problems you've solved after 1 day, 1 week, and 1 month
+- If you can't solve a problem in 15 minutes, read the solution and implement it yourself later
+
+**Build a Pattern Library**
+- Keep notes on common patterns you encounter
+- Document when to use each pattern
+- Create template code for each pattern (see [Common Patterns](/resources/patterns))
+
+---
+
+## During the Interview
+
+### The UMPIRE Framework
+
+A systematic approach to problem-solving in interviews:
+
+#### U - Understand
+
+**Clarify the problem before coding**
+
+Ask questions:
+- "Can the input array be empty?"
+- "Are there duplicate values?"
+- "What should I return if no solution exists?"
+- "Can I modify the input array?"
+- "What's the expected size of the input?"
+- "Are there any constraints on time or space complexity?"
+
+**Restate the problem**:
+- "So I need to find two numbers that sum to the target and return their indices, correct?"
+
+**Check example**:
+- Walk through the given example
+- Confirm your understanding
+
+#### M - Match
+
+**Identify the pattern**
+
+Recognize problem type:
+- Sorted array → Binary Search or Two Pointers
+- Find pairs/complements → Hash Map
+- Substring/subarray → Sliding Window
+- Parentheses/brackets → Stack
+- Tree/Graph → DFS/BFS
+- Kth largest/smallest → Heap
+- Optimization problem → DP or Greedy
+
+Reference similar problems:
+- "This reminds me of Two Sum, but instead of two numbers, we need three."
+
+#### P - Plan
+
+**Outline your approach before coding**
+
+1. **Describe the algorithm**:
+   - "I'll use a hash map to store values I've seen."
+   - "For each element, I'll check if the complement exists."
+
+2. **Discuss complexity**:
+   - "This will be O(n) time because we iterate once."
+   - "Space complexity is O(n) for the hash map."
+
+3. **Consider edge cases**:
+   - Empty input
+   - Single element
+   - All duplicates
+   - No solution exists
+
+4. **Get approval**:
+   - "Does this approach sound good to you?"
+   - Wait for interviewer's feedback before coding
+
+#### I - Implement
+
+**Write clean, working code**
+
+**Best Practices**:
+
+```python
+# Good: Clean, readable code
+def two_sum(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target.
+    Time: O(n), Space: O(n)
+    """
+    seen = {}  # value -> index
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    
+    return []  # no solution found
+
+# Bad: Unclear variable names, no comments
+def ts(a, t):
+    d = {}
+    for i in range(len(a)):
+        if t - a[i] in d:
+            return [d[t - a[i]], i]
+        d[a[i]] = i
+```
+
+**Tips**:
+- Use descriptive variable names: `seen` instead of `d`, `complement` instead of `c`
+- Add docstrings with complexity analysis
+- Leave space for edge case handling
+- Think out loud while coding
+- Explain tricky parts: "Here I'm checking if the complement exists..."
+
+#### R - Review
+
+**Test your code before declaring done**
+
+1. **Walk through with example**:
+   - Use the given test case
+   - Trace through line by line
+   - Verify output matches expected
+
+2. **Check edge cases**:
+   - Empty input: `nums = []`
+   - Minimum size: `nums = [1, 2]`
+   - No solution: `nums = [1, 2, 3], target = 10`
+   - Duplicates: `nums = [3, 3], target = 6`
+
+3. **Look for bugs**:
+   - Off-by-one errors
+   - Null/None pointer issues
+   - Integer overflow (for large numbers)
+   - Incorrect loop boundaries
+
+4. **Verify complexity**:
+   - Confirm time and space match your stated analysis
+
+#### E - Evaluate
+
+**Discuss optimizations and trade-offs**
+
+1. **Can we do better?**
+   - "Could we reduce space to O(1) if we sorted first? But that would increase time to O(n log n)."
+
+2. **Alternative approaches**:
+   - "We could also use two pointers if the array were sorted, which would be O(1) space but O(n log n) time due to sorting."
+
+3. **Real-world considerations**:
+   - "If we expect many queries with the same array, we could preprocess into a hash map once."
+
+4. **Scaling**:
+   - "For very large datasets that don't fit in memory, we might need to use external sorting or a distributed hash table."
+
+---
+
+## Communication Best Practices
+
+### Think Out Loud
+
+**Good**: 
+> "I see the array is sorted, which suggests I could use binary search. Let me think... since I need to find a peak element, I can check if the middle element is greater than its neighbors. If it's decreasing to the right, the peak must be on the left side..."
+
+**Bad**: 
+> *Silently codes for 5 minutes*
+
+### Ask for Hints When Stuck
+
+**Good**:
+> "I'm considering two approaches: using a hash map for O(n) time or sorting for O(n log n). I'm not sure which would be better here. Could you give me a hint about whether the time complexity constraint is strict?"
+
+**Bad**:
+> "I don't know how to solve this."
+
+### Discuss Trade-offs
+
+**Good**:
+> "Using a hash map gives us O(n) time but requires O(n) space. Alternatively, if we sort the array first, we could use two pointers with O(1) extra space, but sorting takes O(n log n) time. Given that the problem doesn't mention space constraints, I'd recommend the hash map approach for better time complexity."
+
+**Bad**:
+> "Hash maps are better."
+
+---
+
+## Edge Cases to Always Consider
+
+### Common Edge Cases by Problem Type
+
+**Arrays**
+- Empty array: `[]`
+- Single element: `[1]`
+- All elements the same: `[5, 5, 5, 5]`
+- Already sorted vs. unsorted
+- Negative numbers: `[-5, -2, 0, 3]`
+- Duplicates
+
+**Strings**
+- Empty string: `""`
+- Single character: `"a"`
+- All same character: `"aaaa"`
+- Special characters and spaces: `"hello world!"`
+- Case sensitivity: `"AbCd"`
+
+**Linked Lists**
+- Empty list: `None`
+- Single node
+- Cycle detection problems
+- Odd vs. even length
+
+**Trees**
+- Empty tree: `None`
+- Single node
+- Skewed tree (all left or all right)
+- Balanced vs. unbalanced
+
+**Graphs**
+- Disconnected components
+- Cycles
+- Single node
+- No edges
+
+**Numeric**
+- Zero: `0`
+- Negative numbers
+- Integer overflow (very large numbers)
+- Floating point precision
+
+---
+
+## Testing Strategies
+
+### Manual Test Cases
+
+**Test case structure**:
+
+```python
+# Example: Two Sum
+
+# 1. Normal case
+nums = [2, 7, 11, 15], target = 9
+# Expected: [0, 1]
+
+# 2. Edge: minimum size
+nums = [1, 2], target = 3
+# Expected: [0, 1]
+
+# 3. Edge: duplicates
+nums = [3, 3], target = 6
+# Expected: [0, 1]
+
+# 4. Edge: negative numbers
+nums = [-1, -2, -3, -4], target = -6
+# Expected: [1, 3]
+
+# 5. Large numbers
+nums = [1000000000, 2000000000], target = 3000000000
+# Expected: [0, 1]
+```
+
+### Stress Testing
+
+**Think about scale**:
+- "What if n = 10^5?" (most interview problems)
+- "What if n = 10^9?" (need O(n) or better)
+- "What if the string is 1GB?" (streaming, memory constraints)
+
+---
+
+## Common Pitfalls to Avoid
+
+### Pitfall 1: Jumping into Code Too Quickly
+
+**Problem**: Start coding before understanding the problem.
+
+**Solution**: Always clarify requirements and plan your approach first.
+
+### Pitfall 2: Not Testing Your Code
+
+**Problem**: Declare "done" without testing.
+
+**Solution**: Always walk through at least one example and check edge cases.
+
+### Pitfall 3: Getting Stuck on Optimal Solution
+
+**Problem**: Spend 20 minutes trying to find the perfect O(n) solution.
+
+**Solution**: 
+- Start with brute force
+- Explain the complexity
+- Then optimize: "This is O(n²). Could I use a hash map to get O(n)?"
+
+### Pitfall 4: Silent Coding
+
+**Problem**: Write code silently, giving interviewer no insight into your thinking.
+
+**Solution**: Narrate your thought process continuously.
+
+### Pitfall 5: Ignoring Hints
+
+**Problem**: Interviewer gives a hint but you continue with your approach.
+
+**Solution**: Listen carefully to hints and incorporate them immediately.
+
+### Pitfall 6: Poor Variable Naming
+
+**Problem**: Using single letters like `i`, `j`, `k`, `x`, `y` everywhere.
+
+**Solution**: Use descriptive names: `left`, `right`, `complement`, `current_sum`.
+
+### Pitfall 7: Not Asking Questions
+
+**Problem**: Make assumptions about input constraints.
+
+**Solution**: Always clarify ambiguities before coding.
+
+---
+
+## Time Management
+
+### 45-Minute Interview Breakdown
+
+**Minutes 0-5: Understand & Clarify**
+- Read problem carefully
+- Ask clarifying questions
+- Verify understanding with examples
+
+**Minutes 5-10: Plan & Discuss**
+- Identify pattern
+- Propose approach
+- Discuss complexity
+- Get interviewer buy-in
+
+**Minutes 10-30: Implement**
+- Write clean code
+- Think out loud
+- Handle edge cases
+- Test as you go
+
+**Minutes 30-40: Review & Test**
+- Walk through example
+- Test edge cases
+- Fix bugs
+- Verify complexity
+
+**Minutes 40-45: Optimize & Discuss**
+- Discuss alternative approaches
+- Trade-offs
+- Real-world considerations
+- Answer follow-up questions
+
+### What If You're Running Out of Time?
+
+**Strategy**:
+1. **Acknowledge it**: "I'm noticing we have about 10 minutes left."
+2. **Prioritize**: "Let me finish the core logic first, then handle edge cases."
+3. **Outline**: "Here's what I'd do for edge cases: ..."
+4. **Pseudocode**: If running really short, write pseudocode for remaining parts.
+
+---
+
+## Problem-Solving When Stuck
+
+### Strategies to Unstick Yourself
+
+**1. Simplify the Problem**
+- Reduce input size: "What if the array had only 2 elements?"
+- Remove constraints: "What if I didn't care about space complexity?"
+- Solve a related problem first
+
+**2. Work Through Examples**
+- Manually solve 2-3 different examples
+- Look for patterns in your manual process
+- "How am I doing this in my head?"
+
+**3. Consider Brute Force**
+- What's the naive O(n²) or O(2ⁿ) solution?
+- Once you have brute force, optimize:
+  - "I'm checking all pairs—could a hash map help?"
+  - "I'm recalculating subproblems—could I cache results?"
+
+**4. Pattern Matching**
+- Does this fit a known pattern? (See [Common Patterns](/resources/patterns))
+- Have I seen a similar problem?
+- What data structure would help here?
+
+**5. Ask for a Hint**
+- "I'm considering two approaches but unsure which to pursue. Could you provide a hint?"
+- "Should I be thinking about this as a graph problem?"
+
+---
+
+## Language-Specific Tips
+
+### Python Advantages
+
+**Rich Built-ins**:
+```python
+# Collections
+from collections import Counter, defaultdict, deque
+
+counts = Counter([1, 2, 2, 3])  # {1: 1, 2: 2, 3: 1}
+graph = defaultdict(list)        # auto-creates empty lists
+queue = deque([1, 2, 3])         # efficient O(1) append/popleft
+
+# Heapq
+import heapq
+heap = []
+heapq.heappush(heap, 5)
+smallest = heapq.heappop(heap)
+
+# Sorting with key
+nums.sort(key=lambda x: (x[0], -x[1]))  # sort by first asc, second desc
+```
+
+**List Comprehensions**:
+```python
+squares = [x*x for x in nums]
+even_squares = [x*x for x in nums if x % 2 == 0]
+```
+
+**Multiple Assignment**:
+```python
+left, right = 0, len(nums) - 1
+a, b = b, a  # swap
+```
+
+### Common Python Gotchas
+
+**1. Integer Division**:
+```python
+# Python 3
+5 / 2   # 2.5 (float division)
+5 // 2  # 2 (floor division)
+
+# Be careful with negative numbers
+-5 // 2  # -3 (floors toward negative infinity)
+int(-5 / 2)  # -2 (truncates toward zero)
+```
+
+**2. List Slicing Creates Copies**:
+```python
+nums = [1, 2, 3, 4, 5]
+sublist = nums[1:3]  # [2, 3] - this is O(k) space for k elements
+```
+
+**3. Default Mutable Arguments**:
+```python
+# BAD: default list is shared across calls
+def add_to_list(val, lst=[]):
+    lst.append(val)
+    return lst
+
+# GOOD: use None and create new list
+def add_to_list(val, lst=None):
+    if lst is None:
+        lst = []
+    lst.append(val)
+    return lst
+```
+
+---
+
+## Behavioral Tips
+
+### Be Collaborative
+
+**Good**:
+- "What do you think about this approach?"
+- "Does this make sense?"
+- "Would you like me to code this up or explore another approach?"
+
+**Bad**:
+- Ignoring interviewer input
+- Defensive when given feedback
+- Acting like you know everything
+
+### Show Enthusiasm
+
+- Express interest in the problem
+- Stay positive even when stuck
+- Be excited about learning something new
+
+### Handle Stress Gracefully
+
+- If you're stuck, stay calm
+- Take a deep breath
+- Ask for a hint rather than giving up
+- Show your problem-solving process even if you don't finish
+
+---
+
+## Final Checklist
+
+### Before Starting to Code
+
+- [ ] Understood the problem completely?
+- [ ] Asked clarifying questions?
+- [ ] Identified the pattern?
+- [ ] Explained my approach?
+- [ ] Discussed time and space complexity?
+- [ ] Got interviewer's approval to code?
+
+### Before Declaring "Done"
+
+- [ ] Tested with the given example?
+- [ ] Tested edge cases?
+- [ ] Checked for off-by-one errors?
+- [ ] Verified variable names are clear?
+- [ ] Confirmed time and space complexity?
+- [ ] Discussed optimizations?
+
+---
+
+## Resources for Continued Learning
+
+### Must-Know Problems
+
+Prioritize these high-frequency problems:
+
+**Top 10 Must-Know**:
+1. [#017 - Two Sum](/problems/array-hashing/017-two-sum) - 76.4% frequency
+2. [#020 - Valid Parentheses](/problems/stack/020-valid-parentheses) - 74.9% frequency
+3. [#016 - Merge Intervals](/problems/array-hashing/016-merge-intervals) - 77.9% frequency
+4. [#039 - LRU Cache](/problems/design/039-lru-cache) - 62.4% frequency
+5. [#001 - Minimum Remove to Make Valid Parentheses](/problems/parentheses/001-minimum-remove-to-make-valid-parentheses) - 100% frequency
+6. [#029 - Valid Palindrome](/problems/two-pointers/029-valid-palindrome) - Common screening
+7. [#007 - Binary Tree Right Side View](/problems/tree/007-binary-tree-right-side-view) - 86% frequency
+8. [#025 - Clone Graph](/problems/graph-dfs-bfs/025-clone-graph) - 71.4% frequency
+9. [#010 - Find Peak Element](/problems/binary-search/010-find-peak-element) - 82.9% frequency
+10. [#037 - Minimum Window Substring](/problems/sliding-window/037-minimum-window-substring) - 62.4% frequency
+
+### Study by Company
+
+Different companies emphasize different patterns:
+- **FAANG**: Focus on medium/hard problems, system design integration
+- **Startups**: Practical problems, real-world scenarios
+- **Finance/Trading**: Math-heavy, optimization problems
+
+---
+
+## Remember
+
+**Interviewing is a skill**. Like any skill, it improves with practice. Don't get discouraged by initial failures—even experienced engineers need practice to perform well in interviews.
+
+**Key Success Factors**:
+1. **Pattern recognition** - Know the 16 core patterns (see [Common Patterns](/resources/patterns))
+2. **Clear communication** - Explain your thinking process
+3. **Clean code** - Write readable, testable code
+4. **Testing mindset** - Always verify your solution
+5. **Growth mindset** - Learn from each interview
+
+Good luck! 🚀

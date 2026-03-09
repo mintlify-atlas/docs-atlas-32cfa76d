@@ -1,0 +1,1129 @@
+---
+title: Common Problem-Solving Patterns
+description: Master the 16 fundamental patterns that solve 90% of coding interview problems
+---
+
+# Common Problem-Solving Patterns
+
+This guide covers the 16 essential algorithmic patterns found across the top 100 interview problems. Understanding these patterns helps you recognize problem types instantly and apply the right approach.
+
+---
+
+## Pattern Overview
+
+The 16 core patterns are:
+
+1. **Array & Hashing** - Fast lookups and aggregations
+2. **Two Pointers** - Linear traversal optimization
+3. **Sliding Window** - Subarray/substring optimization
+4. **Stack** - LIFO operations and parsing
+5. **Binary Search** - Logarithmic search in sorted spaces
+6. **Linked List** - Sequential pointer manipulation
+7. **Trees** - Hierarchical data traversal
+8. **BST** - Binary search tree properties
+9. **Heap/Priority Queue** - Dynamic min/max tracking
+10. **Graph DFS** - Deep exploration and cycles
+11. **Graph BFS** - Shortest paths and levels
+12. **Dynamic Programming** - Optimal substructure
+13. **Backtracking** - Exhaustive search with pruning
+14. **Greedy** - Local optimal choices
+15. **Bit Manipulation** - Efficient bitwise operations
+16. **Math & Geometry** - Mathematical insights
+
+---
+
+## 1. Array & Hashing
+
+### When to Use
+- Need O(1) lookups or counting
+- Finding pairs, duplicates, or frequencies
+- Prefix sums for range queries
+- Grouping or aggregating data
+
+### Key Techniques
+- **Hash Map**: O(1) lookups for complements
+- **Prefix Sum**: Cumulative sums for range queries
+- **Sorting**: Enable two-pointer or binary search
+- **Counting**: Frequency maps for analysis
+
+### Code Template
+
+```python
+def two_sum(nums: List[int], target: int) -> List[int]:
+    """
+    Hash map pattern for O(1) complement lookup.
+    Time: O(n), Space: O(n)
+    """
+    seen = {}  # value -> index
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+
+def subarray_sum(nums: List[int], k: int) -> int:
+    """
+    Prefix sum + hash map for subarray sums.
+    Time: O(n), Space: O(n)
+    """
+    prefix_sum = {0: 1}  # sum -> count
+    curr_sum = count = 0
+    
+    for num in nums:
+        curr_sum += num
+        if curr_sum - k in prefix_sum:
+            count += prefix_sum[curr_sum - k]
+        prefix_sum[curr_sum] = prefix_sum.get(curr_sum, 0) + 1
+    
+    return count
+```
+
+### Problems Using This Pattern
+- [#017 - Two Sum](/problems/array-hashing/017-two-sum)
+- [#026 - Subarray Sum Equals K](/problems/array-hashing/026-subarray-sum-equals-k)
+- [#016 - Merge Intervals](/problems/array-hashing/016-merge-intervals)
+- [#089 - Range Sum Query](/problems/array-hashing/089-range-sum-query-immutable)
+
+---
+
+## 2. Two Pointers
+
+### When to Use
+- Array is sorted or can be sorted
+- Finding pairs with a condition
+- In-place array manipulation
+- Palindrome checking
+- Merging sorted sequences
+
+### Key Variations
+- **Opposite Direction**: Start from both ends (palindrome, container)
+- **Same Direction**: Fast/slow pointers (remove duplicates)
+- **Fixed Gap**: Maintain distance between pointers
+
+### Code Template
+
+```python
+def valid_palindrome(s: str) -> bool:
+    """
+    Opposite direction pointers.
+    Time: O(n), Space: O(1)
+    """
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        if s[left] != s[right]:
+            return False
+        left += 1
+        right -= 1
+    
+    return True
+
+def remove_duplicates(nums: List[int]) -> int:
+    """
+    Same direction pointers (fast/slow).
+    Time: O(n), Space: O(1)
+    """
+    if not nums:
+        return 0
+    
+    slow = 0  # position to write
+    for fast in range(1, len(nums)):
+        if nums[fast] != nums[slow]:
+            slow += 1
+            nums[slow] = nums[fast]
+    
+    return slow + 1
+
+def three_sum(nums: List[int]) -> List[List[int]]:
+    """
+    Sort + two pointers for triplets.
+    Time: O(n²), Space: O(1)
+    """
+    nums.sort()
+    result = []
+    
+    for i in range(len(nums) - 2):
+        if i > 0 and nums[i] == nums[i-1]:
+            continue  # skip duplicates
+        
+        left, right = i + 1, len(nums) - 1
+        while left < right:
+            total = nums[i] + nums[left] + nums[right]
+            if total < 0:
+                left += 1
+            elif total > 0:
+                right -= 1
+            else:
+                result.append([nums[i], nums[left], nums[right]])
+                # Skip duplicates
+                while left < right and nums[left] == nums[left+1]:
+                    left += 1
+                while left < right and nums[right] == nums[right-1]:
+                    right -= 1
+                left += 1
+                right -= 1
+    
+    return result
+```
+
+### Problems Using This Pattern
+- [#029 - Valid Palindrome](/problems/two-pointers/029-valid-palindrome)
+- [#033 - Merge Sorted Array](/problems/two-pointers/033-merge-sorted-array)
+- [#065 - 3Sum](/problems/two-pointers/065-3sum)
+- [#073 - Container With Most Water](/problems/two-pointers/073-container-with-most-water)
+
+---
+
+## 3. Sliding Window
+
+### When to Use
+- Contiguous subarray/substring problems
+- Finding minimum/maximum with constraints
+- "At most K" or "exactly K" conditions
+- Optimizing brute force O(n²) to O(n)
+
+### Key Variations
+- **Fixed Size**: Window size is constant
+- **Variable Size**: Expand/contract based on condition
+- **Hash Map**: Track character frequencies
+
+### Code Template
+
+```python
+def max_consecutive_ones(nums: List[int], k: int) -> int:
+    """
+    Variable size sliding window.
+    Time: O(n), Space: O(1)
+    """
+    left = max_len = zeros = 0
+    
+    for right in range(len(nums)):
+        if nums[right] == 0:
+            zeros += 1
+        
+        # Shrink window if invalid
+        while zeros > k:
+            if nums[left] == 0:
+                zeros -= 1
+            left += 1
+        
+        max_len = max(max_len, right - left + 1)
+    
+    return max_len
+
+def min_window_substring(s: str, t: str) -> str:
+    """
+    Variable window with hash map tracking.
+    Time: O(m+n), Space: O(k) where k = unique chars in t
+    """
+    if not s or not t:
+        return ""
+    
+    target = Counter(t)
+    required = len(target)  # unique chars needed
+    formed = 0  # unique chars satisfied
+    
+    window_counts = {}
+    left = 0
+    min_len = float('inf')
+    min_window = (0, 0)
+    
+    for right in range(len(s)):
+        # Expand window
+        char = s[right]
+        window_counts[char] = window_counts.get(char, 0) + 1
+        
+        if char in target and window_counts[char] == target[char]:
+            formed += 1
+        
+        # Contract window
+        while left <= right and formed == required:
+            # Update result
+            if right - left + 1 < min_len:
+                min_len = right - left + 1
+                min_window = (left, right)
+            
+            # Remove left char
+            char = s[left]
+            window_counts[char] -= 1
+            if char in target and window_counts[char] < target[char]:
+                formed -= 1
+            left += 1
+    
+    return "" if min_len == float('inf') else s[min_window[0]:min_window[1]+1]
+```
+
+### Problems Using This Pattern
+- [#037 - Minimum Window Substring](/problems/sliding-window/037-minimum-window-substring)
+- [#040 - Max Consecutive Ones III](/problems/sliding-window/040-max-consecutive-ones-iii)
+- [#080 - Longest Substring Without Repeating Characters](/problems/sliding-window/080-longest-substring-without-repeating-characters)
+- [#068 - Contains Duplicate II](/problems/sliding-window/068-contains-duplicate-ii)
+
+---
+
+## 4. Stack
+
+### When to Use
+- Parsing expressions or parentheses
+- Matching pairs (brackets, tags)
+- Monotonic sequences (next greater/smaller)
+- Undo/redo operations
+- Function call tracking
+
+### Key Variations
+- **Matching Stack**: Store opening brackets
+- **Monotonic Stack**: Maintain increasing/decreasing order
+- **Index Stack**: Store indices instead of values
+- **State Stack**: Track complex states
+
+### Code Template
+
+```python
+def valid_parentheses(s: str) -> bool:
+    """
+    Stack for matching pairs.
+    Time: O(n), Space: O(n)
+    """
+    stack = []
+    pairs = {'(': ')', '{': '}', '[': ']'}
+    
+    for char in s:
+        if char in pairs:  # opening bracket
+            stack.append(char)
+        elif not stack or pairs[stack.pop()] != char:
+            return False
+    
+    return len(stack) == 0
+
+def basic_calculator(s: str) -> int:
+    """
+    Stack for operators and operands.
+    Time: O(n), Space: O(n)
+    """
+    stack = []
+    num = 0
+    operator = '+'
+    
+    for i, char in enumerate(s):
+        if char.isdigit():
+            num = num * 10 + int(char)
+        
+        if char in '+-*/' or i == len(s) - 1:
+            if operator == '+':
+                stack.append(num)
+            elif operator == '-':
+                stack.append(-num)
+            elif operator == '*':
+                stack.append(stack.pop() * num)
+            elif operator == '/':
+                stack.append(int(stack.pop() / num))
+            
+            operator = char
+            num = 0
+    
+    return sum(stack)
+
+def next_greater_element(nums: List[int]) -> List[int]:
+    """
+    Monotonic decreasing stack.
+    Time: O(n), Space: O(n)
+    """
+    result = [-1] * len(nums)
+    stack = []  # indices
+    
+    for i in range(len(nums)):
+        while stack and nums[stack[-1]] < nums[i]:
+            idx = stack.pop()
+            result[idx] = nums[i]
+        stack.append(i)
+    
+    return result
+```
+
+### Problems Using This Pattern
+- [#020 - Valid Parentheses](/problems/stack/020-valid-parentheses)
+- [#001 - Minimum Remove to Make Valid Parentheses](/problems/parentheses/001-minimum-remove-to-make-valid-parentheses)
+- [#008 - Basic Calculator II](/problems/stack/008-basic-calculator-ii)
+- [#093 - Decode String](/problems/stack/093-decode-string)
+
+---
+
+## 5. Binary Search
+
+### When to Use
+- Search in sorted array
+- Find first/last occurrence
+- Search in rotated sorted array
+- Minimize/maximize with validation function
+- Answer is in a bounded range
+
+### Key Variations
+- **Search Target**: Find exact value in sorted array
+- **Search Answer Space**: Binary search on answer range
+- **Search Condition**: Find boundary meeting condition
+
+### Code Template
+
+```python
+def binary_search(nums: List[int], target: int) -> int:
+    """
+    Classic binary search.
+    Time: O(log n), Space: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+def find_first_occurrence(nums: List[int], target: int) -> int:
+    """
+    Binary search for leftmost occurrence.
+    Time: O(log n), Space: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    result = -1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            result = mid
+            right = mid - 1  # continue searching left
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return result
+
+def min_days_to_ship(weights: List[int], days: int) -> int:
+    """
+    Binary search on answer space.
+    Time: O(n log(sum)), Space: O(1)
+    """
+    def can_ship(capacity):
+        """Check if we can ship in 'days' with 'capacity'"""
+        day_count = 1
+        curr_weight = 0
+        
+        for weight in weights:
+            if curr_weight + weight > capacity:
+                day_count += 1
+                curr_weight = weight
+            else:
+                curr_weight += weight
+        
+        return day_count <= days
+    
+    left, right = max(weights), sum(weights)
+    
+    while left < right:
+        mid = left + (right - left) // 2
+        if can_ship(mid):
+            right = mid  # try smaller capacity
+        else:
+            left = mid + 1
+    
+    return left
+```
+
+### Problems Using This Pattern
+- [#010 - Find Peak Element](/problems/binary-search/010-find-peak-element)
+- [#042 - Find First and Last Position](/problems/binary-search/042-find-first-and-last-position)
+- [#079 - Capacity To Ship Packages](/problems/binary-search/079-capacity-to-ship-packages-within-d-days)
+- [#094 - Koko Eating Bananas](/problems/binary-search/094-koko-eating-bananas)
+
+---
+
+## 6. Linked List
+
+### When to Use
+- Sequential data with insertions/deletions
+- Detecting cycles
+- Finding middle element
+- Reversing sequences
+- Merging sorted lists
+
+### Key Techniques
+- **Dummy Node**: Simplify edge cases
+- **Fast/Slow Pointers**: Find middle or detect cycle
+- **Two Pointer Gap**: Remove nth from end
+- **In-place Reversal**: Reverse without extra space
+
+### Code Template
+
+```python
+def reverse_list(head: ListNode) -> ListNode:
+    """
+    In-place reversal.
+    Time: O(n), Space: O(1)
+    """
+    prev = None
+    curr = head
+    
+    while curr:
+        next_node = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_node
+    
+    return prev
+
+def detect_cycle(head: ListNode) -> ListNode:
+    """
+    Fast/slow pointers for cycle detection.
+    Time: O(n), Space: O(1)
+    """
+    slow = fast = head
+    
+    # Detect if cycle exists
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            break
+    else:
+        return None  # no cycle
+    
+    # Find cycle start
+    slow = head
+    while slow != fast:
+        slow = slow.next
+        fast = fast.next
+    
+    return slow
+
+def merge_two_lists(l1: ListNode, l2: ListNode) -> ListNode:
+    """
+    Dummy node for clean merging.
+    Time: O(n+m), Space: O(1)
+    """
+    dummy = ListNode(0)
+    curr = dummy
+    
+    while l1 and l2:
+        if l1.val <= l2.val:
+            curr.next = l1
+            l1 = l1.next
+        else:
+            curr.next = l2
+            l2 = l2.next
+        curr = curr.next
+    
+    curr.next = l1 or l2
+    return dummy.next
+```
+
+### Problems Using This Pattern
+- [#019 - Merge k Sorted Lists](/problems/heap-priority-queue/019-merge-k-sorted-lists)
+- [#032 - Copy List with Random Pointer](/problems/linked-list/032-copy-list-with-random-pointer)
+- [#045 - Remove Nth Node From End](/problems/linked-list/045-remove-nth-node-from-end)
+- [#054 - Add Two Numbers](/problems/linked-list/054-add-two-numbers)
+
+---
+
+## 7. Binary Tree Traversal
+
+### When to Use
+- Tree structure problems
+- Finding paths or levels
+- Computing tree properties
+- Serialization/deserialization
+
+### Key Techniques
+- **DFS (Pre/In/Post-order)**: Recursive or stack-based
+- **BFS (Level-order)**: Queue-based traversal
+- **Bottom-up**: Return values from children
+- **Top-down**: Pass values to children
+
+### Code Template
+
+```python
+def inorder_traversal(root: TreeNode) -> List[int]:
+    """
+    Recursive inorder (left, root, right).
+    Time: O(n), Space: O(h) for recursion
+    """
+    result = []
+    
+    def dfs(node):
+        if not node:
+            return
+        dfs(node.left)
+        result.append(node.val)
+        dfs(node.right)
+    
+    dfs(root)
+    return result
+
+def level_order(root: TreeNode) -> List[List[int]]:
+    """
+    BFS level-order traversal.
+    Time: O(n), Space: O(w) where w = max width
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level = []
+        for _ in range(len(queue)):
+            node = queue.popleft()
+            level.append(node.val)
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        result.append(level)
+    
+    return result
+
+def max_depth(root: TreeNode) -> int:
+    """
+    Bottom-up DFS.
+    Time: O(n), Space: O(h)
+    """
+    if not root:
+        return 0
+    return 1 + max(max_depth(root.left), max_depth(root.right))
+
+def path_sum(root: TreeNode, target: int) -> int:
+    """
+    Top-down DFS with accumulated state.
+    Time: O(n), Space: O(h)
+    """
+    def dfs(node, curr_sum):
+        if not node:
+            return 0
+        
+        curr_sum += node.val
+        count = 1 if curr_sum == target else 0
+        count += dfs(node.left, curr_sum)
+        count += dfs(node.right, curr_sum)
+        return count
+    
+    return dfs(root, 0)
+```
+
+### Problems Using This Pattern
+- [#007 - Binary Tree Right Side View](/problems/tree/007-binary-tree-right-side-view)
+- [#014 - Diameter of Binary Tree](/problems/tree/014-diameter-of-binary-tree)
+- [#003 - Binary Tree Vertical Order Traversal](/problems/tree/003-binary-tree-vertical-order-traversal)
+- [#076 - Binary Tree Maximum Path Sum](/problems/tree/076-binary-tree-maximum-path-sum)
+
+---
+
+## 8. Binary Search Tree
+
+### When to Use
+- BST property: left < root < right
+- Finding kth smallest/largest
+- Validating BST
+- Range queries
+- Closest value searches
+
+### Key Techniques
+- **Inorder Traversal**: Gives sorted order
+- **BST Property Pruning**: Skip subtrees
+- **Iterative Navigation**: Use BST property for O(h) search
+
+### Code Template
+
+```python
+def search_bst(root: TreeNode, val: int) -> TreeNode:
+    """
+    BST search using property.
+    Time: O(h), Space: O(1) iterative
+    """
+    while root:
+        if val == root.val:
+            return root
+        elif val < root.val:
+            root = root.left
+        else:
+            root = root.right
+    return None
+
+def kth_smallest(root: TreeNode, k: int) -> int:
+    """
+    Inorder traversal with counter.
+    Time: O(k + h), Space: O(h)
+    """
+    stack = []
+    curr = root
+    
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        
+        curr = stack.pop()
+        k -= 1
+        if k == 0:
+            return curr.val
+        curr = curr.right
+    
+    return -1
+
+def range_sum_bst(root: TreeNode, low: int, high: int) -> int:
+    """
+    BST pruning for range queries.
+    Time: O(n), Space: O(h)
+    """
+    if not root:
+        return 0
+    
+    total = 0
+    if low <= root.val <= high:
+        total += root.val
+    
+    if root.val > low:
+        total += range_sum_bst(root.left, low, high)
+    if root.val < high:
+        total += range_sum_bst(root.right, low, high)
+    
+    return total
+```
+
+### Problems Using This Pattern
+- [#027 - Range Sum of BST](/problems/bst-binary-search-tree/027-range-sum-of-bst)
+- [#060 - Closest Binary Search Tree Value](/problems/bst-binary-search-tree/060-closest-binary-search-tree-value)
+- [#092 - Kth Smallest Element in BST](/problems/bst-binary-search-tree/092-kth-smallest-element-in-a-bst)
+- [#051 - Binary Search Tree Iterator](/problems/bst-binary-search-tree/051-binary-search-tree-iterator)
+
+---
+
+## 9. Heap / Priority Queue
+
+### When to Use
+- Find kth largest/smallest dynamically
+- Merge k sorted sequences
+- Top k frequent elements
+- Median tracking
+- Scheduling problems
+
+### Key Variations
+- **Min Heap**: Track k largest (size k min heap)
+- **Max Heap**: Track k smallest (negate values)
+- **Dual Heap**: Median maintenance (max + min heap)
+
+### Code Template
+
+```python
+import heapq
+
+def kth_largest(nums: List[int], k: int) -> int:
+    """
+    Min heap of size k for kth largest.
+    Time: O(n log k), Space: O(k)
+    """
+    heap = []
+    for num in nums:
+        heapq.heappush(heap, num)
+        if len(heap) > k:
+            heapq.heappop(heap)
+    return heap[0]
+
+def merge_k_lists(lists: List[ListNode]) -> ListNode:
+    """
+    Min heap for merging k sorted lists.
+    Time: O(n log k), Space: O(k)
+    """
+    heap = []
+    for i, lst in enumerate(lists):
+        if lst:
+            heapq.heappush(heap, (lst.val, i, lst))
+    
+    dummy = ListNode(0)
+    curr = dummy
+    
+    while heap:
+        val, i, node = heapq.heappop(heap)
+        curr.next = node
+        curr = curr.next
+        if node.next:
+            heapq.heappush(heap, (node.next.val, i, node.next))
+    
+    return dummy.next
+
+class MedianFinder:
+    """
+    Dual heap for dynamic median.
+    Time: O(log n) insert, O(1) median
+    """
+    def __init__(self):
+        self.small = []  # max heap (negate values)
+        self.large = []  # min heap
+    
+    def addNum(self, num: int) -> None:
+        heapq.heappush(self.small, -num)
+        
+        # Balance: small's max <= large's min
+        if self.small and self.large and -self.small[0] > self.large[0]:
+            val = -heapq.heappop(self.small)
+            heapq.heappush(self.large, val)
+        
+        # Balance sizes
+        if len(self.small) > len(self.large) + 1:
+            val = -heapq.heappop(self.small)
+            heapq.heappush(self.large, val)
+        if len(self.large) > len(self.small):
+            val = heapq.heappop(self.large)
+            heapq.heappush(self.small, -val)
+    
+    def findMedian(self) -> float:
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        return (-self.small[0] + self.large[0]) / 2
+```
+
+### Problems Using This Pattern
+- [#006 - Kth Largest Element in an Array](/problems/heap-priority-queue/006-kth-largest-element-in-an-array)
+- [#019 - Merge k Sorted Lists](/problems/heap-priority-queue/019-merge-k-sorted-lists)
+- [#015 - Top K Frequent Elements](/problems/heap-priority-queue/015-top-k-frequent-elements)
+- [#082 - Find Median from Data Stream](/problems/heap-priority-queue/082-find-median-from-data-stream)
+
+---
+
+## 10. Graph DFS
+
+### When to Use
+- Explore all paths or components
+- Detect cycles
+- Topological sorting
+- Connected components
+- Backtracking on graphs
+
+### Key Techniques
+- **Visited Set**: Track explored nodes
+- **Recursion Stack**: Detect back edges (cycles)
+- **Backtracking**: Undo state changes
+- **Component Labeling**: Mark connected groups
+
+### Code Template
+
+```python
+def dfs_iterative(graph: Dict[int, List[int]], start: int) -> List[int]:
+    """
+    Iterative DFS using stack.
+    Time: O(V+E), Space: O(V)
+    """
+    visited = set()
+    stack = [start]
+    result = []
+    
+    while stack:
+        node = stack.pop()
+        if node in visited:
+            continue
+        
+        visited.add(node)
+        result.append(node)
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                stack.append(neighbor)
+    
+    return result
+
+def has_cycle(graph: Dict[int, List[int]], n: int) -> bool:
+    """
+    DFS cycle detection (directed graph).
+    Time: O(V+E), Space: O(V)
+    """
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = [WHITE] * n
+    
+    def dfs(node):
+        if color[node] == GRAY:
+            return True  # back edge found
+        if color[node] == BLACK:
+            return False
+        
+        color[node] = GRAY
+        for neighbor in graph[node]:
+            if dfs(neighbor):
+                return True
+        color[node] = BLACK
+        return False
+    
+    for i in range(n):
+        if color[i] == WHITE and dfs(i):
+            return True
+    return False
+
+def clone_graph(node: 'Node') -> 'Node':
+    """
+    DFS with mapping for graph cloning.
+    Time: O(V+E), Space: O(V)
+    """
+    if not node:
+        return None
+    
+    clones = {}  # original -> clone
+    
+    def dfs(original):
+        if original in clones:
+            return clones[original]
+        
+        clone = Node(original.val)
+        clones[original] = clone
+        
+        for neighbor in original.neighbors:
+            clone.neighbors.append(dfs(neighbor))
+        
+        return clone
+    
+    return dfs(node)
+```
+
+### Problems Using This Pattern
+- [#025 - Clone Graph](/problems/graph-dfs-bfs/025-clone-graph)
+- [#063 - Course Schedule](/problems/graph-dfs-bfs/063-course-schedule)
+- [#053 - Robot Room Cleaner](/problems/graph-dfs-bfs/053-robot-room-cleaner)
+- [#036 - Making A Large Island](/problems/graph-dfs-bfs/036-making-a-large-island)
+
+---
+
+## 11. Graph BFS
+
+### When to Use
+- Shortest path (unweighted)
+- Level-by-level exploration
+- Minimum steps/distance
+- Multi-source BFS
+
+### Key Techniques
+- **Queue**: FIFO for level order
+- **Distance Tracking**: Count levels/steps
+- **Multi-source**: Start from multiple nodes
+- **Visited Set**: Avoid revisiting
+
+### Code Template
+
+```python
+from collections import deque
+
+def bfs_shortest_path(graph: Dict[int, List[int]], start: int, end: int) -> int:
+    """
+    BFS for shortest path.
+    Time: O(V+E), Space: O(V)
+    """
+    queue = deque([(start, 0)])  # (node, distance)
+    visited = {start}
+    
+    while queue:
+        node, dist = queue.popleft()
+        if node == end:
+            return dist
+        
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append((neighbor, dist + 1))
+    
+    return -1  # no path found
+
+def shortest_path_grid(grid: List[List[int]]) -> int:
+    """
+    BFS on grid (4-directional).
+    Time: O(m*n), Space: O(m*n)
+    """
+    if not grid or grid[0][0] == 1:
+        return -1
+    
+    m, n = len(grid), len(grid[0])
+    queue = deque([(0, 0, 1)])  # (row, col, steps)
+    visited = {(0, 0)}
+    directions = [(0,1), (1,0), (0,-1), (-1,0)]
+    
+    while queue:
+        row, col, steps = queue.popleft()
+        
+        if row == m-1 and col == n-1:
+            return steps
+        
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            if 0 <= r < m and 0 <= c < n and (r,c) not in visited and grid[r][c] == 0:
+                visited.add((r, c))
+                queue.append((r, c, steps + 1))
+    
+    return -1
+
+def word_ladder(begin: str, end: str, wordList: List[str]) -> int:
+    """
+    BFS for transformation sequence.
+    Time: O(M² * N) where M=word length, N=wordList size
+    Space: O(M * N)
+    """
+    wordSet = set(wordList)
+    if end not in wordSet:
+        return 0
+    
+    queue = deque([(begin, 1)])
+    
+    while queue:
+        word, level = queue.popleft()
+        if word == end:
+            return level
+        
+        # Try all possible transformations
+        for i in range(len(word)):
+            for c in 'abcdefghijklmnopqrstuvwxyz':
+                next_word = word[:i] + c + word[i+1:]
+                if next_word in wordSet:
+                    wordSet.remove(next_word)
+                    queue.append((next_word, level + 1))
+    
+    return 0
+```
+
+### Problems Using This Pattern
+- [#031 - Shortest Path in Binary Matrix](/problems/graph-dfs-bfs/031-shortest-path-in-binary-matrix)
+- [#081 - Word Ladder](/problems/graph-dfs-bfs/081-word-ladder)
+- [#066 - All Nodes Distance K in Binary Tree](/problems/tree/066-all-nodes-distance-k-in-binary-tree)
+
+---
+
+## 12. Dynamic Programming
+
+### When to Use
+- Optimal substructure (solution built from subsolutions)
+- Overlapping subproblems
+- Counting ways or optimization
+- "Maximum/minimum/longest" keywords
+
+### Key Approaches
+- **Top-down (Memoization)**: Recursion + cache
+- **Bottom-up (Tabulation)**: Iterative DP table
+- **State Compression**: Optimize space
+
+### Code Template
+
+```python
+def fib_memoization(n: int) -> int:
+    """
+    Top-down DP with memoization.
+    Time: O(n), Space: O(n)
+    """
+    memo = {}
+    
+    def dp(i):
+        if i <= 1:
+            return i
+        if i in memo:
+            return memo[i]
+        memo[i] = dp(i-1) + dp(i-2)
+        return memo[i]
+    
+    return dp(n)
+
+def fib_tabulation(n: int) -> int:
+    """
+    Bottom-up DP with table.
+    Time: O(n), Space: O(n)
+    """
+    if n <= 1:
+        return n
+    
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    
+    for i in range(2, n + 1):
+        dp[i] = dp[i-1] + dp[i-2]
+    
+    return dp[n]
+
+def fib_optimized(n: int) -> int:
+    """
+    Space-optimized DP.
+    Time: O(n), Space: O(1)
+    """
+    if n <= 1:
+        return n
+    
+    prev2, prev1 = 0, 1
+    for i in range(2, n + 1):
+        curr = prev1 + prev2
+        prev2, prev1 = prev1, curr
+    
+    return prev1
+
+def longest_common_subsequence(s1: str, s2: str) -> int:
+    """
+    2D DP for sequence alignment.
+    Time: O(m*n), Space: O(m*n)
+    """
+    m, n = len(s1), len(s2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if s1[i-1] == s2[j-1]:
+                dp[i][j] = 1 + dp[i-1][j-1]
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    
+    return dp[m][n]
+```
+
+### Problems Using This Pattern
+- [#018 - Best Time to Buy and Sell Stock](/problems/dynamic-programming/018-best-time-to-buy-and-sell-stock)
+- [#075 - Word Break](/problems/dynamic-programming/075-word-break)
+- [#087 - Maximum Subarray](/problems/array-hashing/087-maximum-subarray)
+- [#099 - Best Time to Buy and Sell Stock III](/problems/dynamic-programming/099-best-time-to-buy-and-sell-stock-iii)
+
+---
+
+## Pattern Recognition Guide
+
+When you see a problem, ask:
+
+1. **Input type?**
+   - Array/String → Two Pointers, Sliding Window, Binary Search
+   - Tree/Graph → DFS/BFS, Recursion
+   - Stream/Dynamic → Heap, Design
+
+2. **Looking for what?**
+   - Pair/Triplet → Two Pointers, Hash Map
+   - Shortest path → BFS
+   - All paths/combinations → DFS, Backtracking
+   - Kth element → Heap, Binary Search
+   - Optimal value → DP, Greedy
+
+3. **Constraints hint?**
+   - O(log n) required → Binary Search
+   - O(n) space not allowed → Two Pointers, Sliding Window
+   - k is small → Heap of size k
+   - Value range is small → Counting, Bucket Sort
+
+4. **Keywords?**
+   - "Substring/subarray" → Sliding Window
+   - "Parentheses/brackets" → Stack
+   - "Minimum/maximum" → DP, Greedy, Heap
+   - "Ways to..." → DP, Backtracking
+   - "Sorted" → Binary Search, Two Pointers
+
+---
+
+## Next Steps
+
+- **Practice Recognition**: Identify patterns before coding
+- **Master Templates**: Memorize core template for each pattern
+- **Study Variations**: Understand when to modify templates
+- **Combine Patterns**: Many problems use 2-3 patterns together
+
+For complexity analysis of these patterns, see [Complexity Analysis](/resources/complexity-analysis).
+
+For interview-specific tips, see [Interview Tips](/resources/interview-tips).

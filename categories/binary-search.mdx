@@ -1,0 +1,336 @@
+---
+title: 'Binary Search'
+description: 'Master binary search on arrays and search spaces for O(log n) solutions'
+---
+
+# Binary Search
+
+Binary search is a divide-and-conquer algorithm that efficiently searches sorted data or finds optimal values in monotonic search spaces. It reduces O(n) problems to O(log n) by eliminating half the search space in each iteration.
+
+## Key Patterns & Techniques
+
+### 1. Classic Binary Search
+- Search for target in sorted array
+- Find insertion position
+- Find first/last occurrence
+
+### 2. Search Space Binary Search
+- Search on answer space, not array indices
+- Used for optimization problems
+- Examples: capacity, speed, minimum/maximum values
+
+### 3. Binary Search on Matrix
+- 2D sorted matrix treated as 1D
+- Row-wise or column-wise binary search
+- Both dimensions sorted
+
+### 4. Find Peak/Boundary
+- Find local maximum/minimum
+- Find transition point in boolean array
+- Rotated sorted array search
+
+## Common Approaches
+
+### Classic Binary Search Template
+```python
+def binarySearch(nums: List[int], target: int) -> int:
+    """
+    Find target in sorted array.
+    Time: O(log n), Space: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2  # Avoid overflow
+        
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1  # Not found
+```
+
+### Find First/Last Occurrence
+```python
+def searchRange(nums: List[int], target: int) -> List[int]:
+    """
+    Find first and last position of target.
+    Time: O(log n), Space: O(1)
+    """
+    def findBound(isFirst: bool) -> int:
+        left, right = 0, len(nums) - 1
+        result = -1
+        
+        while left <= right:
+            mid = left + (right - left) // 2
+            
+            if nums[mid] == target:
+                result = mid
+                # Continue searching
+                if isFirst:
+                    right = mid - 1  # Search left half
+                else:
+                    left = mid + 1   # Search right half
+            elif nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        
+        return result
+    
+    return [findBound(True), findBound(False)]
+```
+
+### Binary Search on Answer Space
+```python
+def minEatingSpeed(piles: List[int], h: int) -> int:
+    """
+    Find minimum eating speed to finish bananas in h hours.
+    Time: O(n log m), Space: O(1), m = max(piles)
+    """
+    def canFinish(speed: int) -> bool:
+        """Check if can finish with given speed."""
+        hours = 0
+        for pile in piles:
+            hours += (pile + speed - 1) // speed  # Ceiling division
+        return hours <= h
+    
+    left, right = 1, max(piles)
+    
+    while left < right:
+        mid = left + (right - left) // 2
+        
+        if canFinish(mid):
+            right = mid  # Try slower speed
+        else:
+            left = mid + 1  # Need faster speed
+    
+    return left
+```
+
+### Find Peak Element
+```python
+def findPeakElement(nums: List[int]) -> int:
+    """
+    Find any peak element (greater than neighbors).
+    Time: O(log n), Space: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    
+    while left < right:
+        mid = left + (right - left) // 2
+        
+        if nums[mid] > nums[mid + 1]:
+            # Peak is on left side or mid itself
+            right = mid
+        else:
+            # Peak is on right side
+            left = mid + 1
+    
+    return left
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="010. Find Peak Element" icon="mountain" href="/problems/010-find-peak-element">
+    **Medium** | Frequency: 82.9%
+    
+    Binary search to find local maximum in O(log n) time.
+  </Card>
+
+  <Card title="042. Find First and Last Position" icon="magnifying-glass" href="/problems/042-find-first-and-last-position-of-element-in-sorted-array">
+    **Medium** | Frequency: 59.4%
+    
+    Two binary searches to find both boundaries of target.
+  </Card>
+
+  <Card title="094. Koko Eating Bananas" icon="apple-whole" href="/problems/094-koko-eating-bananas">
+    **Medium** | Frequency: 32.0%
+    
+    Binary search on eating speed (answer space), not array indices.
+  </Card>
+
+  <Card title="079. Capacity To Ship Packages" icon="box" href="/problems/079-capacity-to-ship-packages-within-d-days">
+    **Medium** | Frequency: 40.7%
+    
+    Binary search on ship capacity to minimize maximum weight.
+  </Card>
+
+  <Card title="074. Cutting Ribbons" icon="scissors" href="/problems/074-cutting-ribbons">
+    **Medium** | Frequency: 40.7%
+    
+    Binary search on cut length to maximize size with k pieces.
+  </Card>
+
+  <Card title="041. Kth Missing Positive Number" icon="list-ol" href="/problems/041-kth-missing-positive-number">
+    **Easy** | Frequency: 59.4%
+    
+    Binary search to find kth missing number efficiently.
+  </Card>
+
+  <Card title="084. Kth Smallest Element in Sorted Matrix" icon="table" href="/problems/084-kth-smallest-element-in-a-sorted-matrix">
+    **Medium** | Frequency: 40.7%
+    
+    Binary search on value range, count elements ≤ mid.
+  </Card>
+
+  <Card title="100. Median of Two Sorted Arrays" icon="divide" href="/problems/100-median-of-two-sorted-arrays">
+    **Hard** | Frequency: 32.0%
+    
+    Binary search on partition point for O(log(min(m,n))) solution.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | When to Use |
+|---------|----------------|------------------|-------------|
+| Classic Search | O(log n) | O(1) | Find element in sorted array |
+| First/Last Occurrence | O(log n) | O(1) | Find boundaries of target |
+| Answer Space | O(n log m) | O(1) | Optimization problems, m = search range |
+| 2D Matrix | O(log(m*n)) | O(1) | Sorted matrix search |
+| Peak Finding | O(log n) | O(1) | Local max/min in array |
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Sorted array"** → Consider binary search
+- **"Find minimum/maximum capacity/speed/size"** → Binary search on answer
+- **"In O(log n) time"** → Almost certainly binary search
+- **"Sorted matrix"** → Binary search with coordinate mapping
+- **"Find peak/local maximum"** → Binary search on gradient
+- **"Minimize the maximum" or "Maximize the minimum"** → Binary search on answer
+
+### Common Mistakes
+- Using `(left + right) / 2` causing integer overflow (use `left + (right - left) // 2`)
+- Wrong loop condition: `while left <= right` vs `while left < right`
+- Off-by-one errors when updating `left` and `right`
+- Not handling duplicates correctly in first/last occurrence
+- Infinite loop when not moving pointers correctly
+
+### Key Insights
+1. **Search space must be monotonic** - as you increase/decrease, property changes predictably
+2. **Choose correct loop invariant** - `left <= right` returns -1, `left < right` returns left
+3. **Answer space pattern** check if mid works, then search left or right
+4. **Ceiling division** use `(a + b - 1) // b` instead of `math.ceil(a/b)`
+5. **Finding boundaries** after finding target, keep searching in direction of boundary
+
+## Binary Search Templates
+
+### Template 1: Exact Match
+```python
+# Loop: while left <= right
+# Return: index or -1
+while left <= right:
+    mid = left + (right - left) // 2
+    if nums[mid] == target:
+        return mid
+    elif nums[mid] < target:
+        left = mid + 1
+    else:
+        right = mid - 1
+return -1
+```
+
+### Template 2: Find Boundary
+```python
+# Loop: while left < right
+# Return: left (always valid position)
+while left < right:
+    mid = left + (right - left) // 2
+    if condition(mid):
+        right = mid  # mid might be answer
+    else:
+        left = mid + 1
+return left
+```
+
+### Template 3: Find in Range
+```python
+# Loop: while left + 1 < right
+# Post-process: check left and right
+while left + 1 < right:
+    mid = left + (right - left) // 2
+    if condition(mid):
+        right = mid
+    else:
+        left = mid
+# Check left and right separately
+```
+
+## Decision Tree
+
+```
+Is the data sorted or monotonic?
+├─ Array is sorted
+│  ├─ Find exact element? → Classic binary search
+│  ├─ Find first/last occurrence? → Modified binary search
+│  └─ Find insertion position? → Lower bound binary search
+└─ Answer space is monotonic
+   ├─ Minimize maximum? → Binary search on capacity/size
+   ├─ Maximize minimum? → Binary search on threshold
+   └─ Kth element in range? → Binary search on value, count elements
+```
+
+## Advanced Patterns
+
+### Rotated Sorted Array
+```python
+def search(nums: List[int], target: int) -> int:
+    """Search in rotated sorted array."""
+    left, right = 0, len(nums) - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        
+        if nums[mid] == target:
+            return mid
+        
+        # Determine which half is sorted
+        if nums[left] <= nums[mid]:  # Left half sorted
+            if nums[left] <= target < nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        else:  # Right half sorted
+            if nums[mid] < target <= nums[right]:
+                left = mid + 1
+            else:
+                right = mid - 1
+    
+    return -1
+```
+
+### Binary Search on 2D Matrix
+```python
+def searchMatrix(matrix: List[List[int]], target: int) -> bool:
+    """Search in row and column sorted matrix."""
+    if not matrix or not matrix[0]:
+        return False
+    
+    m, n = len(matrix), len(matrix[0])
+    left, right = 0, m * n - 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        # Convert 1D index to 2D coordinates
+        row, col = mid // n, mid % n
+        mid_val = matrix[row][col]
+        
+        if mid_val == target:
+            return True
+        elif mid_val < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return False
+```
+
+---
+
+**Pro Tip:** If you can frame the problem as "find the minimum/maximum value such that condition(value) is true", you can use binary search on the answer space. The key is recognizing monotonicity.

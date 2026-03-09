@@ -1,0 +1,323 @@
+---
+title: 'Top Interview Frequency Problems'
+description: 'The most frequently asked LeetCode problems in technical interviews, sorted by appearance rate'
+icon: 'fire'
+---
+
+<Info>
+These problems appear in **80%+ of technical interviews** across top tech companies. Mastering these will significantly boost your interview success rate.
+</Info>
+
+## Highest Frequency Problems (>90%)
+
+Problems that appear in nearly every interview cycle at FAANG and top tech companies.
+
+<CardGroup cols={2}>
+  <Card title="Minimum Remove to Make Valid Parentheses" icon="brackets-curly" href="/leetcode/001">
+    **Frequency: 100.0%** · Medium · Stack, String
+    
+    Remove minimum parentheses to make string valid. Essential stack problem testing parenthesis matching with complexity constraints.
+    
+    **Why it's asked:** Tests stack fundamentals, string manipulation, and optimization thinking.
+  </Card>
+
+  <Card title="Valid Word Abbreviation" icon="text" href="/leetcode/002">
+    **Frequency: 95.4%** · Easy · String, Two Pointers
+    
+    Check if a word matches an abbreviation pattern. Common in text processing scenarios.
+    
+    **Why it's asked:** Tests two-pointer technique and edge case handling with strings.
+  </Card>
+
+  <Card title="Binary Tree Vertical Order Traversal" icon="sitemap" href="/leetcode/003">
+    **Frequency: 93.4%** · Medium · Tree, BFS, Hash Table
+    
+    Traverse tree nodes by vertical column order. Critical for spatial data organization.
+    
+    **Why it's asked:** Tests BFS, coordinate tracking, and hash table usage in tree problems.
+  </Card>
+
+  <Card title="Valid Palindrome II" icon="arrows-left-right" href="/leetcode/004">
+    **Frequency: 92.7%** · Easy · String, Two Pointers
+    
+    Check if string can become palindrome by removing at most one character.
+    
+    **Why it's asked:** Tests two-pointer optimization and conditional logic branching.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Lowest Common Ancestor of Binary Tree III" icon="code-branch" href="/leetcode/005">
+    **Frequency: 89.6%** · Medium · Tree, Hash Table
+    
+    Find LCA with parent pointer available. Essential tree traversal pattern.
+    
+    **Why it's asked:** Tests tree navigation and cycle detection techniques.
+  </Card>
+
+  <Card title="Kth Largest Element in an Array" icon="chart-line" href="/leetcode/006">
+    **Frequency: 86.9%** · Medium · Array, Heap, Quickselect
+    
+    Find kth largest using optimal heap or quickselect approach.
+    
+    **Why it's asked:** Tests heap data structures and divide-and-conquer optimization.
+  </Card>
+
+  <Card title="Binary Tree Right Side View" icon="eye" href="/leetcode/007">
+    **Frequency: 86.0%** · Medium · Tree, BFS, DFS
+    
+    Return rightmost node at each level. Common pattern for level-order traversal.
+    
+    **Why it's asked:** Tests BFS/DFS mastery and level tracking in trees.
+  </Card>
+
+  <Card title="Basic Calculator II" icon="calculator" href="/leetcode/008">
+    **Frequency: 84.0%** · Medium · Stack, String, Math
+    
+    Implement calculator with +, -, *, / operators. Classic stack application.
+    
+    **Why it's asked:** Tests operator precedence handling and stack-based evaluation.
+  </Card>
+</CardGroup>
+
+## Must-Know Classics (>75%)
+
+The foundation problems every software engineer should master.
+
+<CardGroup cols={2}>
+  <Card title="Two Sum" icon="plus" href="/leetcode/017">
+    **Frequency: 76.4%** · Easy · Array, Hash Table
+    
+    Find two numbers that add up to target. The most iconic interview problem.
+    
+    **Pattern:** Hash table for O(1) complement lookup.
+    
+    **Time:** O(n) | **Space:** O(n)
+  </Card>
+
+  <Card title="Merge Intervals" icon="compress" href="/leetcode/016">
+    **Frequency: 77.9%** · Medium · Array, Sorting
+    
+    Merge all overlapping intervals. Essential for scheduling and calendar problems.
+    
+    **Pattern:** Sort by start time, then greedy merge.
+    
+    **Time:** O(n log n) | **Space:** O(n)
+  </Card>
+
+  <Card title="Top K Frequent Elements" icon="ranking-star" href="/leetcode/015">
+    **Frequency: 77.9%** · Medium · Array, Hash Table, Heap
+    
+    Return k most frequent elements. Tests optimal selection algorithms.
+    
+    **Pattern:** Bucket sort for O(n) or heap for O(n log k).
+    
+    **Time:** O(n) | **Space:** O(n)
+  </Card>
+
+  <Card title="Merge k Sorted Lists" icon="list" href="/leetcode/019">
+    **Frequency: 76.4%** · Hard · Linked List, Heap, Divide & Conquer
+    
+    Merge k sorted linked lists efficiently. Classic heap application.
+    
+    **Pattern:** Min heap to track smallest current element across k lists.
+    
+    **Time:** O(N log k) | **Space:** O(k)
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Best Time to Buy and Sell Stock" icon="chart-candlestick" href="/leetcode/018">
+    **Frequency: 76.4%** · Easy · Array, Dynamic Programming
+    
+    Maximize profit with single buy/sell. Foundation for DP problems.
+    
+    **Pattern:** Track minimum price while calculating max profit.
+    
+    **Time:** O(n) | **Space:** O(1)
+  </Card>
+
+  <Card title="Valid Parentheses" icon="brackets" href="/leetcode/020">
+    **Frequency: 74.9%** · Easy · String, Stack
+    
+    Check if parentheses are properly matched. Fundamental stack problem.
+    
+    **Pattern:** Use stack to match opening/closing brackets.
+    
+    **Time:** O(n) | **Space:** O(n)
+  </Card>
+
+  <Card title="Clone Graph" icon="clone" href="/leetcode/025">
+    **Frequency: 71.4%** · Medium · Graph, DFS, Hash Table
+    
+    Deep copy a graph with DFS/BFS. Essential graph traversal pattern.
+    
+    **Pattern:** Hash map to track old→new node mapping during traversal.
+    
+    **Time:** O(N + E) | **Space:** O(N)
+  </Card>
+
+  <Card title="LRU Cache" icon="database" href="/leetcode/039">
+    **Frequency: 62.4%** · Medium · Design, Hash Table, Linked List
+    
+    Implement cache with O(1) get/put. Classic system design problem.
+    
+    **Pattern:** Hash table + doubly linked list for O(1) operations.
+    
+    **Time:** O(1) get/put | **Space:** O(capacity)
+  </Card>
+</CardGroup>
+
+## High-Difficulty Essentials (60%+)
+
+Hard problems that separate strong candidates from exceptional ones.
+
+<CardGroup cols={2}>
+  <Card title="Minimum Window Substring" icon="magnifying-glass" href="/leetcode/037">
+    **Frequency: 62.4%** · Hard · String, Sliding Window, Hash Table
+    
+    Find minimum window containing all characters of target. Classic sliding window.
+    
+    **Pattern:** Expand window to find solution, contract to minimize.
+    
+    **Time:** O(m + n) | **Space:** O(k)
+  </Card>
+
+  <Card title="Find Median from Data Stream" icon="wave-pulse" href="/leetcode/082">
+    **Frequency: 40.7%** · Hard · Design, Heap, Data Stream
+    
+    Maintain running median with two heaps. Advanced heap application.
+    
+    **Pattern:** Max heap for lower half, min heap for upper half.
+    
+    **Time:** O(log n) add, O(1) find | **Space:** O(n)
+  </Card>
+</CardGroup>
+
+## Preparation Strategy
+
+<Steps>
+  <Step title="Master the Top 8 (>80%)">
+    Focus intensively on problems #001-#008. These appear in virtually every interview cycle. Understand not just the solution, but **why** these patterns are so fundamental.
+  </Step>
+  
+  <Step title="Build Foundation with Classics">
+    Study Two Sum, Valid Parentheses, Merge Intervals, and LRU Cache. These teach the core patterns that appear in hundreds of variations.
+  </Step>
+  
+  <Step title="Practice Problem Variations">
+    Once you master the core problem, practice its variations:
+    - Two Sum → Two Sum II, Three Sum, Four Sum
+    - Valid Parentheses → Remove Invalid Parentheses, Minimum Remove
+    - Merge Intervals → Insert Interval, Meeting Rooms II
+  </Step>
+  
+  <Step title="Time Yourself">
+    Aim for these benchmarks:
+    - Easy problems: 10-15 minutes
+    - Medium problems: 20-30 minutes
+    - Hard problems: 35-45 minutes
+    
+    In real interviews, you'll have additional time for clarification and testing.
+  </Step>
+</Steps>
+
+## Priority Tiers
+
+<Tabs>
+  <Tab title="🔥 Critical (Week 1)">
+    **Must master these first:**
+    1. Two Sum (#017) - Hash table fundamentals
+    2. Valid Parentheses (#020) - Stack basics
+    3. Merge Intervals (#016) - Sorting + greedy
+    4. Best Time to Buy/Sell Stock (#018) - Simple DP
+    5. Minimum Remove Parentheses (#001) - Stack + string manipulation
+    
+    **Goal:** Achieve 100% success rate on these patterns.
+  </Tab>
+  
+  <Tab title="⭐ Essential (Week 2)">
+    **Build on fundamentals:**
+    1. LRU Cache (#039) - Design patterns
+    2. Top K Frequent Elements (#015) - Heap/bucket sort
+    3. Kth Largest Element (#006) - Heap operations
+    4. Binary Tree Right Side View (#007) - BFS/DFS
+    5. Clone Graph (#025) - Graph traversal
+    
+    **Goal:** Understand optimal data structure choices.
+  </Tab>
+  
+  <Tab title="💪 Advanced (Week 3-4)">
+    **Challenge yourself:**
+    1. Merge k Sorted Lists (#019) - Advanced heap
+    2. Minimum Window Substring (#037) - Sliding window
+    3. Basic Calculator II (#008) - Complex stack usage
+    4. Find Median from Data Stream (#082) - Two heaps
+    5. Binary Tree Vertical Order (#003) - Coordinate tracking
+    
+    **Goal:** Handle complex multi-technique problems confidently.
+  </Tab>
+</Tabs>
+
+## Interview Success Tips
+
+<AccordionGroup>
+  <Accordion title="How to Recognize High-Frequency Patterns">
+    When you see these keywords in a problem, think of these approaches:
+    
+    - **"Find two numbers that..."** → Hash table for O(1) lookup
+    - **"Matching/Valid parentheses"** → Stack
+    - **"Kth largest/smallest"** → Min/max heap of size k
+    - **"Merge intervals/meetings"** → Sort + greedy merge
+    - **"Maximum/Minimum subarray"** → Kadane's or sliding window
+    - **"Design a cache/data structure"** → Combine multiple structures (hash + list)
+  </Accordion>
+  
+  <Accordion title="Common Interview Follow-Ups">
+    Be prepared for these variations:
+    
+    **Two Sum:**
+    - What if array is sorted? (Two pointers)
+    - What if we need all pairs? (Avoid duplicates)
+    - What about three numbers? (3Sum pattern)
+    
+    **Valid Parentheses:**
+    - What if we can remove characters? (Minimum Remove)
+    - Count minimum insertions needed? (Counter approach)
+    
+    **LRU Cache:**
+    - How to handle concurrent access? (Locks)
+    - What if we need LFU instead? (Two hash maps + freq tracking)
+  </Accordion>
+  
+  <Accordion title="Complexity Expectations">
+    For high-frequency problems, interviewers expect optimal solutions:
+    
+    | Problem Type | Expected Time | Expected Space |
+    |--------------|---------------|----------------|
+    | Array/String search | O(n) | O(1) or O(n) |
+    | Sorting required | O(n log n) | O(1) or O(n) |
+    | Tree traversal | O(n) | O(h) |
+    | Graph traversal | O(V + E) | O(V) |
+    | Heap operations | O(n log k) | O(k) |
+    | Design problems | O(1) operations | O(capacity) |
+  </Accordion>
+</AccordionGroup>
+
+## Why These Problems Matter
+
+These high-frequency problems aren't arbitrary—they test fundamental skills that translate directly to production engineering:
+
+- **Hash tables** (Two Sum, LRU Cache): Core to caching, indexing, and fast lookups in real systems
+- **Stacks** (Valid Parentheses): Essential for parsing, expression evaluation, and undo/redo functionality
+- **Heaps** (Kth Largest, Merge k Lists): Used in priority queues, task scheduling, and top-k queries
+- **Sliding window** (Minimum Window): Powers rate limiting, moving averages, and stream processing
+- **Graph traversal** (Clone Graph): Foundation for social networks, dependency resolution, and recommendation systems
+
+<Tip>
+**Interview Reality Check:** At top companies, you'll likely see 2-3 of these problems (or close variations) in a single interview loop. The difference between an offer and rejection often comes down to **speed and clarity** on these fundamentals.
+</Tip>
+
+<Card title="Next Steps" icon="map" href="/preparation/study-plan">
+  Ready to master these problems? Check out our structured 4-week study plan with daily practice schedules and progress tracking.
+</Card>

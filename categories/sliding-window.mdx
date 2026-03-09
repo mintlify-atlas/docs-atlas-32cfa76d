@@ -1,0 +1,376 @@
+---
+title: 'Sliding Window'
+description: 'Master sliding window technique for substring and subarray problems'
+---
+
+# Sliding Window
+
+The sliding window technique optimizes problems involving contiguous sequences by maintaining a window that expands or contracts based on constraints. It reduces O(n²) brute force to O(n) by avoiding redundant computation.
+
+## Core Concepts
+
+### When to Use Sliding Window
+- Contiguous subarray/substring problems
+- Need to find optimal window (min/max length)
+- Constraint on window contents (sum, characters, duplicates)
+- Can adjust window from both ends
+
+### Window Types
+- **Fixed Size**: Window of constant size k
+- **Variable Size**: Expand/contract based on condition
+- **Two Pointers**: Left and right boundaries
+
+## Key Patterns & Techniques
+
+### 1. Fixed Window Size
+- Window size is given (k)
+- Slide window by 1 each time
+- Add new element, remove old element
+- Time: O(n), Space: O(1) or O(k)
+
+### 2. Variable Window (Expandable)
+- Expand right until condition violated
+- Contract left to restore condition
+- Track optimal window during process
+- Time: O(n), each element visited at most twice
+
+### 3. At Most K Pattern
+- Count subarrays with at most K distinct elements
+- Use counter/hash map to track window contents
+- Shrink when condition violated
+
+### 4. Two Counters Pattern
+- Track both target and window frequencies
+- Expand when missing characters
+- Contract when all requirements met
+
+## Common Approaches
+
+### Fixed Window Template
+```python
+def fixedWindow(arr: List[int], k: int) -> int:
+    """
+    Fixed size window of size k.
+    Time: O(n), Space: O(1)
+    """
+    if len(arr) < k:
+        return 0
+    
+    # Initialize first window
+    window_sum = sum(arr[:k])
+    max_sum = window_sum
+    
+    # Slide window
+    for i in range(k, len(arr)):
+        # Add new element, remove leftmost
+        window_sum += arr[i] - arr[i - k]
+        max_sum = max(max_sum, window_sum)
+    
+    return max_sum
+```
+
+### Variable Window Template
+```python
+def variableWindow(s: str, constraint: int) -> int:
+    """
+    Variable size window with constraint.
+    Time: O(n), Space: O(k) for counter
+    """
+    left = 0
+    max_length = 0
+    window_state = {}  # Track window contents
+    
+    for right in range(len(s)):
+        # Expand window - add right element
+        char = s[right]
+        window_state[char] = window_state.get(char, 0) + 1
+        
+        # Contract window - move left if constraint violated
+        while CONSTRAINT_VIOLATED(window_state, constraint):
+            left_char = s[left]
+            window_state[left_char] -= 1
+            if window_state[left_char] == 0:
+                del window_state[left_char]
+            left += 1
+        
+        # Update result
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+```
+
+### Longest Substring Without Repeating Characters
+```python
+def lengthOfLongestSubstring(s: str) -> int:
+    """
+    Find longest substring with all unique characters.
+    Time: O(n), Space: O(min(n, charset_size))
+    """
+    char_index = {}  # char -> last seen index
+    left = 0
+    max_length = 0
+    
+    for right, char in enumerate(s):
+        # If char seen in current window, move left past it
+        if char in char_index and char_index[char] >= left:
+            left = char_index[char] + 1
+        
+        char_index[char] = right
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+```
+
+### Minimum Window Substring
+```python
+def minWindow(s: str, t: str) -> str:
+    """
+    Find minimum window in s containing all chars from t.
+    Time: O(m + n), Space: O(k)
+    """
+    if not s or not t:
+        return ""
+    
+    # Count chars in t
+    target = Counter(t)
+    required = len(target)
+    formed = 0
+    
+    window_counts = {}
+    left = 0
+    min_len = float('inf')
+    min_left = 0
+    
+    for right, char in enumerate(s):
+        # Expand window
+        window_counts[char] = window_counts.get(char, 0) + 1
+        
+        if char in target and window_counts[char] == target[char]:
+            formed += 1
+        
+        # Contract window
+        while left <= right and formed == required:
+            # Update result
+            if right - left + 1 < min_len:
+                min_len = right - left + 1
+                min_left = left
+            
+            # Remove from left
+            left_char = s[left]
+            window_counts[left_char] -= 1
+            if left_char in target and window_counts[left_char] < target[left_char]:
+                formed -= 1
+            left += 1
+    
+    return "" if min_len == float('inf') else s[min_left:min_left + min_len]
+```
+
+### Max Consecutive Ones III
+```python
+def longestOnes(nums: List[int], k: int) -> int:
+    """
+    Longest subarray with at most k zeros flipped.
+    Time: O(n), Space: O(1)
+    """
+    left = 0
+    zeros_count = 0
+    max_length = 0
+    
+    for right in range(len(nums)):
+        # Expand window
+        if nums[right] == 0:
+            zeros_count += 1
+        
+        # Contract if too many zeros
+        while zeros_count > k:
+            if nums[left] == 0:
+                zeros_count -= 1
+            left += 1
+        
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+```
+
+## Problems in This Category
+
+<CardGroup cols={2}>
+  <Card title="080. Longest Substring Without Repeating" icon="text-width" href="/problems/080-longest-substring-without-repeating-characters">
+    **Medium** | Frequency: 40.7%
+    
+    Variable window with hash map tracking last seen position.
+  </Card>
+
+  <Card title="037. Minimum Window Substring" icon="window-minimize" href="/problems/037-minimum-window-substring">
+    **Hard** | Frequency: 62.4%
+    
+    Two counters pattern - expand until valid, contract for minimum.
+  </Card>
+
+  <Card title="040. Max Consecutive Ones III" icon="binary" href="/problems/040-max-consecutive-ones-iii">
+    **Medium** | Frequency: 62.4%
+    
+    Variable window with constraint on number of zeros.
+  </Card>
+
+  <Card title="059. Continuous Subarray Sum" icon="plus" href="/problems/059-continuous-subarray-sum">
+    **Medium** | Frequency: 47.0%
+    
+    Prefix sum modulo with hash map for subarray divisibility.
+  </Card>
+
+  <Card title="068. Contains Duplicate II" icon="copy" href="/problems/068-contains-duplicate-ii">
+    **Easy** | Frequency: 40.7%
+    
+    Fixed window of size k to find duplicate within distance.
+  </Card>
+
+  <Card title="090. Frequency of Most Frequent Element" icon="chart-bar" href="/problems/090-frequency-of-the-most-frequent-element">
+    **Medium** | Frequency: 32.0%
+    
+    Sort + sliding window with sum constraint for k operations.
+  </Card>
+</CardGroup>
+
+## Complexity Characteristics
+
+| Pattern | Time Complexity | Space Complexity | Key Feature |
+|---------|----------------|------------------|-------------|
+| Fixed Window | O(n) | O(1) or O(k) | Slide by 1, add/remove |
+| Variable Window | O(n) | O(k) | Each element visited ≤2 times |
+| Two Counters | O(n) | O(k) | Track target & window |
+| At Most K | O(n) | O(k) | Shrink when count > k |
+| With Sort | O(n log n) | O(k) | Sort first for monotonic property |
+
+k = charset size or window contents
+
+## Interview Tips
+
+### Pattern Recognition
+- **"Longest substring with..."** → Variable sliding window
+- **"Minimum window containing..."** → Expand until valid, contract for min
+- **"Subarray of size k"** → Fixed window
+- **"At most k distinct/zeros"** → Variable window with counter
+- **"All permutations/anagrams"** → Fixed window with frequency match
+- **"Maximum sum subarray of size k"** → Fixed window
+
+### Common Mistakes
+- Moving both pointers in same iteration (double counting)
+- Not handling window size correctly (right - left + 1)
+- Forgetting to update result before contracting window
+- Using set instead of counter when frequencies matter
+- Not initializing window state correctly
+
+### Key Insights
+1. **Amortized O(n)**: Each element enters window once, leaves once
+2. **Right pointer always moves forward** in outer loop
+3. **Left pointer catches up** when constraint violated
+4. **Hash map tracks window contents** - increment on add, decrement on remove
+5. **Update result after valid window** - either max or min length
+6. **Two pointers on single array** - not two separate arrays
+
+## Decision Tree
+
+```
+Is window size fixed or variable?
+├─ Fixed size k
+│  ├─ Track sum/count? → Initialize first k, slide by 1
+│  └─ Track frequencies? → Hash map, update on slide
+└─ Variable size
+   ├─ Find maximum length? → Expand right, shrink left when invalid
+   ├─ Find minimum length? → Expand until valid, shrink for minimum
+   └─ Count subarrays? → For each right, count valid lefts
+```
+
+## Advanced Patterns
+
+### At Most K → Exactly K Trick
+```python
+def exactlyK(s: str, k: int) -> int:
+    """
+    Subarrays with exactly k distinct = atMostK(k) - atMostK(k-1)
+    """
+    def atMostK(k: int) -> int:
+        left = count = 0
+        freq = {}
+        
+        for right, char in enumerate(s):
+            freq[char] = freq.get(char, 0) + 1
+            
+            while len(freq) > k:
+                freq[s[left]] -= 1
+                if freq[s[left]] == 0:
+                    del freq[s[left]]
+                left += 1
+            
+            count += right - left + 1
+        
+        return count
+    
+    return atMostK(k) - atMostK(k - 1)
+```
+
+### Sliding Window with Deque (Min/Max in Window)
+```python
+from collections import deque
+
+def maxSlidingWindow(nums: List[int], k: int) -> List[int]:
+    """
+    Maximum in each window of size k.
+    Time: O(n), Space: O(k)
+    """
+    deq = deque()  # Store indices, maintain decreasing order
+    result = []
+    
+    for right, num in enumerate(nums):
+        # Remove elements outside window
+        if deq and deq[0] < right - k + 1:
+            deq.popleft()
+        
+        # Remove smaller elements (they'll never be max)
+        while deq and nums[deq[-1]] < num:
+            deq.pop()
+        
+        deq.append(right)
+        
+        # Add to result once window is size k
+        if right >= k - 1:
+            result.append(nums[deq[0]])
+    
+    return result
+```
+
+### Sliding Window on Multiple Arrays
+```python
+def findAnagrams(s: str, p: str) -> List[int]:
+    """
+    Find all anagram starting positions.
+    Fixed window with frequency matching.
+    """
+    if len(p) > len(s):
+        return []
+    
+    p_count = Counter(p)
+    s_count = Counter(s[:len(p)])
+    result = [0] if s_count == p_count else []
+    
+    for right in range(len(p), len(s)):
+        # Add new char
+        s_count[s[right]] += 1
+        
+        # Remove old char
+        left_char = s[right - len(p)]
+        s_count[left_char] -= 1
+        if s_count[left_char] == 0:
+            del s_count[left_char]
+        
+        # Check if anagram
+        if s_count == p_count:
+            result.append(right - len(p) + 1)
+    
+    return result
+```
+
+---
+
+**Pro Tip:** The key insight for sliding window is that each element is processed at most twice (once when expanding right, once when contracting left), giving amortized O(n) time. If you're considering all subarrays with nested loops (O(n²)), check if sliding window applies.
