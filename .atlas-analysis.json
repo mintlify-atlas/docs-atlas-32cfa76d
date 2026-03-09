@@ -1,0 +1,118 @@
+{
+  "projectType": "general",
+  "projectName": "Questions100",
+  "projectDescription": "100 curated AI/ML/Security interview questions with comprehensive answers and real-world applications",
+  "theme": "maple",
+  "primaryColor": "#e74c3c",
+  "lightColor": "#f39c12",
+  "darkColor": "#c0392b",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "study-plans"
+            ]
+          },
+          {
+            "group": "Problem Categories",
+            "pages": [
+              "categories/array-hashing",
+              "categories/two-pointers",
+              "categories/stack",
+              "categories/binary-search",
+              "categories/tree",
+              "categories/bst",
+              "categories/graph",
+              "categories/dynamic-programming",
+              "categories/sliding-window",
+              "categories/linked-list",
+              "categories/heap",
+              "categories/design",
+              "categories/string",
+              "categories/intervals",
+              "categories/palindrome",
+              "categories/parentheses",
+              "categories/math"
+            ]
+          },
+          {
+            "group": "By Difficulty",
+            "pages": [
+              "difficulty/easy",
+              "difficulty/medium",
+              "difficulty/hard"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Problems",
+        "groups": [
+          {
+            "group": "Top Interview Problems",
+            "pages": [
+              "problems/top-frequency",
+              "problems/must-know-classics"
+            ]
+          },
+          {
+            "group": "All Problems",
+            "pages": [
+              "problems/001-020",
+              "problems/021-040",
+              "problems/041-060",
+              "problems/061-080",
+              "problems/081-100"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Study Resources",
+            "pages": [
+              "resources/patterns",
+              "resources/complexity-analysis",
+              "resources/interview-tips"
+            ]
+          },
+          {
+            "group": "Applications",
+            "pages": [
+              "resources/real-world",
+              "resources/cybersecurity"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "100 high-frequency interview problems with detailed solutions",
+    "17 categorized problem types (Arrays, Trees, DP, Graphs, etc.)",
+    "Comprehensive Python implementations with complexity analysis",
+    "Real-world and cybersecurity applications for each problem",
+    "Study plans and interview preparation strategies",
+    "Interactive HTML visualization with 3D graph view"
+  ],
+  "publicApiSurface": [
+    "Array-Hashing: Two Sum, Subarray Sum Equals K, Range Sum Query",
+    "Dynamic-Programming: Best Time to Buy/Sell Stock, Word Break, Maximum Subarray",
+    "Tree: Binary Tree Vertical Order, Diameter, Right Side View, LCA",
+    "Graph-DFS-BFS: Clone Graph, Course Schedule, Shortest Path",
+    "Binary-Search: Find Peak Element, Kth Missing Positive, Binary Search",
+    "Stack: Valid Parentheses, Basic Calculator II, Minimum Remove",
+    "Linked-List: Merge k Sorted Lists, Add Two Numbers, Copy with Random Pointer",
+    "Design: LRU Cache, Moving Average, BST Iterator",
+    "Heap-Priority-Queue: Kth Largest Element, Top K Frequent, Find Median",
+    "Sliding-Window: Longest Substring, Max Consecutive Ones, Minimum Window"
+  ]
+}
